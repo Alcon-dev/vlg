@@ -19,7 +19,7 @@ import max from "@app/assets/img/header/max.svg";
 import phone from "@app/assets/img/header/phone.svg";
 import mainBlockMapPin from "@app/assets/img/sections/main-block/map-pin.svg";
 import mainBlockUsers from "@app/assets/img/sections/main-block/users.svg";
-import mainBlockFlag from "@app/assets/img/sections/main-block/flag.svg";
+import mainBlockFlag from "@app/assets/img/sections/main-block/pool.svg";
 import mainBlockEye from "@app/assets/img/sections/main-block/eye-on.svg";
 import aboutMap from "@app/assets/img/sections/about/map.svg";
 import aboutUsers from "@app/assets/img/sections/about/users.svg";
