@@ -197,8 +197,10 @@ export default {
 header {
   position: relative;
   z-index: 1;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  // display: grid;
+  // grid-template-columns: 1fr auto 1fr;
+  display: flex;
+  justify-content: space-between;
   padding: 1.5rem;
   max-width: 110rem;
   margin: 0 auto;
@@ -221,6 +223,11 @@ header {
 .logo {
   width: 11.875rem;
   height: auto;
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 0.813rem);
+  transform: translate(-50%, -50%);
+  width: 11.875rem;
 }
 
 .menuList,
