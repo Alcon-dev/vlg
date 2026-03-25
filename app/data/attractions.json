@@ -1,0 +1,89 @@
+[
+  {
+    "title": "СПИН-СПОРТ",
+    "description": "Горнолыжный комплекс",
+    "distance": { "value": 199, "type": "м." },
+    "images": [
+      { "src": "sport/sport-1.png", "size": "small" },
+      { "src": "sport/sport-2.png", "size": "medium" },
+      { "src": "sport/sport-3.png", "size": "medium" },
+      { "src": "sport/sport-4.png", "size": "small" },
+      { "src": "sport/sport-5.png", "size": "small" }
+    ]
+  },
+  {
+    "title": "КОНИ-ПАРК",
+    "description": "Конный клуб",
+    "distance": { "value": 264, "type": "м." },
+    "images": [
+      { "src": "park/park-1.png", "size": "medium" },
+      { "src": "park/park-2.png", "size": "medium" },
+      { "src": "park/park-3.png", "size": "small" }
+    ]
+  },
+  {
+    "title": "NOBADDAYS",
+    "description": "Городской пляж",
+    "distance": { "value": 516, "type": "м." },
+    "images": [
+      { "src": "nobaddays/nobaddays-1.png", "size": "small" },
+      { "src": "nobaddays/nobaddays-2.png", "size": "medium" },
+      { "src": "nobaddays/nobaddays-3.png", "size": "small" }
+    ]
+  },
+  {
+    "title": "ЯХТ-КЛУБ",
+    "description": "Прогулки на яхте и скоростном катере",
+    "distance": { "value": 713, "type": "м." },
+    "images": [
+      { "src": "club/club-1.png", "size": "medium" },
+      { "src": "club/club-2.png", "size": "medium" },
+      { "src": "club/club-3.png", "size": "small" }
+    ]
+  },
+  {
+    "title": "МОНАСТЫРЬ",
+    "description": "Воскресенский Мужской монастырь",
+    "distance": { "value": 1.25, "type": "км." },
+    "images": [
+      { "src": "monastery/monastery-1.png", "size": "large" },
+      { "src": "monastery/monastery-2.png", "size": "medium" },
+      { "src": "monastery/monastery-3.png", "size": "small" }
+    ]
+  },
+  {
+    "title": "АМБАРНЫЕ БАНИ",
+    "description": "Банный комплекс",
+    "distance": { "value": 2, "type": "км." },
+    "images": [
+      { "src": "baths/baths-1.png", "size": "medium" },
+      { "src": "baths/baths-2.png", "size": "medium" }
+    ]
+  },
+  {
+    "title": "АМБАР",
+    "description": "Ресторан",
+    "distance": { "value": 2, "type": "км." },
+    "images": [
+      { "src": "restaurant-1/restaurant-1-1.png", "size": "medium" },
+      { "src": "restaurant-1/restaurant-1-2.png", "size": "small" }
+    ]
+  },
+  {
+    "title": "МИДИЙНОЕ МЕСТО",
+    "description": "Ресторан",
+    "distance": { "value": 2.2, "type": "км." },
+    "images": [
+      { "src": "restaurant-2/restaurant-2-1.png", "size": "small" },
+      { "src": "restaurant-2/restaurant-2-2.png", "size": "medium" }
+    ]
+  },
+  {
+    "title": "УДАЧНОЕ МЕСТО",
+    "description": "Ресторан",
+    "distance": { "value": 2.2, "type": "км." },
+    "images": [
+      { "src": "restaurant-3/restaurant-3-1.png", "size": "large" }
+    ]
+  }
+]

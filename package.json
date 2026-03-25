@@ -1,0 +1,31 @@
+{
+  "name": "volga",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@nuxt/eslint": "^1.15.2",
+    "@vuepic/vue-datepicker": "^12.1.0",
+    "axios": "^1.13.6",
+    "nuxt": "^3.14.0",
+    "swiper": "^12.1.2",
+    "vue": "^3.5.0",
+    "vue-router": "^4.4.0",
+    "vuex": "^4.1.0"
+  },
+  "devDependencies": {
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "prettier": "^3.3.3",
+    "sass-embedded": "^1.97.3"
+  }
+}

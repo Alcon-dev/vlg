@@ -1,0 +1,46 @@
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: always
+      variables:
+        HELM_REVISION: prod
+        VALUES_PATH: frontend/values_volga_residence.yaml
+        HELM_FOLDER_NAME: atlant_argo_helm
+        ARCHITECTURE_REPO_LINK: $ATLANT_ARCHITECTURE_REPO_LINK
+        ARCHITECTURE_REPO_TOKEN: $ATLANT_ARCHITECTURE_REPO_TOKEN
+        DOCKERFILE_NAME: Dockerfile
+    - when: never
+
+variables:
+  IMAGE_NAME: volga_residence_fe
+  VERSION: 1.0.$CI_PIPELINE_ID
+  DOCKER_IMAGE_NAME: cr.yandex/$REGISTRY_ID/$CI_COMMIT_BRANCH/$IMAGE_NAME:$VERSION
+
+include:
+  - project: 'atlant/atlant-shared-gitlab-jobs'
+    file: '.gitlab/update-version.yml'
+
+stages:
+  - build
+  - update-version
+
+build:
+  stage: build
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: "tcp://docker:2375"
+    RUNNER_SCRIPT_TIMEOUT: 120m
+    RUNNER_AFTER_SCRIPT_TIMEOUT: 10m
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - echo $AUTH_KEY | docker login --username json_key --password-stdin cr.yandex
+    - echo $ATLANT_DOCKER_PASSWORD | docker login --username $ATLANT_DOCKER_USERNAME --password-stdin docker.io
+  script:
+    - docker build -t $DOCKER_IMAGE_NAME -f ${DOCKERFILE_NAME} .
+    - docker push $DOCKER_IMAGE_NAME
+  after_script:
+    - docker logout cr.yandex
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
