@@ -6,7 +6,7 @@
   >
     <div v-if="!embedded" :class="$style.titleContainer">
       <div :class="$style.titleLine1">
-        <h3>РЕЗИДЕНЦИЯ<br />ВОЛГА</h3>
+        <h3>Резиденция<br />ВОЛГА</h3>
         <h2>ВЫБЕРИТЕ ВИЛЛУ</h2>
       </div>
       <div :class="$style.titleLine2">
@@ -1747,6 +1747,7 @@ export default {
     font-size: 1rem;
     font-weight: 300;
     margin: 0.25rem 0 0 0;
+    line-height: 120%;
     @include mobile {
       font-size: 0.625rem;
       color: $text-tertiary;
