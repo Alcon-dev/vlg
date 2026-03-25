@@ -1,40 +1,10 @@
 <template>
   <section id="services" :class="$style.wrapper">
     <div :class="$style.titleContainer">
-      <div :class="$style.titlePrimaryRow">
-        <h2 :class="$style.titlePrimary">УСЛУГИ</h2>
-        <div :class="$style.titlePrimaryIcons">
-          <img
-            v-for="i in 5"
-            :key="i"
-            src="@app/assets/img/sections/services/smile.svg"
-            alt=""
-            :class="$style.titlePrimaryIcon"
-            width="32"
-            height="32"
-            loading="lazy"
-            decoding="async"
-          />
-        </div>
-      </div>
+      <h2 :class="$style.titlePrimary">УСЛУГИ</h2>
       <h2 :class="$style.titleSecondary">РЕЗИДЕНЦИИ ВОЛГА</h2>
     </div>
-    <div :class="$style.info">
-      <div v-for="item in info" :key="item.title" :class="$style.infoItem">
-        <div :class="$style.infoItemTitleContainer">
-          <img
-            src="@app/assets/img/sections/services/smile.svg"
-            :alt="item.title"
-            width="40"
-            height="40"
-            loading="lazy"
-            decoding="async"
-          />
-          <h3 :class="$style.infoItemTitle">{{ item.title }}</h3>
-        </div>
-        <p :class="$style.infoItemDescription">{{ item.description }}</p>
-      </div>
-    </div>
+
     <div :class="$style.services">
       <div
         v-for="(item, index) in services"
@@ -52,16 +22,6 @@
               {{ item.description }}
             </p>
           </div>
-
-          <img
-            v-if="item.icon"
-            src="@app/assets/img/sections/services/smile.svg"
-            :alt="item.title"
-            width="40"
-            height="40"
-            loading="lazy"
-            decoding="async"
-          />
         </div>
 
         <img
@@ -158,36 +118,11 @@ export default {
   }
 }
 
-.titlePrimaryRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: nowrap;
-}
-
 .titlePrimary {
   margin: 0;
   @include mobile {
     font-size: 1.5rem;
   }
-}
-
-.titlePrimaryIcons {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-shrink: 0;
-  @include mobile {
-    display: none;
-  }
-}
-
-.titlePrimaryIcon {
-  width: 2rem;
-  height: 2rem;
-  object-fit: contain;
-  display: block;
 }
 
 .titlePrimary,
@@ -200,7 +135,7 @@ export default {
     letter-spacing: -4%;
   }
   @include mobile {
-    text-align: left;
+    text-align: center;
     font-size: 1.5rem;
   }
 }
