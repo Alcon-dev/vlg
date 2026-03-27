@@ -200,66 +200,63 @@
                   @submit.prevent="onBookingSubmit"
                 >
                   <div
-                    ref="dateSelectWrapRef"
+                    ref="checkInWrapRef"
                     :class="[
                       $style.dateSelectWrap,
-                      $style.dateSelectWrapRow,
-                      calendarOpen && $style.dateSelectWrapOpen,
+                      $style.formGroup,
+                      $style.dateField,
+                      calendarOpenCheckIn && $style.dateSelectWrapOpen,
                     ]"
                   >
-                    <div :class="$style.formGroup">
-                      <label :class="$style.formLabel">Заселение и выезд</label>
-                      <div :class="$style.dateSelectTriggerWrap">
-                        <button
-                          ref="dateSelectTriggerRef"
-                          type="button"
-                          :class="[
-                            $style.formInput,
-                            $style.formInputWithIcon,
-                            $style.dateSelectTrigger,
-                            bookingValidationError === 'dates' &&
-                              $style.formInputError,
-                          ]"
-                          @click="calendarOpen = !calendarOpen"
+                    <label :class="$style.formLabel">Дата заезда</label>
+                    <div :class="$style.dateSelectTriggerWrap">
+                      <button
+                        ref="checkInTriggerRef"
+                        type="button"
+                        :class="[
+                          $style.formInput,
+                          $style.formInputWithIcon,
+                          $style.dateSelectTrigger,
+                          bookingValidationError === 'dates' &&
+                            $style.formInputError,
+                        ]"
+                        @click="toggleCheckInCalendar"
+                      >
+                        <span
+                          v-if="checkInDateFormatted"
+                          :class="$style.dateRangeText"
                         >
-                          <span
-                            v-if="dateRangeFormatted"
-                            :class="$style.dateRangeText"
-                          >
-                            {{ dateRangeFormatted }}
-                          </span>
-                          <span v-else :class="$style.guestsPlaceholder">
-                            Выберите даты
-                          </span>
-                        </button>
-                        <button
-                          v-if="dateRangeFormatted"
-                          type="button"
-                          :class="$style.dateSelectClearBtn"
-                          aria-label="Очистить даты"
-                          @click.stop="clearDateRange"
-                        >
-                          ×
-                        </button>
-                        <AppIcon
-                          v-else
-                          name="reservCalendar"
-                          alt=""
-                          :class="$style.formInputIcon"
-                        />
-                      </div>
+                          {{ checkInDateFormatted }}
+                        </span>
+                        <span v-else :class="$style.guestsPlaceholder">
+                          Выберите дату
+                        </span>
+                      </button>
+                      <button
+                        v-if="checkInDate"
+                        type="button"
+                        :class="$style.dateSelectClearBtn"
+                        aria-label="Очистить дату заезда"
+                        @click.stop="clearCheckInDate"
+                      >
+                        ×
+                      </button>
+                      <AppIcon
+                        v-else
+                        name="reservCalendar"
+                        alt=""
+                        :class="$style.formInputIcon"
+                      />
                     </div>
                     <Transition name="date-dropdown">
                       <div
-                        v-show="calendarOpen"
+                        v-show="calendarOpenCheckIn"
                         :class="$style.calendarDropdown"
                         @mousedown.prevent
                       >
                         <VueDatePicker
-                          v-if="calendarOpen"
-                          ref="datePickerRef"
-                          v-model="dateRange"
-                          range
+                          v-if="calendarOpenCheckIn"
+                          v-model="checkInDate"
                           :inline="true"
                           :dark="true"
                           :locale="ruLocale"
@@ -268,12 +265,85 @@
                           :disabled-dates="isCalendarDateDisabled"
                           auto-apply
                           :teleport="false"
-                          @update:model-value="onDateRangeSelect"
+                          @update:model-value="onCheckInDateSelect"
                           @update-month-year="onCalendarMonthYearChange"
                         />
                       </div>
                     </Transition>
                   </div>
+                  <div
+                    ref="checkOutWrapRef"
+                    :class="[
+                      $style.dateSelectWrap,
+                      $style.formGroup,
+                      $style.dateField,
+                      calendarOpenCheckOut && $style.dateSelectWrapOpen,
+                    ]"
+                  >
+                    <label :class="$style.formLabel">Дата выезда</label>
+                    <div :class="$style.dateSelectTriggerWrap">
+                      <button
+                        ref="checkOutTriggerRef"
+                        type="button"
+                        :class="[
+                          $style.formInput,
+                          $style.formInputWithIcon,
+                          $style.dateSelectTrigger,
+                          bookingValidationError === 'dates' &&
+                            $style.formInputError,
+                        ]"
+                        @click="toggleCheckOutCalendar"
+                      >
+                        <span
+                          v-if="checkOutDateFormatted"
+                          :class="$style.dateRangeText"
+                        >
+                          {{ checkOutDateFormatted }}
+                        </span>
+                        <span v-else :class="$style.guestsPlaceholder">
+                          Выберите дату
+                        </span>
+                      </button>
+                      <button
+                        v-if="checkOutDate"
+                        type="button"
+                        :class="$style.dateSelectClearBtn"
+                        aria-label="Очистить дату выезда"
+                        @click.stop="clearCheckOutDate"
+                      >
+                        ×
+                      </button>
+                      <AppIcon
+                        v-else
+                        name="reservCalendar"
+                        alt=""
+                        :class="$style.formInputIcon"
+                      />
+                    </div>
+                    <Transition name="date-dropdown">
+                      <div
+                        v-show="calendarOpenCheckOut"
+                        :class="$style.calendarDropdown"
+                        @mousedown.prevent
+                      >
+                        <VueDatePicker
+                          v-if="calendarOpenCheckOut"
+                          v-model="checkOutDate"
+                          :inline="true"
+                          :dark="true"
+                          :locale="ruLocale"
+                          :enable-time-picker="false"
+                          :hide-navigation="['time']"
+                          :disabled-dates="isCalendarDateDisabledForCheckOut"
+                          auto-apply
+                          :teleport="false"
+                          @update:model-value="onCheckOutDateSelect"
+                          @update-month-year="onCalendarMonthYearChange"
+                        />
+                      </div>
+                    </Transition>
+                  </div>
+
                   <div :class="[$style.formGroup, $style.formGroupGuests]">
                     <label :class="$style.formLabel">Количество гостей</label>
                     <div
@@ -1016,8 +1086,10 @@ export default {
       guestsOpen: false,
       guestSelection: { adults: 1, children: [] },
       childAges: CHILD_AGES,
-      calendarOpen: false,
-      dateRange: null,
+      calendarOpenCheckIn: false,
+      calendarOpenCheckOut: false,
+      checkInDate: null,
+      checkOutDate: null,
       ruLocale: ru,
       calendarViewMonth: null,
       calendarViewYear: null,
@@ -1034,19 +1106,21 @@ export default {
     };
   },
   computed: {
-    dateRangeFormatted() {
-      if (!this.dateRange || !Array.isArray(this.dateRange)) return "";
-      const [start, end] = this.dateRange;
-      if (!start) return "";
-      const format = (d) => {
-        if (!d) return "";
-        const day = d.getDate();
-        const month = d.toLocaleDateString("ru-RU", { month: "short" });
-        const year = d.getFullYear();
-        return `${day} ${month} ${year}`;
-      };
-      if (!end || start.getTime() === end.getTime()) return format(start);
-      return `${format(start)} – ${format(end)}`;
+    checkInDateFormatted() {
+      if (!this.checkInDate) return "";
+      const day = this.checkInDate.getDate();
+      const month = this.checkInDate.toLocaleDateString("ru-RU", {
+        month: "long",
+      });
+      return `${day} ${month}`;
+    },
+    checkOutDateFormatted() {
+      if (!this.checkOutDate) return "";
+      const day = this.checkOutDate.getDate();
+      const month = this.checkOutDate.toLocaleDateString("ru-RU", {
+        month: "long",
+      });
+      return `${day} ${month}`;
     },
     totalGuests() {
       const g = this.guestSelection;
@@ -1162,7 +1236,9 @@ export default {
       return Array.isArray(list) && list.length ? list[0] : "";
     },
     isAnyDropdownOpen() {
-      return this.calendarOpen || this.guestsOpen;
+      return (
+        this.calendarOpenCheckIn || this.calendarOpenCheckOut || this.guestsOpen
+      );
     },
     calendarFromStore() {
       return this.$store.state.calendar || [];
@@ -1226,10 +1302,12 @@ export default {
       }
     },
     activeTabIndex() {
-      this.dateRange = null;
+      this.checkInDate = null;
+      this.checkOutDate = null;
       this.guestSelection = { adults: 1, children: [] };
       this.guestsOpen = false;
-      this.calendarOpen = false;
+      this.calendarOpenCheckIn = false;
+      this.calendarOpenCheckOut = false;
       this.carouselActiveIndex = 1;
     },
     currentApartment(apt) {
@@ -1250,8 +1328,30 @@ export default {
       }
       this.fetchCalendar();
     },
-    calendarOpen(open) {
+    calendarOpenCheckIn(open) {
       if (open) {
+        this.calendarOpenCheckOut = false;
+        const now = new Date();
+        this.calendarViewMonth = now.getMonth();
+        this.calendarViewYear = now.getFullYear();
+        this.fetchCalendarForMonth(
+          this.calendarViewMonth,
+          this.calendarViewYear
+        );
+        this.$nextTick(() => {
+          document.addEventListener("mousedown", this.onCalendarClickOutside);
+          if (!this.embedded) {
+            window.addEventListener("scroll", this.onCalendarScroll, true);
+          }
+        });
+      } else {
+        document.removeEventListener("mousedown", this.onCalendarClickOutside);
+        window.removeEventListener("scroll", this.onCalendarScroll, true);
+      }
+    },
+    calendarOpenCheckOut(open) {
+      if (open) {
+        this.calendarOpenCheckIn = false;
         const now = new Date();
         this.calendarViewMonth = now.getMonth();
         this.calendarViewYear = now.getFullYear();
@@ -1479,8 +1579,8 @@ export default {
       )}`;
     },
     isDateCardSelected(item) {
-      if (!this.dateRange || !Array.isArray(this.dateRange)) return false;
-      const [start, end] = this.dateRange;
+      const start = this.checkInDate;
+      const end = this.checkOutDate;
       if (!start || !end) return false;
       return (
         this.toDateStr(start) === item.checkInStr &&
@@ -1489,10 +1589,14 @@ export default {
     },
     onDateCardClick(item) {
       if (!item.available) return;
-      this.dateRange = [
-        new Date(item.checkInDate.getTime()),
-        new Date(item.checkOutDate.getTime()),
-      ];
+      this.checkInDate = new Date(item.checkInDate.getTime());
+      this.checkOutDate = new Date(item.checkOutDate.getTime());
+      this.bookingValidationError = "";
+    },
+    isCalendarDateDisabledForCheckOut(date) {
+      if (this.isCalendarDateDisabled(date)) return true;
+      if (!this.checkInDate) return false;
+      return this.toDateStr(date) <= this.toDateStr(this.checkInDate);
     },
     scrollNearestDates(direction) {
       const el = this.$refs.nearestDatesScrollRef;
@@ -1629,13 +1733,19 @@ export default {
       event.preventDefault();
     },
     onCalendarClickOutside(event) {
-      const wrap = this.$refs.dateSelectWrapRef;
-      if (wrap && !wrap.contains(event.target)) {
-        this.calendarOpen = false;
+      const checkInWrap = this.$refs.checkInWrapRef;
+      const checkOutWrap = this.$refs.checkOutWrapRef;
+      const insideCheckIn = checkInWrap && checkInWrap.contains(event.target);
+      const insideCheckOut =
+        checkOutWrap && checkOutWrap.contains(event.target);
+      if (!insideCheckIn && !insideCheckOut) {
+        this.calendarOpenCheckIn = false;
+        this.calendarOpenCheckOut = false;
       }
     },
     onCalendarScroll() {
-      this.calendarOpen = false;
+      this.calendarOpenCheckIn = false;
+      this.calendarOpenCheckOut = false;
     },
     onGuestsClickOutside(event) {
       const wrap = this.$refs.guestsSelectWrapRef;
@@ -1652,27 +1762,54 @@ export default {
       }
     },
     onWheelCapture(event) {
-      const dateWrap = this.$refs.dateSelectWrapRef;
-      const insideCalendar = dateWrap && dateWrap.contains(event.target);
+      const checkInWrap = this.$refs.checkInWrapRef;
+      const checkOutWrap = this.$refs.checkOutWrapRef;
+      const insideCalendar =
+        (checkInWrap && checkInWrap.contains(event.target)) ||
+        (checkOutWrap && checkOutWrap.contains(event.target));
       if (insideCalendar) {
         event.preventDefault();
       }
     },
-    onDateRangeSelect() {
-      if (this.dateRange && Array.isArray(this.dateRange)) {
-        const [start, end] = this.dateRange;
-        if (!start || !end) return;
-        if (this.toDateStr(start) === this.toDateStr(end)) {
-          this.dateRange = null;
-          return;
-        }
-        this.bookingValidationError = "";
-        this.calendarOpen = false;
-      }
+    toggleCheckInCalendar() {
+      this.calendarOpenCheckIn = !this.calendarOpenCheckIn;
+      if (this.calendarOpenCheckIn) this.calendarOpenCheckOut = false;
     },
-    clearDateRange() {
-      this.dateRange = null;
-      this.calendarOpen = false;
+    toggleCheckOutCalendar() {
+      this.calendarOpenCheckOut = !this.calendarOpenCheckOut;
+      if (this.calendarOpenCheckOut) this.calendarOpenCheckIn = false;
+    },
+    onCheckInDateSelect(value) {
+      if (!(value instanceof Date)) return;
+      this.checkInDate = value;
+      if (
+        this.checkOutDate &&
+        this.toDateStr(this.checkOutDate) <= this.toDateStr(this.checkInDate)
+      ) {
+        this.checkOutDate = null;
+      }
+      this.bookingValidationError = "";
+      this.calendarOpenCheckIn = false;
+    },
+    onCheckOutDateSelect(value) {
+      if (!(value instanceof Date)) return;
+      if (
+        this.checkInDate &&
+        this.toDateStr(value) <= this.toDateStr(this.checkInDate)
+      ) {
+        return;
+      }
+      this.checkOutDate = value;
+      this.bookingValidationError = "";
+      this.calendarOpenCheckOut = false;
+    },
+    clearCheckInDate() {
+      this.checkInDate = null;
+      this.calendarOpenCheckIn = false;
+    },
+    clearCheckOutDate() {
+      this.checkOutDate = null;
+      this.calendarOpenCheckOut = false;
     },
     selectTab(index) {
       if (this.embedded) {
@@ -1686,15 +1823,9 @@ export default {
       const apt = this.currentApartment;
       if (!apt?.id) return;
 
-      if (!this.dateRange || !Array.isArray(this.dateRange)) {
+      if (!this.checkInDate || !this.checkOutDate) {
         this.bookingValidationError = "dates";
-        this.$nextTick(() => this.$refs.dateSelectTriggerRef?.focus());
-        return;
-      }
-      const [start, end] = this.dateRange;
-      if (!start || !end) {
-        this.bookingValidationError = "dates";
-        this.$nextTick(() => this.$refs.dateSelectTriggerRef?.focus());
+        this.$nextTick(() => this.$refs.checkInTriggerRef?.focus());
         return;
       }
 
@@ -1706,8 +1837,8 @@ export default {
       };
 
       this.$store.commit("setBookingFormData", {
-        checkInDate: this.toDateStr(start),
-        checkOutDate: this.toDateStr(end),
+        checkInDate: this.toDateStr(this.checkInDate),
+        checkOutDate: this.toDateStr(this.checkOutDate),
         guests,
         apartment: apt,
       });
@@ -2585,40 +2716,84 @@ export default {
 }
 
 .formRowOneRow {
+  display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   align-items: flex-end;
   gap: 1rem;
   padding: 0 0 1rem 0;
 
-  & > .formGroup {
-    padding-bottom: 0;
+  & > .dateSelectWrap,
+  & > .formGroupGuests,
+  & > .bookButton {
+    flex: 1 1 calc((100% - 3rem) / 4);
+    width: calc((100% - 3rem) / 4);
+    min-width: 0;
+  }
+
+  & > .dateSelectWrap,
+  & > .formGroupGuests {
+    position: relative;
+    padding: 0.45rem 0 0 0;
+    gap: 0;
+  }
+
+  & > .dateSelectWrap .formLabel,
+  & > .formGroupGuests .formLabel {
+    position: absolute;
+    top: 0;
+    left: 0.75rem;
+    transform: translateY(-50%);
+    margin: 0;
+    padding: 0 0.25rem;
+    font-size: 0.625rem;
+    font-weight: 300;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.6);
+    background: $text-primary;
+    z-index: 2;
   }
 
   & > .bookButton {
-    min-width: 11rem;
-    flex-shrink: 0;
-    padding: 0 1.5rem;
-    height: 3.5rem;
+    padding: 0 1rem;
+    height: 3rem;
+    min-height: 3rem;
     box-sizing: border-box;
-    @include tablet {
-      width: 100%;
-    }
   }
 
   .dateSelectTriggerWrap .formInput,
   .guestsSelectWrap .formInput {
-    min-height: 2.75rem;
+    height: 3rem;
+    min-height: 3rem;
     box-sizing: border-box;
+  }
+
+  .dateSelectTrigger,
+  .guestsSelectTrigger {
+    display: flex;
+    align-items: center;
+    text-align: left;
+  }
+
+  .dateSelectTrigger span,
+  .guestsSelectTrigger span {
+    width: 100%;
+    text-align: left;
+    line-height: 1.2;
   }
 
   @include mobile {
     flex-direction: column;
     align-items: stretch;
 
+    & > .dateSelectWrap,
+    & > .formGroupGuests,
     & > .bookButton {
       width: 100%;
-      min-width: 0;
+      flex: 1 1 100%;
+    }
+
+    & > .bookButton {
       height: auto;
       margin-top: 0.5rem;
       padding: 0.875rem 1rem;
@@ -2658,6 +2833,16 @@ export default {
   color: $text-white;
   @include mobile {
     display: none;
+  }
+}
+
+.dateField {
+  .formInput {
+    border-color: #685137 !important;
+  }
+
+  .formLabel {
+    color: #685137 !important;
   }
 }
 
