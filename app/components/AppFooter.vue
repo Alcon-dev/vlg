@@ -33,10 +33,10 @@
         <nav :class="$style.column">
           <h3 :class="$style.columnTitle">Услуги</h3>
           <ul :class="$style.columnList">
-            <li><NuxtLink to="#">Аренда вилл</NuxtLink></li>
-            <li><NuxtLink to="#">Организация банкетов</NuxtLink></li>
-            <li><NuxtLink to="#">Питание</NuxtLink></li>
-            <li><NuxtLink to="#">Фотосессии</NuxtLink></li>
+            <li><NuxtLink to="#services">Питание</NuxtLink></li>
+            <li><NuxtLink to="#services">Праздники</NuxtLink></li>
+            <li><NuxtLink to="#services">Экскурсии</NuxtLink></li>
+            <li><NuxtLink to="#services">Прокат</NuxtLink></li>
           </ul>
         </nav>
         <div :class="$style.columnLogo">
@@ -106,24 +106,18 @@
       </div>
     </div>
     <div :class="$style.bottomSection">
-      <div :class="$style.bottomRow">
-        <div :class="$style.bottomLeft">
-          <span :class="$style.bottomItem">© 2026 Все права защищены</span>
-          <span :class="$style.bottomItem">ООО «Резиденция ВОЛГА»</span>
-        </div>
-        <div :class="$style.bottomRight">
-          <NuxtLink :class="$style.bottomLink" to="#">
-            Политика конфиденциальности
-          </NuxtLink>
-          <a
-            :class="$style.bottomLink"
-            href="#faq"
-            @click.prevent="scrollToFaqRules"
-          >
-            Правила проживания
-          </a>
-        </div>
-      </div>
+      <span :class="$style.bottomItem">ООО "Резиденция ВОЛГА"</span>
+      <span :class="$style.bottomItem">© 2026 Все права защищены</span>
+      <a
+        :class="$style.bottomLink"
+        href="#faq"
+        @click.prevent="scrollToFaqRules"
+      >
+        Правила проживания
+      </a>
+      <NuxtLink :class="$style.bottomLink" to="#">
+        Политика конфиденциальности
+      </NuxtLink>
       <span :class="$style.bottomDev">
         Сайт разработан
         <a
@@ -211,7 +205,7 @@ export default {
 }
 
 .topSection {
-  padding: 2.5rem;
+  padding: 2.5rem 5rem;
   margin: 0 auto;
   @include mobile {
     padding: 2.5rem 1rem;
@@ -269,8 +263,9 @@ export default {
 }
 
 .columnTitle {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 600;
+  line-height: 120%;
   margin: 0;
   @include tablet {
     font-size: 0.875rem;
@@ -316,6 +311,7 @@ export default {
   gap: 0.5rem;
   font-size: 0.875rem;
   font-weight: 300;
+  line-height: 120%;
 
   a {
     color: $text-white;
@@ -359,20 +355,23 @@ export default {
 }
 
 .mobileBookBtn {
-  display: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  background: rgba(255, 255, 255, 0.16);
+  color: $text-white;
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  line-height: 120%;
+  border-radius: 2rem;
+  transition: background 0.2s;
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
   @include mobile {
     display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background: rgba(255, 255, 255, 0.12);
-    color: $text-white;
-    font-size: 0.9375rem;
-    font-weight: 500;
-    text-decoration: none;
-    border-radius: 2rem;
-    transition: background 0.2s;
-    &:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
   }
 }
 
@@ -397,7 +396,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 3rem;
 }
 
 .socialLink {
@@ -441,49 +440,23 @@ export default {
 
 .bottomSection {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
   gap: 1rem;
-  padding: 1.25rem 2.5rem 2.5rem 2.5rem;
+  padding: 1.5rem 5rem 2.5rem 5rem;
   margin: 0 auto;
   font-size: 0.8125rem;
   color: rgba(255, 255, 255, 0.75);
   max-width: 100%;
   @include mobile {
+    flex-direction: column;
     padding: 1rem 1rem 1.5rem;
   }
 }
 
-.bottomRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  width: 100%;
-}
-
-.bottomLeft {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.25rem;
-  @include mobile {
-    gap: 0.5rem;
-  }
-}
-
-.bottomRight {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.25rem;
-  @include mobile {
-    gap: 0.5rem;
-  }
-}
-
 .bottomDev {
-  display: block;
-  text-align: center;
-  width: 100%;
+  display: inline;
+  text-align: right;
   @include mobile {
     font-size: 0.625rem;
     color: rgba(255, 255, 255, 0.6);
@@ -492,14 +465,8 @@ export default {
 
 .bottomItem {
   white-space: nowrap;
-  &:last-child {
-    text-align: right;
-  }
   @include mobile {
     font-size: 0.625rem;
-    &:last-child {
-      text-align: left;
-    }
   }
 }
 
@@ -513,8 +480,7 @@ export default {
   }
   @include mobile {
     font-size: 0.625rem;
-
-    text-align: right;
+    text-align: center;
   }
 }
 
