@@ -75,7 +75,9 @@
     </div>
     <div :class="$style.reviews">
       <div :class="$style.reviewsHeader">
-        <h3 :class="$style.reviewsSectionTitle">Отзывы клиентов на avito.ru</h3>
+        <h3 :class="$style.reviewsSectionTitle">
+          Отзывы наших клиентов на avito.ru
+        </h3>
         <div :class="$style.reviewsHeaderMobile">
           <h3 :class="$style.reviewsSectionTitleMobile">
             Отзывы наших клиентов на avito.ru

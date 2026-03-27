@@ -2390,7 +2390,6 @@ a.contactItem:hover {
 .bookingFormUnifiedFieldWrap {
   position: relative;
   min-width: 0;
-  z-index: 1;
   &:not(:first-child) {
     border-left: 1px solid rgba(255, 255, 255, 0.24);
   }
@@ -2444,7 +2443,7 @@ a.contactItem:hover {
   margin: 0;
   max-width: min(20rem, calc(100vw - 2rem));
   padding: 0.35rem 0.5rem;
-  background: rgba(173, 31, 31, 0.787);
+  background: rgb(173, 31, 31);
   border-radius: 0.35rem;
   color: $text-white;
   font-size: 0.7rem;

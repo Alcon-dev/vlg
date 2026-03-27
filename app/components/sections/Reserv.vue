@@ -2961,6 +2961,9 @@ export default {
   flex-shrink: 0;
   min-height: 0.5rem;
   margin-top: 0.25rem;
+  @include mobile {
+    min-height: 0;
+  }
 }
 
 .fieldError {
