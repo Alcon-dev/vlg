@@ -90,7 +90,8 @@ export default {
 
 .wrapper {
   display: flex;
-  gap: 2rem;
+  align-items: center;
+  gap: 2.5rem;
   @include tablet {
     gap: 1rem;
   }
@@ -119,6 +120,7 @@ export default {
 .title {
   font-size: 2rem;
   font-weight: 600;
+  white-space: nowrap;
   @include mobile {
     font-size: 0.875rem;
     font-weight: 600;

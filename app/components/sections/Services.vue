@@ -68,28 +68,28 @@ export default {
         {
           title: "Питание",
           description:
-            "Для вашего комфортного отдыха в нашей резиденции мы предлагаем услуги персонального повара,и организацию мероприятий с привлечением кейтеринга",
+            "Для вашего комфортного отдыха в нашей\nрезиденции мы предлагаем услуги\nперсонального повара,\nи организацию мероприятий с привлечением\nкейтеринга",
           image: food,
           icon: true,
         },
         {
           title: "Праздники",
           description:
-            "Организуем и подготовим наши специалисты для вашего прадника:\nФотосессии\nВидеосьемки\nДесткие праздники\nСвадьбы",
+            "Организуем и подготовим виллу для вашего\nпраздника:\nФотосессии\nВидеосъемки\nДетские праздники\nСвадьбы",
           image: holidays,
           icon: false,
         },
         {
           title: "Экскурсии",
           description:
-            "Организуем персональные и групповые экскурсии по достопримечательностям:\nЗамок “Гарибальд”\nВоскресенский монастырь",
+            'Организуем персональные и групповые\nэкскурсии по достопримечательностям:\n• Замок "Гарибальди"\n• Воскресенский мужской монастырь\n• Обзорная экскурсия по волге',
           image: excursions,
           icon: false,
         },
         {
           title: "Прокат",
           description:
-            "Для вас прокат:\nКвадроциклов\nИнвентаря для рыбалки\nВелосипедов",
+            "Для активного отдыха мы предлагаем прокат:\n• Квадроциклов\n• Велосипедов\n• Инвентаря для рыбалки\n• Лыжи и сноуборд",
           image: rental,
           icon: false,
         },
@@ -113,6 +113,7 @@ export default {
 }
 
 .titleContainer {
+  text-align: center;
   @include mobile {
     max-width: 100%;
   }
@@ -130,10 +131,6 @@ export default {
   color: $text-primary;
   text-align: center;
   font-weight: 300;
-  @include tablet {
-    text-align: left;
-    letter-spacing: -4%;
-  }
   @include mobile {
     text-align: center;
     font-size: 1.5rem;
@@ -144,6 +141,8 @@ export default {
   @include mobile {
     font-size: 1.5rem;
   }
+  white-space: nowrap;
+  display: inline-block;
 }
 
 .info {
@@ -201,7 +200,7 @@ export default {
   align-items: center;
   gap: 1rem;
   border: 1px solid #e0e0e0;
-  border-radius: 1rem;
+  border-radius: 1.125rem;
   padding: 0.5rem;
   @include mobile {
     grid-template-columns: 1fr auto;
@@ -300,6 +299,8 @@ export default {
   font-size: 1rem;
   font-weight: 300;
   line-height: 1.2;
+  white-space: pre-line;
+  letter-spacing: -2%;
   @include mobile {
     font-size: 0.75rem;
     font-weight: 400;

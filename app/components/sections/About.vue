@@ -372,6 +372,10 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  /* Скрываем блок, но оставляем занимаемое место,
+     чтобы `titleLine1` (space-between) не переставил остальные элементы. */
+  visibility: hidden;
+  pointer-events: none;
   span {
     font-size: 3rem;
     margin: 0 1rem 0 0;
@@ -575,7 +579,7 @@ export default {
   align-items: center;
   text-align: center;
   gap: 1rem;
-  padding: 0 0 1rem 0;
+  padding: 0 0 2.5rem 0;
   border-bottom: 1px solid #d8d8d8;
   @include mobile {
     align-items: center;
@@ -791,7 +795,10 @@ export default {
   border: none;
   padding: 0;
   cursor: pointer;
-  transition: background 0.2s, width 0.2s, height 0.2s;
+  transition:
+    background 0.2s,
+    width 0.2s,
+    height 0.2s;
   @include mobile {
     width: 1.5rem;
     height: 0.2rem;
