@@ -7,9 +7,12 @@
         <div :class="$style.titleLine1Right">
           <p :class="$style.phone">+7 (927) 767-56-00</p>
           <div :class="$style.titleLine1Desc">
-            <p :class="$style.descLine">Уединенное место</p>
-            <p :class="$style.descLine">с панорамными видами на волгу и горы</p>
-            <p :class="$style.descLine">в окружении уникальных объектов</p>
+            <p :class="$style.descLine">
+              Уединенное место с панорамными видами
+            </p>
+            <p :class="$style.descLine">
+              на волгу и горы в окружении уникальных объектов
+            </p>
           </div>
         </div>
       </div>
@@ -1772,6 +1775,7 @@ export default {
   justify-content: space-between;
   align-items: flex-end;
   width: 100%;
+  margin: 0 0 1rem 0;
 
   @include tablet {
     .title {
@@ -1806,8 +1810,18 @@ export default {
 }
 
 .titleLine1Right {
-  .titleLine1Desc {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  max-width: 26rem;
+  min-width: 0;
+
+  .phone {
     display: none;
+  }
+
+  .titleLine1Desc {
+    display: block;
 
     @include tablet {
       display: block;
@@ -1817,15 +1831,17 @@ export default {
 
 .titleLine1Desc {
   text-align: right;
-  max-width: 20rem;
+  max-width: 100%;
+  min-width: 0;
 
   .descLine {
-    text-wrap: nowrap;
+    white-space: normal;
+    overflow-wrap: anywhere;
     margin: 0 0 0.25rem;
     font-size: 1rem;
     font-weight: 300;
     line-height: 1.2;
-    color: $text-secondary;
+    color: $text-primary;
     letter-spacing: -4%;
 
     &:last-child {
@@ -1837,8 +1853,23 @@ export default {
 .titleLine2 {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: flex-end;
   width: 100%;
+
+  .titleH2 {
+    text-align: right;
+    order: 2;
+  }
+
+  .address {
+    margin: 0;
+    text-align: left;
+    order: 1;
+
+    :global(br) {
+      display: none;
+    }
+  }
 
   @include tablet {
     h2 {
@@ -1858,6 +1889,7 @@ export default {
       font-size: 1.875rem;
       font-weight: 300;
       text-align: right;
+      order: 1;
     }
     .address {
       display: block;
@@ -1867,6 +1899,7 @@ export default {
       line-height: 1.35;
       text-align: center;
       width: 100%;
+      order: 2;
     }
   }
 }
@@ -1905,8 +1938,9 @@ a.contactItem:hover {
 }
 
 .title {
-  font-size: 2rem;
+  font-size: 1rem;
   line-height: 1.2;
+  font-weight: 300;
 }
 
 .phone {
@@ -1916,9 +1950,8 @@ a.contactItem:hover {
 }
 
 .address {
-  font-size: 2rem;
+  font-size: 1.5rem;
   line-height: 1.2;
-  font-weight: 300;
   text-align: right;
   @include mobile {
     text-align: center;

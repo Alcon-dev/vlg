@@ -159,22 +159,18 @@ export default {
 }
 
 .titleLine2Left {
-  display: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 
-  @include tablet {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-
-    .contactText {
-      margin: 0;
-      font-size: 1rem;
-      font-weight: 300;
-      line-height: 1.2;
-      color: $text-primary;
-      @include mobile {
-        display: none;
-      }
+  .contactText {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1.2;
+    color: $text-primary;
+    @include mobile {
+      display: none;
     }
   }
 }
@@ -210,18 +206,18 @@ export default {
 
 .titleLine1 {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 }
 
 .titleLine2 {
   display: flex;
-  justify-content: end;
-  align-items: center;
+  justify-content: space-between;
+  align-items: flex-end;
 
   .title {
-    text-align: right;
-    margin: 0 2.5rem 0 0;
+    text-align: center;
+    margin: 0;
   }
 
   @include tablet {
