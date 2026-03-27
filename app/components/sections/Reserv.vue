@@ -3080,11 +3080,14 @@ export default {
 }
 
 .dateCard {
+  $date-card-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
   flex: 0 0 auto;
   min-height: 5.125rem;
   padding: 0 1rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0.375rem;
+  background: transparent;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -3092,18 +3095,24 @@ export default {
   scroll-snap-align: start;
   cursor: pointer;
   transition:
-    background-color 0.2s,
-    border-color 0.2s,
-    color 0.2s;
+    background 0.35s $date-card-ease,
+    border-color 0.35s $date-card-ease,
+    color 0.35s $date-card-ease;
   @include mobile {
     min-height: 4rem;
     gap: 0.25rem;
   }
+
+  &:hover:not(.dateCardUnavailable):not(.dateCardSelected) {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: #000000;
+  }
 }
 
 .dateCardUnavailable {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.16);
+  background-clip: border-box;
+  border: 1px solid transparent;
   cursor: not-allowed;
   pointer-events: none;
 
@@ -3118,8 +3127,8 @@ export default {
 }
 
 .dateCardSelected {
-  background: #2d5a5a;
-  border-color: rgba(255, 255, 255, 0.35);
+  background: #004f68;
+  border-color: #004f68;
 
   .dateCardDates,
   .dateCardPrice {
