@@ -2959,7 +2959,7 @@ export default {
 
 .fieldErrorSlot {
   flex-shrink: 0;
-  min-height: 2.25rem;
+  min-height: 0.5rem;
   margin-top: 0.25rem;
 }
 
