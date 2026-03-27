@@ -6,8 +6,8 @@
       </div>
       <div :class="$style.titleLine2">
         <div :class="$style.titleLine2Left">
-          <p :class="$style.contactText">ОСТАЛИСЬ ВОПРОСЫ</p>
-          <p :class="$style.contactText">СВЯЖИТЕСЬ С НАМИ</p>
+          <p :class="$style.contactText">Остались вопросы</p>
+          <p :class="$style.contactText">свяжитесь с нами</p>
         </div>
         <h2 :class="$style.title">ВОПРОСЫ</h2>
         <div :class="$style.titleLine2Right">
@@ -197,7 +197,6 @@ export default {
 .title {
   font-size: 6.25rem;
   font-weight: 400;
-  line-height: 0.9;
   @include mobile {
     font-size: 1.875rem;
     font-weight: 300;
@@ -239,22 +238,9 @@ export default {
   }
 }
 
-.contactBlock {
-  display: flex;
-  flex-direction: column;
-  align-items: end;
-  justify-content: end;
-  .contactText {
-    font-size: 2rem;
-    font-weight: 300;
-    line-height: 1.2;
-    color: $text-primary;
-  }
-}
-
 .contactPhone {
-  font-size: 2rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 300;
   line-height: 1.2;
   color: $text-primary;
   text-decoration: none;

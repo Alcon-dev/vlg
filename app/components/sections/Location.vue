@@ -2468,9 +2468,9 @@ a.contactItem:hover {
 }
 
 .bookingFormUnifiedConsentTooltip {
-  top: auto;
-  bottom: calc(100% + 0.35rem);
-  right: 0;
+  top: calc(100% + 0.3rem);
+  bottom: auto;
+  right: 0.4rem;
 }
 
 .bookingFormUnifiedConsentInput {

@@ -130,7 +130,7 @@ export default {
 .titleSecondary {
   color: $text-primary;
   text-align: center;
-  font-weight: 300;
+  font-weight: 400;
   @include mobile {
     text-align: center;
     font-size: 1.5rem;

@@ -949,6 +949,8 @@ export default {
 
 .consentErrorWrap {
   overflow: hidden;
+  padding: 0 1.15rem;
+  box-sizing: border-box;
 }
 
 .textarea {

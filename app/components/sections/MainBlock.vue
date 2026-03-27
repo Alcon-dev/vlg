@@ -105,7 +105,7 @@ export default {
         { icon: "mainBlockMapPin", text: "Уникальное расположение" },
         { icon: "mainBlockUsers", text: "Размещение до 30 гостей" },
         { icon: "mainBlockFlag", text: "Подогреваемый бассейн 12м." },
-        { icon: "mainBlockEye", text: "Панорамный вид на горы и волгу" },
+        { icon: "mainBlockEye", text: "Панорамный\u00A0вид\nна\u00A0горы\u00A0и\u00A0волгу" },
       ],
     };
   },
@@ -348,6 +348,7 @@ export default {
   line-height: 1.3;
   font-weight: 600;
   text-align: left;
+  white-space: pre-line;
   max-width: 14rem;
   @include tablet {
     font-size: 1rem;
