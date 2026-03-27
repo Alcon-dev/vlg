@@ -217,8 +217,7 @@
                           $style.formInput,
                           $style.formInputWithIcon,
                           $style.dateSelectTrigger,
-                          bookingValidationError === 'dates' &&
-                            $style.formInputError,
+                          bookingCheckInError && $style.formInputError,
                         ]"
                         @click="toggleCheckInCalendar"
                       >
@@ -270,6 +269,17 @@
                         />
                       </div>
                     </Transition>
+                    <div :class="$style.fieldErrorSlot">
+                      <Transition name="field-error">
+                        <p
+                          v-if="bookingCheckInError"
+                          key="check-in-err"
+                          :class="$style.fieldError"
+                        >
+                          Выберите дату заезда
+                        </p>
+                      </Transition>
+                    </div>
                   </div>
                   <div
                     ref="checkOutWrapRef"
@@ -289,8 +299,7 @@
                           $style.formInput,
                           $style.formInputWithIcon,
                           $style.dateSelectTrigger,
-                          bookingValidationError === 'dates' &&
-                            $style.formInputError,
+                          bookingCheckOutError && $style.formInputError,
                         ]"
                         @click="toggleCheckOutCalendar"
                       >
@@ -342,10 +351,21 @@
                         />
                       </div>
                     </Transition>
+                    <div :class="$style.fieldErrorSlot">
+                      <Transition name="field-error">
+                        <p
+                          v-if="bookingCheckOutError"
+                          key="check-out-err"
+                          :class="$style.fieldError"
+                        >
+                          Выберите дату выезда
+                        </p>
+                      </Transition>
+                    </div>
                   </div>
 
                   <div :class="[$style.formGroup, $style.formGroupGuests]">
-                    <label :class="$style.formLabel">Количество гостей</label>
+                    <label :class="$style.formLabel">Кол-во гостей</label>
                     <div
                       ref="guestsSelectWrapRef"
                       :class="[
@@ -495,7 +515,7 @@
                       <template v-if="nearestDatesLoading">
                         <div :class="$style.upcomingDatesSkeleton">
                           <span
-                            v-for="n in 5"
+                            v-for="n in 12"
                             :key="n"
                             :class="$style.upcomingDatesSkeletonCard"
                           />
@@ -1082,6 +1102,8 @@ export default {
       bookingPhone: this.initialBookingPhone ?? "",
       bookingSubmitting: false,
       bookingValidationError: "",
+      bookingCheckInError: false,
+      bookingCheckOutError: false,
       bookingApiErrors: {},
       guestsOpen: false,
       guestSelection: { adults: 1, children: [] },
@@ -1108,19 +1130,17 @@ export default {
   computed: {
     checkInDateFormatted() {
       if (!this.checkInDate) return "";
-      const day = this.checkInDate.getDate();
-      const month = this.checkInDate.toLocaleDateString("ru-RU", {
+      return this.checkInDate.toLocaleDateString("ru-RU", {
+        day: "numeric",
         month: "long",
       });
-      return `${day} ${month}`;
     },
     checkOutDateFormatted() {
       if (!this.checkOutDate) return "";
-      const day = this.checkOutDate.getDate();
-      const month = this.checkOutDate.toLocaleDateString("ru-RU", {
+      return this.checkOutDate.toLocaleDateString("ru-RU", {
+        day: "numeric",
         month: "long",
       });
-      return `${day} ${month}`;
     },
     totalGuests() {
       const g = this.guestSelection;
@@ -1219,7 +1239,6 @@ export default {
     },
     bookingValidationMessage() {
       const messages = {
-        dates: "Выберите даты заезда и выезда",
         name: "Введите имя",
         phone: "Введите номер телефона",
       };
@@ -1592,6 +1611,8 @@ export default {
       this.checkInDate = new Date(item.checkInDate.getTime());
       this.checkOutDate = new Date(item.checkOutDate.getTime());
       this.bookingValidationError = "";
+      this.bookingCheckInError = false;
+      this.bookingCheckOutError = false;
     },
     isCalendarDateDisabledForCheckOut(date) {
       if (this.isCalendarDateDisabled(date)) return true;
@@ -1789,6 +1810,7 @@ export default {
         this.checkOutDate = null;
       }
       this.bookingValidationError = "";
+      this.bookingCheckInError = false;
       this.calendarOpenCheckIn = false;
     },
     onCheckOutDateSelect(value) {
@@ -1801,6 +1823,7 @@ export default {
       }
       this.checkOutDate = value;
       this.bookingValidationError = "";
+      this.bookingCheckOutError = false;
       this.calendarOpenCheckOut = false;
     },
     clearCheckInDate() {
@@ -1820,12 +1843,18 @@ export default {
     },
     onBookingSubmit() {
       this.bookingValidationError = "";
+      this.bookingCheckInError = false;
+      this.bookingCheckOutError = false;
       const apt = this.currentApartment;
       if (!apt?.id) return;
 
       if (!this.checkInDate || !this.checkOutDate) {
-        this.bookingValidationError = "dates";
-        this.$nextTick(() => this.$refs.checkInTriggerRef?.focus());
+        if (!this.checkInDate) this.bookingCheckInError = true;
+        if (!this.checkOutDate) this.bookingCheckOutError = true;
+        this.$nextTick(() => {
+          if (!this.checkInDate) this.$refs.checkInTriggerRef?.focus();
+          else this.$refs.checkOutTriggerRef?.focus();
+        });
         return;
       }
 
@@ -2719,7 +2748,7 @@ export default {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 1rem;
   padding: 0 0 1rem 0;
 
@@ -2741,11 +2770,11 @@ export default {
   & > .dateSelectWrap .formLabel,
   & > .formGroupGuests .formLabel {
     position: absolute;
-    top: 0;
+    top: 0.45rem;
     left: 0.75rem;
     transform: translateY(-50%);
     margin: 0;
-    padding: 0 0.25rem;
+    padding: 0 0.35rem;
     font-size: 0.625rem;
     font-weight: 300;
     line-height: 1;
@@ -2759,6 +2788,7 @@ export default {
     height: 3rem;
     min-height: 3rem;
     box-sizing: border-box;
+    margin-top: 0.45rem;
   }
 
   .dateSelectTriggerWrap .formInput,
@@ -2925,6 +2955,22 @@ export default {
   font-size: 0.875rem;
   color: $main-red;
   line-height: 1.3;
+}
+
+.fieldErrorSlot {
+  flex-shrink: 0;
+  min-height: 2.25rem;
+  margin-top: 0.25rem;
+}
+
+.fieldError {
+  margin: 0;
+  font-size: 0.75rem;
+  color: $main-red;
+  line-height: 1.3;
+  @include mobile {
+    font-size: 0.6875rem;
+  }
 }
 
 .upcomingDatesTitle {
@@ -3321,6 +3367,25 @@ export default {
 
 :global(.date-dropdown-enter-to),
 :global(.date-dropdown-leave-from) {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+:global(.field-error-enter-active),
+:global(.field-error-leave-active) {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+:global(.field-error-enter-from),
+:global(.field-error-leave-to) {
+  opacity: 0;
+  transform: translateY(0.25rem);
+}
+
+:global(.field-error-enter-to),
+:global(.field-error-leave-from) {
   opacity: 1;
   transform: translateY(0);
 }

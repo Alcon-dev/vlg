@@ -306,8 +306,10 @@ export default {
       const [y, m, d] = dateStr.split("-").map(Number);
       if (!m || !d) return dateStr;
       const date = new Date(y, m - 1, d);
-      const month = date.toLocaleDateString("ru-RU", { month: "long" });
-      return `${d} ${month}`;
+      return date.toLocaleDateString("ru-RU", {
+        day: "numeric",
+        month: "long",
+      });
     },
     close() {
       this.$emit("close");
