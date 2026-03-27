@@ -93,41 +93,96 @@
               </div>
             </div>
 
-            <div :class="$style.inputRow">
-              <input
-                v-model="firstName"
-                type="text"
-                :class="[$style.rowInput, $style.rowInputHalf]"
-                placeholder="Введите имя"
-                autocomplete="given-name"
-                required
-              />
-              <input
-                v-model="lastName"
-                type="text"
-                :class="[$style.rowInput, $style.rowInputHalf]"
-                placeholder="Введите фамилию"
-                autocomplete="family-name"
-                required
-              />
+            <div :class="$style.fieldRowBlock">
+              <div :class="$style.inputRow">
+                <input
+                  v-model="firstName"
+                  type="text"
+                  :class="[$style.rowInput, $style.rowInputHalf]"
+                  placeholder="Введите имя"
+                  autocomplete="given-name"
+                  @input="onFirstNameInput"
+                />
+                <input
+                  v-model="lastName"
+                  type="text"
+                  :class="[$style.rowInput, $style.rowInputHalf]"
+                  placeholder="Введите фамилию"
+                  autocomplete="family-name"
+                  @input="onLastNameInput"
+                />
+              </div>
+              <div :class="$style.inputErrorsRow">
+                <div :class="$style.inputErrorCell">
+                  <Transition name="field-error">
+                    <p
+                      v-if="firstNameErrorText"
+                      :key="firstNameErrorText"
+                      :class="$style.fieldError"
+                    >
+                      {{ firstNameErrorText }}
+                    </p>
+                  </Transition>
+                </div>
+                <div :class="$style.inputErrorCell">
+                  <Transition name="field-error">
+                    <p
+                      v-if="lastNameErrorText"
+                      :key="lastNameErrorText"
+                      :class="$style.fieldError"
+                    >
+                      {{ lastNameErrorText }}
+                    </p>
+                  </Transition>
+                </div>
+              </div>
             </div>
 
-            <div :class="$style.inputRow">
-              <input
-                v-model="phone"
-                type="tel"
-                :class="[$style.rowInput, $style.rowInputHalf]"
-                placeholder="Телефон"
-                autocomplete="tel"
-                required
-              />
-              <input
-                v-model="email"
-                type="email"
-                :class="[$style.rowInput, $style.rowInputHalf]"
-                placeholder="E-mail (опционально)"
-                autocomplete="email"
-              />
+            <div :class="$style.fieldRowBlock">
+              <div :class="$style.inputRow">
+                <input
+                  v-model="phone"
+                  type="tel"
+                  :class="[$style.rowInput, $style.rowInputHalf]"
+                  placeholder="Телефон"
+                  autocomplete="tel"
+                  @input="onPhoneInput"
+                  @blur="validatePhoneField"
+                />
+                <input
+                  v-model="email"
+                  type="email"
+                  :class="[$style.rowInput, $style.rowInputHalf]"
+                  placeholder="E-mail (опционально)"
+                  autocomplete="email"
+                  @input="onEmailInput"
+                  @blur="validateEmailField"
+                />
+              </div>
+              <div :class="$style.inputErrorsRowBare">
+                <div :class="$style.inputErrorBareCell">
+                  <Transition name="field-error">
+                    <p
+                      v-if="phoneErrorText"
+                      :key="phoneErrorText"
+                      :class="$style.fieldError"
+                    >
+                      {{ phoneErrorText }}
+                    </p>
+                  </Transition>
+                </div>
+                <div :class="$style.inputErrorBareCell">
+                  <Transition name="field-error">
+                    <p
+                      v-if="emailErrorText"
+                      :key="emailErrorText"
+                      :class="$style.fieldError"
+                    >
+                      {{ emailErrorText }}
+                    </p>
+                  </Transition>
+                </div>
+              </div>
             </div>
 
             <div :class="$style.textareaWrap">
@@ -145,6 +200,7 @@
                 v-model="consent"
                 type="checkbox"
                 :class="$style.consentInput"
+                @change="clearFieldError('consent')"
               />
               <label for="booking-form-consent" :class="$style.consentLabel">
                 <span :class="$style.consentCheckbox" aria-hidden="true">
@@ -168,11 +224,22 @@
                 </span>
               </label>
             </div>
+            <div :class="$style.consentErrorWrap">
+              <Transition name="field-error">
+                <p
+                  v-if="consentErrorText"
+                  :key="consentErrorText"
+                  :class="$style.fieldError"
+                >
+                  {{ consentErrorText }}
+                </p>
+              </Transition>
+            </div>
 
             <button
               type="submit"
               :class="$style.submitBtn"
-              :disabled="!canSubmit || submitting"
+              :disabled="submitDisabled"
             >
               <span
                 v-if="submitting"
@@ -198,6 +265,65 @@ const BOOKING_CONFIRM_URL =
 const BOOKING_REDIRECT_URL = "https://homereserve.ru/HE3NXyOLk4/status";
 const DEFAULT_ADDRESS = "г. Тольятти, СНТ Волгарь 18А/3 р-н Центральный";
 
+function sanitizePersonName(value) {
+  return (value || "").replace(/[^\p{L}\s\-'’]/gu, "");
+}
+
+function isValidPersonName(value) {
+  const t = (value || "").trim();
+  if (t.length < 2) return false;
+  return /^[\p{L}]+(?:[\s\-'’]+[\p{L}]+)*$/u.test(t);
+}
+
+function sanitizePhoneInput(value) {
+  return (value || "").replace(/[^\d+()\s\-]/g, "");
+}
+
+function digitsOnly(value) {
+  return (value || "").replace(/\D/g, "");
+}
+
+/**
+ * Российский мобильный: 10 цифр, начинается с 9;
+ * или 11 цифр с 7/8 и второй цифрой 9 (7 9XX … / 8 9XX …).
+ */
+function isValidRuPhoneDigits(d) {
+  if (!d || typeof d !== "string") return false;
+  if (d.length === 10) return d[0] === "9";
+  if (d.length === 11 && (d[0] === "7" || d[0] === "8")) return d[1] === "9";
+  return false;
+}
+
+function normalizePhoneForApi(d) {
+  if (d.length === 10 && d[0] === "9") return `7${d}`;
+  if (d.length === 11 && d[0] === "8") return `7${d.slice(1)}`;
+  return d;
+}
+
+/**
+ * Проверка e-mail: непустая локальная часть, домен с точкой, зона ≥2 букв.
+ */
+function isValidEmailFormat(email) {
+  const t = (email || "").trim();
+  if (!t) return true;
+  if (t.length > 254 || /\s/.test(t)) return false;
+  if ((t.match(/@/g) || []).length !== 1) return false;
+  const [local, domain] = t.split("@");
+  if (!local || !domain || local.length > 64) return false;
+  if (local.startsWith(".") || local.endsWith(".") || local.includes(".."))
+    return false;
+  if (!domain.includes(".") || domain.startsWith(".") || domain.endsWith("."))
+    return false;
+  const tld = domain.slice(domain.lastIndexOf(".") + 1);
+  if (tld.length < 2 || !/^[a-zA-Z]+$/i.test(tld)) return false;
+  return (
+    /^[a-zA-Z0-9._%+\-]+$/.test(local) &&
+    /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/i.test(
+      domain
+    )
+  );
+}
+
 export default {
   name: "BookingFormModal",
   props: {
@@ -219,6 +345,13 @@ export default {
       consent: false,
       submitting: false,
       apiErrors: {},
+      clientErrors: {
+        first_name: "",
+        last_name: "",
+        phone: "",
+        email: "",
+        consent: "",
+      },
     };
   },
   computed: {
@@ -240,39 +373,46 @@ export default {
     checkOutFormatted() {
       return this.formatDateDisplay(this.formData?.checkOutDate);
     },
-    isFirstNameValid() {
-      return !!(this.firstName || "").trim();
-    },
-    isLastNameValid() {
-      return !!(this.lastName || "").trim();
-    },
-    isPhoneValid() {
-      return !!(this.phone || "").replace(/\D/g, "");
-    },
-    canSubmit() {
+    submitDisabled() {
       return (
-        !this.submitting &&
-        !!this.apartment?.id &&
-        !!this.formData?.checkInDate &&
-        !!this.formData?.checkOutDate &&
-        this.isFirstNameValid &&
-        this.isLastNameValid &&
-        this.isPhoneValid &&
-        this.consent
+        this.submitting ||
+        !this.apartment?.id ||
+        !this.formData?.checkInDate ||
+        !this.formData?.checkOutDate
       );
+    },
+    firstNameErrorText() {
+      return (
+        this.clientErrors.first_name || this.apiErrorLine("first_name") || ""
+      );
+    },
+    lastNameErrorText() {
+      return (
+        this.clientErrors.last_name || this.apiErrorLine("last_name") || ""
+      );
+    },
+    phoneErrorText() {
+      return this.clientErrors.phone || this.apiErrorLine("phone") || "";
+    },
+    emailErrorText() {
+      return this.clientErrors.email || this.apiErrorLine("email") || "";
+    },
+    consentErrorText() {
+      return this.clientErrors.consent || "";
     },
   },
   watch: {
     open(isOpen) {
       if (isOpen && this.formData) {
         const prefill = this.$store.state.bookingModalPrefill;
-        this.firstName = prefill?.name ?? "";
+        this.firstName = sanitizePersonName(prefill?.name ?? "");
         this.lastName = "";
-        this.phone = prefill?.phone ?? "";
+        this.phone = sanitizePhoneInput(prefill?.phone ?? "");
         this.email = "";
         this.wishes = "";
         this.consent = false;
         this.apiErrors = {};
+        this.resetClientErrors();
       }
       if (typeof document === "undefined") return;
       if (isOpen) {
@@ -314,31 +454,115 @@ export default {
     close() {
       this.$emit("close");
     },
+    resetClientErrors() {
+      this.clientErrors = {
+        first_name: "",
+        last_name: "",
+        phone: "",
+        email: "",
+        consent: "",
+      };
+    },
+    apiErrorLine(key) {
+      const list = this.apiErrors?.[key];
+      return Array.isArray(list) && list.length ? list[0] : "";
+    },
+    clearFieldError(key) {
+      this.clientErrors[key] = "";
+      if (this.apiErrors[key]) {
+        const next = { ...this.apiErrors };
+        delete next[key];
+        this.apiErrors = next;
+      }
+    },
+    onFirstNameInput(e) {
+      this.firstName = sanitizePersonName(e.target.value);
+      this.clearFieldError("first_name");
+    },
+    onLastNameInput(e) {
+      this.lastName = sanitizePersonName(e.target.value);
+      this.clearFieldError("last_name");
+    },
+    onPhoneInput(e) {
+      this.phone = sanitizePhoneInput(e.target.value);
+      this.clearFieldError("phone");
+    },
+    onEmailInput(e) {
+      this.email = e.target.value;
+      this.clearFieldError("email");
+    },
+    validatePhoneField() {
+      const d = digitsOnly(this.phone);
+      if (!d) {
+        this.clearFieldError("phone");
+        return;
+      }
+      if (!isValidRuPhoneDigits(d)) {
+        this.clientErrors.phone =
+          "Введите номер в формате 9XXXXXXXXX или +7/8 9XXXXXXXXX";
+      } else {
+        this.clearFieldError("phone");
+      }
+    },
+    validateEmailField() {
+      const t = (this.email || "").trim();
+      if (!t) {
+        this.clearFieldError("email");
+        return;
+      }
+      if (!isValidEmailFormat(t)) {
+        this.clientErrors.email = "Введите корректный e-mail";
+      } else {
+        this.clearFieldError("email");
+      }
+    },
     async onSubmit() {
+      this.resetClientErrors();
       this.apiErrors = {};
       const apt = this.apartment;
       if (!apt?.id) return;
 
       const firstName = (this.firstName || "").trim();
-      if (!this.isFirstNameValid) {
-        this.apiErrors.first_name = ["Введите имя"];
-        return;
-      }
       const lastName = (this.lastName || "").trim();
-      if (!this.isLastNameValid) {
-        this.apiErrors.last_name = ["Введите фамилию"];
-        return;
+      const phoneDigits = digitsOnly(this.phone);
+      const emailTrim = (this.email || "").trim();
+      let invalid = false;
+
+      if (!firstName) {
+        this.clientErrors.first_name = "Введите имя";
+        invalid = true;
+      } else if (!isValidPersonName(firstName)) {
+        this.clientErrors.first_name =
+          "Только буквы, без цифр и символов (минимум 2 символа)";
+        invalid = true;
       }
-      const phoneRaw = (this.phone || "").replace(/\D/g, "");
-      if (!this.isPhoneValid) {
-        this.apiErrors.phone = ["Введите телефон"];
-        return;
+      if (!lastName) {
+        this.clientErrors.last_name = "Введите фамилию";
+        invalid = true;
+      } else if (!isValidPersonName(lastName)) {
+        this.clientErrors.last_name =
+          "Только буквы, без цифр и символов (минимум 2 символа)";
+        invalid = true;
+      }
+      if (!phoneDigits) {
+        this.clientErrors.phone = "Введите телефон";
+        invalid = true;
+      } else if (!isValidRuPhoneDigits(phoneDigits)) {
+        this.clientErrors.phone =
+          "Введите номер в формате 9XXXXXXXXX или +7/8 9XXXXXXXXX";
+        invalid = true;
+      }
+      if (!isValidEmailFormat(emailTrim)) {
+        this.clientErrors.email =
+          "Некорректный адрес: проверьте формат name@домен.зона";
+        invalid = true;
       }
       if (!this.consent) {
-        this.apiErrors.consent = ["Необходимо согласие на обработку данных"];
-        return;
+        this.clientErrors.consent =
+          "Необходимо согласие на обработку персональных данных";
+        invalid = true;
       }
-      if (!this.canSubmit) return;
+      if (invalid) return;
 
       const body = {
         apartment_id: String(apt.id),
@@ -347,8 +571,8 @@ export default {
         first_name: firstName,
         last_name: lastName,
         guests: this.formData.guests ?? { adults: 1, children: [] },
-        phone: phoneRaw,
-        email: (this.email || "").trim(),
+        phone: normalizePhoneForApi(phoneDigits),
+        email: emailTrim,
         wish: (this.wishes || "").trim(),
         redirect_url: BOOKING_REDIRECT_URL,
         widget_type: "widget_page",
@@ -366,6 +590,7 @@ export default {
         console.error("Booking confirm error:", err);
         if (err.response?.status === 422 && err.response?.data?.errors) {
           this.apiErrors = { ...err.response.data.errors };
+          return;
         }
         const msg =
           err.response?.data?.message ||
@@ -549,6 +774,15 @@ export default {
   background: rgba(255, 255, 255, 0.015);
 }
 
+.fieldRowBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 .labeledRow,
 .inputRow {
   display: grid;
@@ -557,6 +791,49 @@ export default {
   @include mobile {
     grid-template-columns: 1fr;
   }
+}
+
+.inputErrorsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  min-width: 0;
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.inputErrorCell {
+  min-width: 0;
+  padding: 0 1.15rem;
+  overflow: hidden;
+}
+
+/* Телефон / почта: ошибки в сетке без обёрток-ячеек — без вертикальных линий */
+.inputErrorsRowBare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  box-sizing: border-box;
+  gap: 0;
+  column-gap: 0;
+  overflow: hidden;
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.inputErrorBareCell {
+  min-width: 0;
+  padding: 0 1.15rem;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.inputErrorsRowBare .fieldError {
+  min-width: 0;
 }
 
 .labeledCell {
@@ -661,6 +938,17 @@ export default {
       border-top: 1px solid rgba(255, 255, 255, 0.22);
     }
   }
+}
+
+.fieldError {
+  margin: 0;
+  font-size: 0.75rem;
+  color: $main-red;
+  line-height: 1.3;
+}
+
+.consentErrorWrap {
+  overflow: hidden;
 }
 
 .textarea {
@@ -806,6 +1094,25 @@ export default {
   }
 }
 
+:global(.field-error-enter-active),
+:global(.field-error-leave-active) {
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease;
+}
+
+:global(.field-error-enter-from),
+:global(.field-error-leave-to) {
+  opacity: 0;
+  transform: translateY(-0.35rem);
+}
+
+:global(.field-error-enter-to),
+:global(.field-error-leave-from) {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 @include tablet {
   .panel {
     max-width: 56rem;
@@ -880,7 +1187,8 @@ export default {
   .labeledRow,
   .inputRow,
   .textareaWrap,
-  .consentRow {
+  .consentRow,
+  .fieldRowBlock {
     min-width: 0;
   }
 
