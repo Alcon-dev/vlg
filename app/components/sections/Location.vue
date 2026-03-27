@@ -848,60 +848,95 @@
         </h3>
         <div :class="$style.bookingFormUnifiedBody">
           <div :class="$style.bookingFormUnifiedRow">
-            <input
-              ref="locationShortNameRef"
-              v-model="bookingName"
-              type="text"
-              autocomplete="given-name"
-              placeholder="Введите имя"
-              :class="[
-                $style.bookingFormUnifiedField,
-                $style.bookingFormUnifiedFieldHalf,
-                locationFormErrorField === 'name' && $style.locationInputError,
-              ]"
-              @input="
-                locationFormError = '';
-                locationFormErrorField = '';
-              "
-            />
-            <input
-              v-model="bookingLastName"
-              type="text"
-              autocomplete="family-name"
-              placeholder="Введите фамилию"
-              :class="[
-                $style.bookingFormUnifiedField,
-                $style.bookingFormUnifiedFieldHalf,
-              ]"
-            />
+            <div :class="$style.bookingFormUnifiedFieldWrap">
+              <input
+                ref="locationShortNameRef"
+                v-model="bookingName"
+                type="text"
+                autocomplete="given-name"
+                placeholder="Введите имя"
+                :class="[
+                  $style.bookingFormUnifiedField,
+                  $style.bookingFormUnifiedFieldHalf,
+                  locationUnifiedFirstNameErrorText &&
+                    $style.locationInputError,
+                ]"
+                @input="onLocationUnifiedFirstNameInput"
+              />
+              <p
+                v-if="locationUnifiedFirstNameErrorText"
+                :class="$style.bookingFormUnifiedFieldTooltip"
+              >
+                {{ locationUnifiedFirstNameErrorText }}
+              </p>
+            </div>
+            <div :class="$style.bookingFormUnifiedFieldWrap">
+              <input
+                ref="locationShortLastNameRef"
+                v-model="bookingLastName"
+                type="text"
+                autocomplete="family-name"
+                placeholder="Введите фамилию"
+                :class="[
+                  $style.bookingFormUnifiedField,
+                  $style.bookingFormUnifiedFieldHalf,
+                  locationUnifiedLastNameErrorText && $style.locationInputError,
+                ]"
+                @input="onLocationUnifiedLastNameInput"
+              />
+              <p
+                v-if="locationUnifiedLastNameErrorText"
+                :class="$style.bookingFormUnifiedFieldTooltip"
+              >
+                {{ locationUnifiedLastNameErrorText }}
+              </p>
+            </div>
           </div>
           <div :class="$style.bookingFormUnifiedRow">
-            <input
-              ref="locationShortPhoneRef"
-              v-model="bookingPhone"
-              type="tel"
-              autocomplete="tel"
-              placeholder="Телефон"
-              :class="[
-                $style.bookingFormUnifiedField,
-                $style.bookingFormUnifiedFieldHalf,
-                locationFormErrorField === 'phone' && $style.locationInputError,
-              ]"
-              @input="
-                locationFormError = '';
-                locationFormErrorField = '';
-              "
-            />
-            <input
-              v-model="bookingEmail"
-              type="email"
-              autocomplete="email"
-              placeholder="E-mail (опционально)"
-              :class="[
-                $style.bookingFormUnifiedField,
-                $style.bookingFormUnifiedFieldHalf,
-              ]"
-            />
+            <div :class="$style.bookingFormUnifiedFieldWrap">
+              <input
+                ref="locationShortPhoneRef"
+                v-model="bookingPhone"
+                type="tel"
+                autocomplete="tel"
+                placeholder="Телефон"
+                :class="[
+                  $style.bookingFormUnifiedField,
+                  $style.bookingFormUnifiedFieldHalf,
+                  locationUnifiedPhoneErrorText && $style.locationInputError,
+                ]"
+                @input="onLocationUnifiedPhoneInput"
+                @blur="validateLocationUnifiedPhoneField"
+              />
+              <p
+                v-if="locationUnifiedPhoneErrorText"
+                :class="$style.bookingFormUnifiedFieldTooltip"
+              >
+                {{ locationUnifiedPhoneErrorText }}
+              </p>
+            </div>
+            <div :class="$style.bookingFormUnifiedFieldWrap">
+              <input
+                ref="locationShortEmailRef"
+                v-model="bookingEmail"
+                type="email"
+                autocomplete="email"
+                placeholder="E-mail (опционально)"
+                :class="[
+                  $style.bookingFormUnifiedField,
+                  $style.bookingFormUnifiedFieldHalf,
+                  locationUnifiedEmailErrorText && $style.locationInputError,
+                ]"
+                @input="onLocationUnifiedEmailInput"
+                @blur="validateLocationUnifiedEmailField"
+              />
+              <p
+                v-if="locationUnifiedEmailErrorText"
+                :class="$style.bookingFormUnifiedFieldTooltip"
+              >
+                {{ locationUnifiedEmailErrorText }}
+              </p>
+            </div>
           </div>
           <textarea
             v-model="bookingWish"
@@ -912,56 +947,64 @@
             placeholder="Ваши пожелания (опционально)"
             rows="4"
           />
-          <p v-if="locationFormError" :class="$style.locationFormErrorText">
-            {{ locationFormError }}
-          </p>
           <div :class="$style.bookingFormUnifiedConsentRow">
-            <input
-              id="location-booking-consent"
-              v-model="bookingConsent"
-              type="checkbox"
-              :class="$style.bookingFormUnifiedConsentInput"
-              @change="locationFormError = ''"
-            />
-            <label
-              for="location-booking-consent"
-              :class="$style.bookingFormUnifiedConsentLabel"
-            >
-              <span
-                :class="$style.bookingFormUnifiedConsentBox"
-                aria-hidden="true"
+            <div :class="$style.bookingFormUnifiedConsentWrap">
+              <input
+                id="location-booking-consent"
+                v-model="bookingConsent"
+                type="checkbox"
+                :class="$style.bookingFormUnifiedConsentInput"
+                @change="clearLocationUnifiedField('consent')"
+              />
+              <label
+                for="location-booking-consent"
+                :class="$style.bookingFormUnifiedConsentLabel"
               >
-                <span :class="$style.bookingFormUnifiedConsentCheckmark" />
-              </span>
-              <span :class="$style.bookingFormUnifiedConsentText">
-                Я даю согласие на обработку
-                <a
-                  href="#"
-                  :class="$style.bookingFormUnifiedConsentLink"
-                  @click.stop.prevent
-                  >персональных данных</a
-                >, и подтверждаю ознакомление с
-                <a
-                  href="#"
-                  :class="$style.bookingFormUnifiedConsentLink"
-                  @click.stop.prevent
-                  >Правилами бронирования</a
-                >,
-                <a
-                  href="#"
-                  :class="$style.bookingFormUnifiedConsentLink"
-                  @click.stop.prevent
-                  >условиями оферты</a
+                <span
+                  :class="$style.bookingFormUnifiedConsentBox"
+                  aria-hidden="true"
                 >
-                и
-                <a
-                  href="#"
-                  :class="$style.bookingFormUnifiedConsentLink"
-                  @click.stop.prevent
-                  >Политикой обработки персональных данных</a
-                >.
-              </span>
-            </label>
+                  <span :class="$style.bookingFormUnifiedConsentCheckmark" />
+                </span>
+                <span :class="$style.bookingFormUnifiedConsentText">
+                  Я даю согласие на обработку
+                  <a
+                    href="#"
+                    :class="$style.bookingFormUnifiedConsentLink"
+                    @click.stop.prevent
+                    >персональных данных</a
+                  >, и подтверждаю ознакомление с
+                  <a
+                    href="#"
+                    :class="$style.bookingFormUnifiedConsentLink"
+                    @click.stop.prevent
+                    >Правилами бронирования</a
+                  >,
+                  <a
+                    href="#"
+                    :class="$style.bookingFormUnifiedConsentLink"
+                    @click.stop.prevent
+                    >условиями оферты</a
+                  >
+                  и
+                  <a
+                    href="#"
+                    :class="$style.bookingFormUnifiedConsentLink"
+                    @click.stop.prevent
+                    >Политикой обработки персональных данных</a
+                  >.
+                </span>
+              </label>
+              <p
+                v-if="locationUnifiedConsentErrorText"
+                :class="[
+                  $style.bookingFormUnifiedFieldTooltip,
+                  $style.bookingFormUnifiedConsentTooltip,
+                ]"
+              >
+                {{ locationUnifiedConsentErrorText }}
+              </p>
+            </div>
           </div>
           <button
             type="submit"
@@ -1011,6 +1054,58 @@ const MARKER_ICON_SIZE_REM = [15.75, 6.3125];
 const MARKER_ICON_OFFSET_REM = [-2.5, -4.375];
 const LOCATION_CHILD_AGES = Array.from({ length: 18 }, (_, i) => String(i));
 
+function sanitizePersonName(value) {
+  return (value || "").replace(/[^\p{L}\s\-'’]/gu, "");
+}
+
+function isValidPersonName(value) {
+  const t = (value || "").trim();
+  if (t.length < 2) return false;
+  return /^[\p{L}]+(?:[\s\-'’]+[\p{L}]+)*$/u.test(t);
+}
+
+function sanitizePhoneInput(value) {
+  return (value || "").replace(/[^\d+()\s-]/g, "");
+}
+
+function digitsOnly(value) {
+  return (value || "").replace(/\D/g, "");
+}
+
+function isValidRuPhoneDigits(d) {
+  if (!d || typeof d !== "string") return false;
+  if (d.length === 10) return d[0] === "9";
+  if (d.length === 11 && (d[0] === "7" || d[0] === "8")) return d[1] === "9";
+  return false;
+}
+
+function normalizePhoneForApi(d) {
+  if (d.length === 10 && d[0] === "9") return `7${d}`;
+  if (d.length === 11 && d[0] === "8") return `7${d.slice(1)}`;
+  return d;
+}
+
+function isValidEmailFormat(email) {
+  const t = (email || "").trim();
+  if (!t) return true;
+  if (t.length > 254 || /\s/.test(t)) return false;
+  if ((t.match(/@/g) || []).length !== 1) return false;
+  const [local, domain] = t.split("@");
+  if (!local || !domain || local.length > 64) return false;
+  if (local.startsWith(".") || local.endsWith(".") || local.includes(".."))
+    return false;
+  if (!domain.includes(".") || domain.startsWith(".") || domain.endsWith("."))
+    return false;
+  const tld = domain.slice(domain.lastIndexOf(".") + 1);
+  if (tld.length < 2 || !/^[a-zA-Z]+$/i.test(tld)) return false;
+  return (
+    /^[a-zA-Z0-9._+%-]+$/.test(local) &&
+    /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/i.test(
+      domain
+    )
+  );
+}
+
 export default {
   name: "Location",
   components: { VueDatePicker },
@@ -1046,13 +1141,43 @@ export default {
       locationNearestDatesLoading: false,
       locationCanScrollNearestLeft: false,
       locationCanScrollNearestRight: false,
+      locationUnifiedClientErrors: {
+        first_name: "",
+        last_name: "",
+        phone: "",
+        email: "",
+        consent: "",
+      },
     };
   },
   computed: {
+    locationUnifiedFirstNameErrorText() {
+      return (
+        this.locationUnifiedClientErrors.first_name ||
+        this.locationApiErrorName ||
+        ""
+      );
+    },
+    locationUnifiedLastNameErrorText() {
+      return this.locationUnifiedClientErrors.last_name || "";
+    },
+    locationUnifiedPhoneErrorText() {
+      return (
+        this.locationUnifiedClientErrors.phone ||
+        this.locationApiErrorPhone ||
+        ""
+      );
+    },
+    locationUnifiedEmailErrorText() {
+      return this.locationUnifiedClientErrors.email || "";
+    },
+    locationUnifiedConsentErrorText() {
+      return this.locationUnifiedClientErrors.consent || "";
+    },
     canSubmitLocationForm() {
       const name = (this.bookingName || "").trim();
       const lastName = (this.bookingLastName || "").trim();
-      const phone = (this.bookingPhone || "").replace(/\D/g, "");
+      const phone = digitsOnly(this.bookingPhone);
       return !!name && !!lastName && !!phone && this.bookingConsent;
     },
     locationTotalGuests() {
@@ -1609,44 +1734,139 @@ export default {
       this.isTabletOrBelowView =
         typeof window !== "undefined" && window.innerWidth <= 1290;
     },
+    resetLocationUnifiedClientErrors() {
+      this.locationUnifiedClientErrors = {
+        first_name: "",
+        last_name: "",
+        phone: "",
+        email: "",
+        consent: "",
+      };
+    },
+    clearLocationUnifiedField(key) {
+      this.locationUnifiedClientErrors[key] = "";
+      if (!this.locationApiErrors[key]) return;
+      this.locationApiErrors = Object.fromEntries(
+        Object.entries(this.locationApiErrors).filter(([k]) => k !== key)
+      );
+    },
+    onLocationUnifiedFirstNameInput(e) {
+      this.bookingName = sanitizePersonName(e.target.value);
+      this.clearLocationUnifiedField("first_name");
+    },
+    onLocationUnifiedLastNameInput(e) {
+      this.bookingLastName = sanitizePersonName(e.target.value);
+      this.clearLocationUnifiedField("last_name");
+    },
+    onLocationUnifiedPhoneInput(e) {
+      this.bookingPhone = sanitizePhoneInput(e.target.value);
+      this.clearLocationUnifiedField("phone");
+    },
+    onLocationUnifiedEmailInput(e) {
+      this.bookingEmail = e.target.value;
+      this.clearLocationUnifiedField("email");
+    },
+    validateLocationUnifiedPhoneField() {
+      const d = digitsOnly(this.bookingPhone);
+      if (!d) {
+        this.clearLocationUnifiedField("phone");
+        return;
+      }
+      if (!isValidRuPhoneDigits(d)) {
+        this.locationUnifiedClientErrors.phone =
+          "Введите номер в формате 9XXXXXXXXX или +7/8 9XXXXXXXXX";
+      } else {
+        this.clearLocationUnifiedField("phone");
+      }
+    },
+    validateLocationUnifiedEmailField() {
+      const t = (this.bookingEmail || "").trim();
+      if (!t) {
+        this.clearLocationUnifiedField("email");
+        return;
+      }
+      if (!isValidEmailFormat(t)) {
+        this.locationUnifiedClientErrors.email = "Введите корректный e-mail";
+      } else {
+        this.clearLocationUnifiedField("email");
+      }
+    },
     onLocationShortFormSubmit() {
+      this.resetLocationUnifiedClientErrors();
       this.locationFormError = "";
       this.locationFormErrorField = "";
-      const name = (this.bookingName || "").trim();
+
+      const firstName = (this.bookingName || "").trim();
       const lastName = (this.bookingLastName || "").trim();
-      const phone = (this.bookingPhone || "").replace(/\D/g, "");
-      if (!name) {
-        this.locationFormError = "Введите имя";
-        this.locationFormErrorField = "name";
-        this.$nextTick(() => this.$refs.locationShortNameRef?.focus());
-        return;
+      const phoneDigits = digitsOnly(this.bookingPhone);
+      const emailTrim = (this.bookingEmail || "").trim();
+      let invalid = false;
+
+      if (!firstName) {
+        this.locationUnifiedClientErrors.first_name = "Введите имя";
+        invalid = true;
+      } else if (!isValidPersonName(firstName)) {
+        this.locationUnifiedClientErrors.first_name =
+          "Только буквы, без цифр и символов (минимум 2 символа)";
+        invalid = true;
       }
       if (!lastName) {
-        this.locationFormError = "Введите фамилию";
-        this.locationFormErrorField = "lastName";
-        return;
+        this.locationUnifiedClientErrors.last_name = "Введите фамилию";
+        invalid = true;
+      } else if (!isValidPersonName(lastName)) {
+        this.locationUnifiedClientErrors.last_name =
+          "Только буквы, без цифр и символов (минимум 2 символа)";
+        invalid = true;
       }
-      if (!phone) {
-        this.locationFormError = "Введите номер телефона";
-        this.locationFormErrorField = "phone";
-        this.$nextTick(() => this.$refs.locationShortPhoneRef?.focus());
-        return;
+      if (!phoneDigits) {
+        this.locationUnifiedClientErrors.phone = "Введите телефон";
+        invalid = true;
+      } else if (!isValidRuPhoneDigits(phoneDigits)) {
+        this.locationUnifiedClientErrors.phone =
+          "Введите номер в формате 9XXXXXXXXX или +7/8 9XXXXXXXXX";
+        invalid = true;
+      }
+      if (!isValidEmailFormat(emailTrim)) {
+        this.locationUnifiedClientErrors.email =
+          "Некорректный адрес: проверьте формат name@домен.зона";
+        invalid = true;
       }
       if (!this.bookingConsent) {
-        this.locationFormError = "Подтвердите согласие на обработку данных";
+        this.locationUnifiedClientErrors.consent =
+          "Необходимо согласие на обработку персональных данных";
+        invalid = true;
+      }
+
+      if (invalid) {
+        this.$nextTick(() => {
+          if (this.locationUnifiedFirstNameErrorText) {
+            this.$refs.locationShortNameRef?.focus();
+          } else if (this.locationUnifiedLastNameErrorText) {
+            this.$refs.locationShortLastNameRef?.focus();
+          } else if (this.locationUnifiedPhoneErrorText) {
+            this.$refs.locationShortPhoneRef?.focus();
+          } else if (this.locationUnifiedEmailErrorText) {
+            this.$refs.locationShortEmailRef?.focus();
+          }
+        });
         return;
       }
+
+      const normalizedPhone = normalizePhoneForApi(phoneDigits);
+      const phonePrefill =
+        sanitizePhoneInput(this.bookingPhone).trim() || normalizedPhone;
+
       this.$store.commit("setLocationFormData", {
-        firstName: name,
+        firstName,
         lastName,
-        phone: this.bookingPhone?.trim() ?? "",
-        email: (this.bookingEmail || "").trim(),
+        phone: normalizedPhone,
+        email: emailTrim,
         wish: (this.bookingWish || "").trim(),
       });
       this.$store.commit("setBookingModalOpenedFromLocation", true);
       this.$store.commit("setBookingModalPrefill", {
-        name,
-        phone: this.bookingPhone?.trim() ?? "",
+        name: firstName,
+        phone: phonePrefill,
       });
       this.$store.commit("setBookingModalOpen", true);
     },
@@ -2161,9 +2381,24 @@ a.contactItem:hover {
   grid-template-columns: 1fr 1fr;
   border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 0.45rem;
-  overflow: hidden;
+  overflow: visible;
   @include mobile {
     grid-template-columns: 1fr;
+  }
+}
+
+.bookingFormUnifiedFieldWrap {
+  position: relative;
+  min-width: 0;
+  z-index: 1;
+  &:not(:first-child) {
+    border-left: 1px solid rgba(255, 255, 255, 0.24);
+  }
+  @include mobile {
+    &:not(:first-child) {
+      border-left: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.24);
+    }
   }
 }
 
@@ -2199,15 +2434,23 @@ a.contactItem:hover {
 .bookingFormUnifiedFieldHalf {
   border: none;
   border-radius: 0;
-  &:not(:first-child) {
-    border-left: 1px solid rgba(255, 255, 255, 0.24);
-  }
-  @include mobile {
-    &:not(:first-child) {
-      border-left: none;
-      border-top: 1px solid rgba(255, 255, 255, 0.24);
-    }
-  }
+}
+
+.bookingFormUnifiedFieldTooltip {
+  position: absolute;
+  top: calc(100% + 0.3rem);
+  right: 0.4rem;
+  z-index: 20;
+  margin: 0;
+  max-width: min(20rem, calc(100vw - 2rem));
+  padding: 0.35rem 0.5rem;
+  background: rgba(173, 31, 31, 0.787);
+  border-radius: 0.35rem;
+  color: $text-white;
+  font-size: 0.7rem;
+  line-height: 1.25;
+  pointer-events: none;
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.25);
 }
 
 .bookingFormUnifiedTextarea {
@@ -2217,6 +2460,17 @@ a.contactItem:hover {
 
 .bookingFormUnifiedConsentRow {
   display: block;
+  position: relative;
+}
+
+.bookingFormUnifiedConsentWrap {
+  position: relative;
+}
+
+.bookingFormUnifiedConsentTooltip {
+  top: auto;
+  bottom: calc(100% + 0.35rem);
+  right: 0;
 }
 
 .bookingFormUnifiedConsentInput {
