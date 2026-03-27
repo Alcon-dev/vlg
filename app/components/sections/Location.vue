@@ -1787,8 +1787,9 @@ export default {
   }
   @include mobile {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 0;
+    margin: 0;
 
     .title,
     .titleLine1Right .phone {
@@ -1796,15 +1797,21 @@ export default {
     }
     .titleLine1Desc {
       display: block;
-      margin-top: 0;
-      max-width: none;
+      margin-top: 0.5rem;
+      max-width: 100%;
+      width: 100%;
+      text-align: center;
       .descLine {
         display: none;
+        margin: 0;
       }
     }
     .titleH2 {
       font-size: 1.875rem;
       font-weight: 300;
+      width: 100%;
+      text-align: left;
+      line-height: 0.95;
     }
   }
 }
@@ -1826,6 +1833,12 @@ export default {
     @include tablet {
       display: block;
     }
+  }
+
+  @include mobile {
+    align-items: center;
+    max-width: none;
+    width: 100%;
   }
 }
 
@@ -1882,14 +1895,27 @@ export default {
   }
   @include mobile {
     flex-direction: column;
-    align-items: flex-end;
+    align-items: center;
     margin-top: 0;
 
     .titleH2 {
       font-size: 1.875rem;
       font-weight: 300;
       text-align: right;
+      width: 100%;
+      line-height: 0.95;
       order: 1;
+    }
+    .titleDescMobile {
+      display: block;
+      order: 2;
+      margin: 0.35rem 0 0 0;
+      font-size: 0.625rem;
+      font-weight: 300;
+      line-height: 1.2;
+      text-align: center;
+      color: $text-primary;
+      max-width: 22rem;
     }
     .address {
       display: block;
@@ -1899,7 +1925,11 @@ export default {
       line-height: 1.35;
       text-align: center;
       width: 100%;
-      order: 2;
+      order: 3;
+
+      :global(br) {
+        display: inline;
+      }
     }
   }
 }
