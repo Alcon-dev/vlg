@@ -78,7 +78,7 @@
         <h3 :class="$style.reviewsSectionTitle">Отзывы клиентов на avito.ru</h3>
         <div :class="$style.reviewsHeaderMobile">
           <h3 :class="$style.reviewsSectionTitleMobile">
-            Отзывы наших клиентов
+            Отзывы наших клиентов на avito.ru
           </h3>
           <div :class="$style.reviewsRatingBlock">
             <button
@@ -619,6 +619,7 @@ export default {
   font-weight: 600;
   text-align: center;
   padding: 0 0 2.5rem 0;
+  display: none;
 
   @include tablet {
     display: none;
@@ -633,15 +634,15 @@ export default {
 }
 
 .reviewsHeaderMobile {
-  display: none;
-
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 0 2.5rem 0;
+  gap: 1.5rem;
   @include tablet {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
     padding: 0 0 1.5rem 0;
-    gap: 0.5rem;
   }
   @include mobile {
     display: none;
@@ -649,10 +650,13 @@ export default {
 }
 
 .reviewsSectionTitleMobile {
-  font-size: 2rem;
+  font-size: 3rem;
   font-weight: 600;
   margin: 0;
   color: $text-primary;
+  @include tablet {
+    font-size: 2rem;
+  }
 }
 
 .reviewsRatingBlock {
@@ -680,9 +684,12 @@ export default {
 }
 
 .reviewsRatingValue {
-  font-size: 2rem;
-  font-weight: 600;
+  font-size: 3rem;
+  font-weight: 300;
   color: $text-primary;
+  @include tablet {
+    font-size: 2rem;
+  }
 }
 
 .reviewsRatingStars {
@@ -690,15 +697,19 @@ export default {
   gap: 0.25rem;
 
   img {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 2rem;
+    height: 2rem;
     object-fit: contain;
+    @include tablet {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
   }
 }
 
 .reviewsAvitoLink {
   font-size: 0.875rem;
-  color: #2563eb;
+  color: #0d99ff;
   text-decoration: underline;
   margin: 0;
 }
@@ -711,23 +722,29 @@ export default {
 }
 
 .reviewsNavBtn {
-  display: none;
+  display: block;
   flex-shrink: 0;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 4rem;
+  height: 4rem;
   border-radius: 50%;
   border: none;
   background: $bg-primary;
   cursor: pointer;
   background-image: url("../../assets/img/sections/about/swiper-arrow.svg");
   background-repeat: no-repeat;
-  background-position: center;
-  background-size: 1rem;
+  background-position: center center;
+  background-size: 2rem;
   padding: 0;
   z-index: 2;
 
   @include tablet {
     display: block;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-size: 1rem;
+  }
+  @include mobile {
+    display: none;
   }
 }
 
@@ -788,7 +805,7 @@ export default {
 }
 
 .paginationBullet {
-  width: 2rem;
+  width: 18rem;
   height: 0.25rem;
   border-radius: 0.125rem;
   background: $bg-primary;
