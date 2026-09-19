@@ -5,12 +5,13 @@
     :class="embedded ? $style.embeddedWrap : $style.wrapper"
   >
     <div v-if="!embedded" :class="$style.titleContainer">
-      <div :class="$style.titleLine1">
-        <h3>Резиденция<br />ВОЛГА</h3>
-        <h2>ВЫБЕРИТЕ ВИЛЛУ</h2>
+      <div :class="$style.titleMain">
+        <h2 :class="$style.titlePrimary">ВЫБЕРИТЕ ВИЛЛУ</h2>
+        <h2 :class="$style.titleSecondary">ИЗ НАШЕЙ КОЛЛЕКЦИИ</h2>
       </div>
-      <div :class="$style.titleLine2">
-        <h2>ДАТЫ БРОНИРОВАНИЯ</h2>
+      <div :class="$style.titleBrand">
+        <span :class="$style.titleBrandLabel">РЕЗИДЕНЦИЯ</span>
+        <span :class="$style.titleBrandName">ВОЛГА</span>
       </div>
     </div>
     <div :class="$style.reservContainer">
@@ -36,17 +37,8 @@
             aria-hidden="true"
           >
             <span :class="$style.switcherTabVilla">Вилла</span>
-            {{ tab.label }}
+            <span :class="$style.switcherTabLabel">{{ tab.label }}</span>
           </button>
-          <div :class="$style.tabCardLine" />
-          <div
-            v-if="tab.desc"
-            :class="[
-              $style.tabCardDesc,
-              activeTabIndex !== index && $style.tabCardDescInactive,
-            ]"
-            v-html="tab.desc"
-          />
         </div>
       </div>
 
@@ -114,8 +106,21 @@
                 </button>
                 <Swiper
                   :modules="swiperModules"
-                  :slides-per-view="1"
-                  :space-between="0"
+                  :slides-per-view="1.12"
+                  :centered-slides="true"
+                  :space-between="8"
+                  :breakpoints="{
+                    0: {
+                      slidesPerView: 1,
+                      centeredSlides: false,
+                      spaceBetween: 0,
+                    },
+                    769: {
+                      slidesPerView: 1.12,
+                      centeredSlides: true,
+                      spaceBetween: 8,
+                    },
+                  }"
                   navigation
                   :class="$style.carousel"
                   @swiper="onCarouselSwiper"
@@ -195,408 +200,116 @@
                   v-html="currentApartment.desc"
                 ></div>
 
-                <form
-                  :class="[$style.formRow, $style.formRowOneRow]"
-                  @submit.prevent="onBookingSubmit"
+                <div
+                  v-if="nearestDatesItems.length || nearestDatesLoading"
+                  :class="$style.upcomingDates"
                 >
-                  <div
-                    ref="checkInWrapRef"
-                    :class="[
-                      $style.dateSelectWrap,
-                      $style.formGroup,
-                      $style.dateField,
-                      calendarOpenCheckIn && $style.dateSelectWrapOpen,
-                    ]"
-                  >
-                    <label :class="$style.formLabel">Дата заезда</label>
-                    <div :class="$style.dateSelectTriggerWrap">
-                      <button
-                        ref="checkInTriggerRef"
-                        type="button"
-                        :class="[
-                          $style.formInput,
-                          $style.formInputWithIcon,
-                          $style.dateSelectTrigger,
-                          bookingCheckInError && $style.formInputError,
-                        ]"
-                        @click="toggleCheckInCalendar"
-                      >
+                  <span :class="$style.upcomingDatesTitle">Ближайшие даты</span>
+                  <div :class="$style.upcomingDatesNavWrap">
+                    <template v-if="nearestDatesLoading">
+                      <div :class="$style.upcomingDatesSkeleton">
                         <span
-                          v-if="checkInDateFormatted"
-                          :class="$style.dateRangeText"
-                        >
-                          {{ checkInDateFormatted }}
-                        </span>
-                        <span v-else :class="$style.guestsPlaceholder">
-                          Выберите дату
-                        </span>
-                      </button>
-                      <button
-                        v-if="checkInDate"
-                        type="button"
-                        :class="$style.dateSelectClearBtn"
-                        aria-label="Очистить дату заезда"
-                        @click.stop="clearCheckInDate"
-                      >
-                        ×
-                      </button>
-                      <AppIcon
-                        v-else
-                        name="reservCalendar"
-                        alt=""
-                        :class="$style.formInputIcon"
-                      />
-                    </div>
-                    <Transition name="date-dropdown">
-                      <div
-                        v-show="calendarOpenCheckIn"
-                        :class="$style.calendarDropdown"
-                        @mousedown.prevent
-                      >
-                        <VueDatePicker
-                          v-if="calendarOpenCheckIn"
-                          v-model="checkInDate"
-                          :inline="true"
-                          :dark="true"
-                          :locale="ruLocale"
-                          :enable-time-picker="false"
-                          :hide-navigation="['time']"
-                          :disabled-dates="isCalendarDateDisabled"
-                          auto-apply
-                          :teleport="false"
-                          @update:model-value="onCheckInDateSelect"
-                          @update-month-year="onCalendarMonthYearChange"
+                          v-for="n in 12"
+                          :key="n"
+                          :class="$style.upcomingDatesSkeletonCard"
                         />
                       </div>
-                    </Transition>
-                    <div :class="$style.fieldErrorSlot">
-                      <Transition name="field-error">
-                        <p
-                          v-if="bookingCheckInError"
-                          key="check-in-err"
-                          :class="$style.fieldError"
-                        >
-                          Выберите дату заезда
-                        </p>
-                      </Transition>
-                    </div>
-                  </div>
-                  <div
-                    ref="checkOutWrapRef"
-                    :class="[
-                      $style.dateSelectWrap,
-                      $style.formGroup,
-                      $style.dateField,
-                      calendarOpenCheckOut && $style.dateSelectWrapOpen,
-                    ]"
-                  >
-                    <label :class="$style.formLabel">Дата выезда</label>
-                    <div :class="$style.dateSelectTriggerWrap">
+                    </template>
+                    <template v-else>
                       <button
-                        ref="checkOutTriggerRef"
                         type="button"
                         :class="[
-                          $style.formInput,
-                          $style.formInputWithIcon,
-                          $style.dateSelectTrigger,
-                          bookingCheckOutError && $style.formInputError,
+                          $style.upcomingDatesNavBtn,
+                          $style.upcomingDatesNavBtnPrev,
+                          !canScrollNearestLeft &&
+                            $style.upcomingDatesNavBtnDisabled,
                         ]"
-                        @click="toggleCheckOutCalendar"
+                        aria-label="Назад"
+                        :disabled="!canScrollNearestLeft"
+                        @click="scrollNearestDates(-1)"
                       >
-                        <span
-                          v-if="checkOutDateFormatted"
-                          :class="$style.dateRangeText"
-                        >
-                          {{ checkOutDateFormatted }}
-                        </span>
-                        <span v-else :class="$style.guestsPlaceholder">
-                          Выберите дату
-                        </span>
-                      </button>
-                      <button
-                        v-if="checkOutDate"
-                        type="button"
-                        :class="$style.dateSelectClearBtn"
-                        aria-label="Очистить дату выезда"
-                        @click.stop="clearCheckOutDate"
-                      >
-                        ×
-                      </button>
-                      <AppIcon
-                        v-else
-                        name="reservCalendar"
-                        alt=""
-                        :class="$style.formInputIcon"
-                      />
-                    </div>
-                    <Transition name="date-dropdown">
-                      <div
-                        v-show="calendarOpenCheckOut"
-                        :class="$style.calendarDropdown"
-                        @mousedown.prevent
-                      >
-                        <VueDatePicker
-                          v-if="calendarOpenCheckOut"
-                          v-model="checkOutDate"
-                          :inline="true"
-                          :dark="true"
-                          :locale="ruLocale"
-                          :enable-time-picker="false"
-                          :hide-navigation="['time']"
-                          :disabled-dates="isCalendarDateDisabledForCheckOut"
-                          auto-apply
-                          :teleport="false"
-                          @update:model-value="onCheckOutDateSelect"
-                          @update-month-year="onCalendarMonthYearChange"
+                        <img
+                          :src="arrowLeftIcon"
+                          alt=""
+                          width="48"
+                          height="48"
+                          decoding="async"
                         />
-                      </div>
-                    </Transition>
-                    <div :class="$style.fieldErrorSlot">
-                      <Transition name="field-error">
-                        <p
-                          v-if="bookingCheckOutError"
-                          key="check-out-err"
-                          :class="$style.fieldError"
-                        >
-                          Выберите дату выезда
-                        </p>
-                      </Transition>
-                    </div>
-                  </div>
-
-                  <div :class="[$style.formGroup, $style.formGroupGuests]">
-                    <label :class="$style.formLabel">Кол-во гостей</label>
-                    <div
-                      ref="guestsSelectWrapRef"
-                      :class="[
-                        $style.guestsSelectWrap,
-                        guestsOpen && $style.guestsSelectWrapOpen,
-                      ]"
-                    >
-                      <button
-                        type="button"
-                        :class="[
-                          $style.formInput,
-                          $style.formInputWithIcon,
-                          $style.guestsSelectTrigger,
-                        ]"
-                        @click="guestsOpen = !guestsOpen"
-                        @blur="onGuestsBlur"
-                      >
-                        <span
-                          :class="totalGuests ? '' : $style.guestsPlaceholder"
-                        >
-                          {{
-                            totalGuests
-                              ? `${totalGuests} ${guestsLabel(totalGuests)}`
-                              : `До ${currentApartment.capacity} гостей`
-                          }}
-                        </span>
                       </button>
-                      <AppIcon
-                        name="reservArrowDown"
-                        alt=""
-                        :class="[
-                          $style.formInputIcon,
-                          guestsOpen && $style.guestsSelectIconOpen,
-                        ]"
-                      />
-                      <Transition name="guests-dropdown">
-                        <div
-                          v-show="guestsOpen"
-                          :class="$style.guestsDropdown"
-                          @mousedown="onGuestsDropdownMousedown"
-                        >
-                          <div :class="$style.guestsDropdownInner">
-                            <div :class="$style.guestsRow">
-                              <span :class="$style.guestsRowLabel"
-                                >Взрослые</span
-                              >
-                              <div :class="$style.guestsCounter">
-                                <button
-                                  type="button"
-                                  :class="$style.guestsCounterBtn"
-                                  :disabled="guestSelection.adults <= 1"
-                                  aria-label="Меньше"
-                                  @click="setAdults(guestSelection.adults - 1)"
-                                >
-                                  −
-                                </button>
-                                <span :class="$style.guestsCounterValue">{{
-                                  guestSelection.adults
-                                }}</span>
-                                <button
-                                  type="button"
-                                  :class="$style.guestsCounterBtn"
-                                  :disabled="!canAddAdult"
-                                  aria-label="Больше"
-                                  @click="setAdults(guestSelection.adults + 1)"
-                                >
-                                  +
-                                </button>
-                              </div>
-                            </div>
-                            <div
-                              v-for="(child, index) in guestSelection.children"
-                              :key="index"
-                              :class="$style.guestsChildRow"
-                            >
-                              <span :class="$style.guestsChildLabel">
-                                Ребенок:
-                                <select
-                                  :value="child.age"
-                                  :class="$style.guestsChildSelect"
-                                  @change="
-                                    setChildAge(index, $event.target.value)
-                                  "
-                                >
-                                  <option
-                                    v-for="a in childAges"
-                                    :key="a"
-                                    :value="a"
-                                  >
-                                    {{ a }} лет
-                                  </option>
-                                </select>
-                              </span>
-                              <button
-                                type="button"
-                                :class="$style.guestsChildRemove"
-                                aria-label="Удалить"
-                                @click="removeChild(index)"
-                              >
-                                ×
-                              </button>
-                            </div>
-                            <button
-                              v-if="canAddChild"
-                              type="button"
-                              :class="$style.guestsAddChild"
-                              @click="addChild"
-                            >
-                              Добавить ребенка
-                              <span :class="$style.guestsAddChildChevron"
-                                >▼</span
-                              >
-                            </button>
-                          </div>
-                        </div>
-                      </Transition>
-                    </div>
-                  </div>
-
-                  <button
-                    type="submit"
-                    :class="$style.bookButton"
-                    :disabled="bookingSubmitting"
-                  >
-                    Забронировать
-                    <span
-                      v-if="bookingSubmitting"
-                      :class="$style.bookButtonSpinner"
-                      aria-hidden="true"
-                    />
-                    <AppIcon
-                      v-else
-                      name="reservArrowUpRight"
-                      alt=""
-                      :class="$style.bookButtonIcon"
-                    />
-                  </button>
-
-                  <div
-                    v-if="nearestDatesItems.length || nearestDatesLoading"
-                    :class="[$style.upcomingDates, $style.formRowFullWidth]"
-                  >
-                    <span :class="$style.upcomingDatesTitle"
-                      >Ближайшие даты</span
-                    >
-                    <div :class="$style.upcomingDatesNavWrap">
-                      <template v-if="nearestDatesLoading">
-                        <div :class="$style.upcomingDatesSkeleton">
-                          <span
-                            v-for="n in 12"
-                            :key="n"
-                            :class="$style.upcomingDatesSkeletonCard"
-                          />
-                        </div>
-                      </template>
-                      <template v-else>
-                        <Transition name="nav-btn">
-                          <button
-                            v-if="canScrollNearestLeft"
-                            key="prev"
-                            type="button"
+                      <div
+                        ref="nearestDatesScrollRef"
+                        :class="$style.upcomingDatesScroll"
+                        @scroll="updateNearestDatesScrollState"
+                      >
+                        <div :class="$style.upcomingDatesScrollInner">
+                          <div
+                            v-for="(item, index) in nearestDatesItems"
+                            :key="index"
                             :class="[
-                              $style.upcomingDatesNavBtn,
-                              $style.upcomingDatesNavBtnPrev,
+                              $style.dateCard,
+                              !item.available && $style.dateCardUnavailable,
+                              isDateCardSelected(item) &&
+                                $style.dateCardSelected,
                             ]"
-                            aria-label="Назад"
-                            @click="scrollNearestDates(-1)"
-                          />
-                        </Transition>
-                        <div
-                          ref="nearestDatesScrollRef"
-                          :class="$style.upcomingDatesScroll"
-                          @scroll="updateNearestDatesScrollState"
-                        >
-                          <div :class="$style.upcomingDatesScrollInner">
-                            <div
-                              v-for="(item, index) in nearestDatesItems"
-                              :key="index"
-                              :class="[
-                                $style.dateCard,
-                                !item.available && $style.dateCardUnavailable,
-                                isDateCardSelected(item) &&
-                                  $style.dateCardSelected,
-                              ]"
-                              @click="onDateCardClick(item)"
+                            @click="onDateCardClick(item)"
+                          >
+                            <span
+                              v-if="item.available && item.discountPercent"
+                              :class="$style.dateCardDiscount"
                             >
+                              {{ item.discountLabel }}
+                            </span>
+                            <div :class="$style.dateCardMain">
                               <span
-                                v-if="item.price != null"
+                                v-if="item.available && item.price != null"
                                 :class="$style.dateCardPrice"
                               >
                                 {{ item.priceFormatted }}
-                                <span
-                                  v-if="item.discountPercent"
-                                  :class="$style.dateCardDiscount"
-                                >
-                                  {{ item.discountLabel }}
-                                </span>
                               </span>
-                              <span :class="$style.dateCardDates">
-                                {{ item.dateLabel }}
+                              <span
+                                v-else-if="!item.available"
+                                :class="$style.dateCardBusy"
+                              >
+                                ЗАНЯТО
                               </span>
+                              <span v-else :class="$style.dateCardPrice"
+                                >—</span
+                              >
+                            </div>
+                            <div :class="$style.dateCardFooter">
+                              <span :class="$style.dateCardDays">{{
+                                item.dayRange
+                              }}</span>
+                              <span :class="$style.dateCardMonth">{{
+                                item.monthLabel
+                              }}</span>
                             </div>
                           </div>
                         </div>
-                        <Transition name="nav-btn">
-                          <button
-                            v-if="canScrollNearestRight"
-                            key="next"
-                            type="button"
-                            :class="[
-                              $style.upcomingDatesNavBtn,
-                              $style.upcomingDatesNavBtnNext,
-                            ]"
-                            aria-label="Вперёд"
-                            @click="scrollNearestDates(1)"
-                          />
-                        </Transition>
-                      </template>
-                    </div>
+                      </div>
+                      <button
+                        type="button"
+                        :class="[
+                          $style.upcomingDatesNavBtn,
+                          $style.upcomingDatesNavBtnNext,
+                          !canScrollNearestRight &&
+                            $style.upcomingDatesNavBtnDisabled,
+                        ]"
+                        aria-label="Вперёд"
+                        :disabled="!canScrollNearestRight"
+                        @click="scrollNearestDates(1)"
+                      >
+                        <img
+                          :src="arrowRightIcon"
+                          alt=""
+                          width="48"
+                          height="48"
+                          decoding="async"
+                        />
+                      </button>
+                    </template>
                   </div>
-
-                  <p
-                    v-if="bookingValidationError"
-                    :class="[
-                      $style.bookingValidationMessage,
-                      $style.formRowFullWidth,
-                    ]"
-                  >
-                    {{ bookingValidationMessage }}
-                  </p>
-                </form>
+                </div>
               </div>
             </div>
 
@@ -604,19 +317,50 @@
               <div
                 :class="[
                   $style.block,
-                  expandedBlocks.about && $style.blockExpanded,
+                  expandedBlocks.philosophy && $style.blockExpanded,
                 ]"
               >
                 <h5
                   :class="$style.blockTitle"
                   role="button"
                   tabindex="0"
-                  :aria-expanded="expandedBlocks.about"
-                  @click="toggleBlock('about')"
-                  @keydown.enter.prevent="toggleBlock('about')"
-                  @keydown.space.prevent="toggleBlock('about')"
+                  :aria-expanded="expandedBlocks.philosophy"
+                  @click="toggleBlock('philosophy')"
+                  @keydown.enter.prevent="toggleBlock('philosophy')"
+                  @keydown.space.prevent="toggleBlock('philosophy')"
                 >
-                  О вилле
+                  Философия и стиль
+                  <AppIcon
+                    name="reservArrowDownRight"
+                    alt=""
+                    :class="$style.blockTitleIcon"
+                  />
+                </h5>
+                <div :class="$style.blockContent">
+                  <div
+                    v-if="currentApartment.desc"
+                    :class="$style.blockDesc"
+                    v-html="currentApartment.desc"
+                  />
+                  <p v-else :class="$style.blockListInline">—</p>
+                </div>
+              </div>
+              <div
+                :class="[
+                  $style.block,
+                  expandedBlocks.details && $style.blockExpanded,
+                ]"
+              >
+                <h5
+                  :class="$style.blockTitle"
+                  role="button"
+                  tabindex="0"
+                  :aria-expanded="expandedBlocks.details"
+                  @click="toggleBlock('details')"
+                  @keydown.enter.prevent="toggleBlock('details')"
+                  @keydown.space.prevent="toggleBlock('details')"
+                >
+                  Детали размещения
                   <AppIcon
                     name="reservArrowDownRight"
                     alt=""
@@ -626,83 +370,49 @@
                 <div :class="$style.blockContent">
                   <div :class="$style.blockListTwoCol">
                     <div :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel">Кол-во гостей:</span>
+                      <span :class="$style.blockListLabel">Кол-во гостей</span>
                       <span :class="$style.blockListValue">{{
                         currentApartment.capacity ?? "—"
                       }}</span>
                     </div>
                     <div :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel">Спальных мест:</span>
+                      <span :class="$style.blockListLabel"
+                        >Кол-во спальных мест</span
+                      >
                       <span :class="$style.blockListValue">{{
                         sleepsTotal ?? "—"
                       }}</span>
                     </div>
                     <div :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel">Кол-во этажей:</span>
+                      <span :class="$style.blockListLabel">Кол-во этажей</span>
                       <span :class="$style.blockListValue">{{
                         currentApartment.floor ?? "—"
                       }}</span>
                     </div>
                     <div :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel">Кол-во комнат:</span>
+                      <span :class="$style.blockListLabel">Кол-во комнат</span>
                       <span :class="$style.blockListValue">{{
                         currentApartment.rooms ?? "—"
                       }}</span>
                     </div>
                     <div :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel">Площадь:</span>
-                      <span :class="$style.blockListValue"
-                        >{{ currentApartment.area ?? "—" }} м²</span
+                      <span :class="$style.blockListLabel"
+                        >Кол-во санузлов</span
                       >
-                    </div>
-                    <div
-                      v-if="currentApartment?.services?.includes('balcony')"
-                      :class="$style.blockListRow"
-                    >
-                      <span :class="$style.blockListLabel">Зона отдыха:</span>
                       <span :class="$style.blockListValue">{{
-                        serviceLabel("balcony")
+                        bathroomsCount
                       }}</span>
+                    </div>
+                    <div :class="$style.blockListRow">
+                      <span :class="$style.blockListLabel">Площадь</span>
+                      <span :class="$style.blockListValue"
+                        >{{ currentApartment.area ?? "—" }} м2</span
+                      >
                     </div>
                   </div>
                 </div>
               </div>
               <div
-                v-if="equipmentKeys.length"
-                :class="[
-                  $style.block,
-                  expandedBlocks.equipment && $style.blockExpanded,
-                ]"
-              >
-                <h5
-                  :class="$style.blockTitle"
-                  role="button"
-                  tabindex="0"
-                  :aria-expanded="expandedBlocks.equipment"
-                  @click="toggleBlock('equipment')"
-                  @keydown.enter.prevent="toggleBlock('equipment')"
-                  @keydown.space.prevent="toggleBlock('equipment')"
-                >
-                  <span :class="$style.blockTitleDesktopOnly"
-                    >Техника и оснащение</span
-                  >
-                  <span :class="$style.blockTitleTabletOnly">Оснащение</span>
-                  <AppIcon
-                    name="reservArrowDownRight"
-                    alt=""
-                    :class="$style.blockTitleIcon"
-                  />
-                </h5>
-                <div :class="$style.blockContent">
-                  <p :class="$style.blockListInline">
-                    <template v-for="(key, i) in equipmentKeys" :key="key">
-                      <span v-if="i"> · </span>{{ serviceLabel(key) }}
-                    </template>
-                  </p>
-                </div>
-              </div>
-              <div
-                v-if="comfortKeys.length"
                 :class="[
                   $style.block,
                   expandedBlocks.comfort && $style.blockExpanded,
@@ -717,7 +427,7 @@
                   @keydown.enter.prevent="toggleBlock('comfort')"
                   @keydown.space.prevent="toggleBlock('comfort')"
                 >
-                  Комфорт
+                  Условия комфорта
                   <AppIcon
                     name="reservArrowDownRight"
                     alt=""
@@ -725,29 +435,28 @@
                   />
                 </h5>
                 <div :class="$style.blockContent">
-                  <p :class="$style.blockListInline">
-                    <template v-for="(key, i) in comfortKeys" :key="key">
-                      <span v-if="i"> · </span>{{ serviceLabel(key) }}
-                    </template>
+                  <p v-if="comfortServicesText" :class="$style.blockListInline">
+                    {{ comfortServicesText }}
                   </p>
+                  <p v-else :class="$style.blockListInline">—</p>
                 </div>
               </div>
               <div
                 :class="[
                   $style.block,
-                  expandedBlocks.rules && $style.blockExpanded,
+                  expandedBlocks.etiquette && $style.blockExpanded,
                 ]"
               >
                 <h5
                   :class="$style.blockTitle"
                   role="button"
                   tabindex="0"
-                  :aria-expanded="expandedBlocks.rules"
-                  @click="toggleBlock('rules')"
-                  @keydown.enter.prevent="toggleBlock('rules')"
-                  @keydown.space.prevent="toggleBlock('rules')"
+                  :aria-expanded="expandedBlocks.etiquette"
+                  @click="toggleBlock('etiquette')"
+                  @keydown.enter.prevent="toggleBlock('etiquette')"
+                  @keydown.space.prevent="toggleBlock('etiquette')"
                 >
-                  Правила
+                  Гостевой этикет
                   <AppIcon
                     name="reservArrowDownRight"
                     alt=""
@@ -756,46 +465,34 @@
                 </h5>
                 <div :class="$style.blockContent">
                   <div :class="$style.blockListTwoCol">
-                    <div v-if="rulesCheckInLabel" :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel">Заезд:</span>
+                    <div :class="$style.blockListRow">
+                      <span :class="$style.blockListLabel">Время прибытия</span>
                       <span :class="$style.blockListValue">{{
-                        rulesCheckInLabel
-                      }}</span>
-                    </div>
-                    <div v-if="rulesCheckOutLabel" :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel">Выезд:</span>
-                      <span :class="$style.blockListValue">{{
-                        rulesCheckOutLabel
+                        rulesCheckInLabel || "—"
                       }}</span>
                     </div>
                     <div :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel"
-                        >Можно с детьми:</span
-                      >
+                      <span :class="$style.blockListLabel">Время выезда</span>
                       <span :class="$style.blockListValue">{{
-                        rulesKidsAllowed ? "да" : "нет"
+                        rulesCheckOutLabel || "—"
                       }}</span>
                     </div>
                     <div :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel"
-                        >Можно с питомцем:</span
-                      >
-                      <span :class="$style.blockListValue">{{
-                        rulesPetsAllowed ? "да" : "нет"
-                      }}</span>
-                    </div>
-                    <div :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel"
-                        >Разрешены вечеринки:</span
-                      >
-                      <span :class="$style.blockListValue">{{
-                        rulesPartyAllowed ? "да" : "нет"
-                      }}</span>
-                    </div>
-                    <div :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel">Можно курить:</span>
+                      <span :class="$style.blockListLabel">Можно курить</span>
                       <span :class="$style.blockListValue">{{
                         rulesSmokeAllowed ? "да" : "нет"
+                      }}</span>
+                    </div>
+                    <div :class="$style.blockListRow">
+                      <span :class="$style.blockListLabel"
+                        >Есть отчётные документы</span
+                      >
+                      <span :class="$style.blockListValue">да</span>
+                    </div>
+                    <div :class="$style.blockListRow">
+                      <span :class="$style.blockListLabel">С питомцем</span>
+                      <span :class="$style.blockListValue">{{
+                        rulesPetsAllowed ? "По согласованию" : "нет"
                       }}</span>
                     </div>
                   </div>
@@ -991,6 +688,8 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { ru } from "date-fns/locale";
+import arrowLeftIcon from "@app/assets/icons/ui/arrow-left.svg?url";
+import arrowRightIcon from "@app/assets/icons/ui/arrow-right.svg?url";
 
 const VueDatePicker = defineAsyncComponent(async () => {
   await import("@vuepic/vue-datepicker/dist/main.css");
@@ -1035,13 +734,13 @@ const SERVICE_LABELS = {
   seaview: "Вид на море",
   mountainview: "Вид на горы",
   seafront: "У моря",
-  air_conditioning: "Кондиционер",
+  air_conditioning: "Индивидуальная система кондиционирования",
   pool: "Бассейн",
   washing_machine: "Стиральная машина",
-  wi_fi: "Wi-Fi",
+  wi_fi: "Высокоскоростной Wi-Fi",
   animals: "Можно с животными",
   party: "Можно проводить вечеринки",
-  tv: "Телевизор",
+  tv: "Smart TV",
   kids: "Подходит для детей",
   playground: "Детская площадка",
   refrigerator: "Холодильник",
@@ -1067,6 +766,14 @@ const SERVICE_LABELS = {
   elevator: "Лифт",
 };
 
+const COMFORT_SERVICE_KEYS = [
+  ...COMFORT_KEYS,
+  ...EQUIPMENT_KEYS,
+  "balcony",
+  "party",
+  "kids",
+];
+
 export default {
   name: "Reserv",
   components: { Swiper, SwiperSlide, VueDatePicker },
@@ -1086,6 +793,8 @@ export default {
   },
   data() {
     return {
+      arrowLeftIcon,
+      arrowRightIcon,
       localSelectedIndex: 0,
       swiperModules: [Navigation],
       carouselSwiper: null,
@@ -1120,10 +829,10 @@ export default {
       nearestDatesLoading: false,
       isMobile: false,
       expandedBlocks: {
-        about: true,
-        equipment: false,
+        philosophy: true,
+        details: false,
         comfort: false,
-        rules: false,
+        etiquette: false,
       },
     };
   },
@@ -1174,7 +883,6 @@ export default {
       return this.apartments.map((a) => ({
         id: a.id,
         label: a.title,
-        desc: a.desc || "",
       }));
     },
     currentApartment() {
@@ -1203,15 +911,17 @@ export default {
         .reduce((acc, n) => acc + n, 0);
       return sum > 0 ? sum : null;
     },
-    equipmentKeys() {
-      return EQUIPMENT_KEYS.filter((key) =>
-        this.currentApartment?.services?.includes(key)
-      );
+    bathroomsCount() {
+      return "—";
     },
-    comfortKeys() {
-      return COMFORT_KEYS.filter((key) =>
-        this.currentApartment?.services?.includes(key)
-      );
+    comfortServicesText() {
+      const services = this.currentApartment?.services;
+      if (!Array.isArray(services) || !services.length) return "";
+      const labels = COMFORT_SERVICE_KEYS.filter((key) =>
+        services.includes(key)
+      ).map((key) => this.serviceLabel(key));
+      const unique = [...new Set(labels)];
+      return unique.join(" · ");
     },
     rulesKidsAllowed() {
       return this.currentApartment?.services?.includes("kids") ?? false;
@@ -1273,15 +983,19 @@ export default {
         const partsTo = this.formatCalendarDateParts(nextDayStr);
         const shortFrom = this.formatCalendarDateShortMonth(entry.date);
         const shortTo = this.formatCalendarDateShortMonth(nextDayStr);
-        const dateLabel =
+        const dayRange = `${partsFrom.day}-${partsTo.day}`;
+        const monthLabel =
           partsFrom.month === partsTo.month
-            ? `${partsFrom.day}-${partsTo.day} ${partsTo.month}`
-            : `${partsFrom.day}-${partsTo.day} ${shortFrom}/${shortTo}`;
+            ? partsTo.month
+            : `${shortFrom}/${shortTo}`;
+        const dateLabel = `${dayRange} ${monthLabel}`;
         const price = entry.price;
         const discountPercent = entry.discounts?.[0]?.percent ?? 0;
         const checkInDate = this.parseDateStr(entry.date);
         const checkOutDate = this.parseDateStr(nextDayStr);
         return {
+          dayRange,
+          monthLabel,
           dateLabel,
           price,
           priceFormatted: price != null ? `${this.formatPrice(price)} ₽` : null,
@@ -1613,6 +1327,34 @@ export default {
       this.bookingValidationError = "";
       this.bookingCheckInError = false;
       this.bookingCheckOutError = false;
+
+      const apt = this.currentApartment;
+      if (!apt?.id) return;
+
+      const guests = {
+        adults: this.guestSelection?.adults ?? 1,
+        children: (this.guestSelection?.children ?? []).map((c) => ({
+          age: c?.age ?? "0",
+        })),
+      };
+
+      const basePrice =
+        item.discountPercent && item.price != null
+          ? Math.round(item.price / (1 - item.discountPercent / 100))
+          : null;
+
+      this.$store.commit("setBookingFormData", {
+        checkInDate: this.toDateStr(this.checkInDate),
+        checkOutDate: this.toDateStr(this.checkOutDate),
+        guests,
+        apartment: apt,
+        price: item.price ?? null,
+        priceFormatted: item.priceFormatted ?? null,
+        discountPercent: item.discountPercent ?? null,
+        basePrice,
+      });
+      this.$store.commit("setSelectedApartmentIndex", this.activeTabIndex);
+      this.$store.commit("setBookingFormModalOpen", true);
     },
     isCalendarDateDisabledForCheckOut(date) {
       if (this.isCalendarDateDisabled(date)) return true;
@@ -1887,32 +1629,12 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 7.5rem 2.5rem;
-  background-color: $text-primary;
+  background-color: $bg-footer;
   color: $text-white;
   gap: 5rem;
   @include tablet {
     padding: 5rem 1rem;
     gap: 2.5rem;
-  }
-  h2 {
-    color: $text-tertiary;
-    font-weight: 300;
-    line-height: 0.8;
-    @include tablet {
-      font-size: 1.875rem;
-      color: $text-white;
-    }
-  }
-  h3 {
-    font-size: 1rem;
-    font-weight: 300;
-    margin: 0.25rem 0 0 0;
-    line-height: 120%;
-    @include tablet {
-      font-size: 0.625rem;
-      color: $text-tertiary;
-      margin: 0;
-    }
   }
 }
 
@@ -1921,36 +1643,89 @@ export default {
   margin: 0 auto;
   width: 100%;
   display: flex;
-  flex-direction: column;
-  @include tablet {
-    gap: 0.25rem;
-  }
-}
-
-.titleLine1 {
-  display: flex;
-  text-wrap: nowrap;
-  gap: 0;
   justify-content: space-between;
-  letter-spacing: -4%;
+  align-items: flex-start;
+  gap: 2rem;
   @include tablet {
-    gap: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
   }
 }
 
-.titleLine2 {
+.titleMain {
   display: flex;
-  letter-spacing: -4%;
-  text-wrap: nowrap;
-  h2 {
-    color: #685137;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.titlePrimary {
+  margin: 0;
+  font-size: 6.25rem;
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1;
+  @include laptop {
+    font-size: 3.75rem;
   }
   @include tablet {
+    font-size: 1.5rem;
+  }
+}
+
+.titleSecondary {
+  margin: 0;
+  font-size: 6.25rem;
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  color: $text-accent;
+  line-height: 1;
+  @include laptop {
+    font-size: 3.75rem;
+  }
+  @include tablet {
+    font-size: 1.5rem;
+  }
+}
+
+.titleBrand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  padding-top: 0.5rem;
+  @include tablet {
+    align-items: flex-start;
+    padding-top: 0;
+  }
+}
+
+.titleBrandLabel {
+  font-size: 0.875rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.2;
+}
+
+.titleBrandName {
+  font-size: 2rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: $text-accent;
+  line-height: 1.2;
+  @include tablet {
+    font-size: 1.25rem;
   }
 }
 
 .embeddedWrap {
-  background-color: $text-primary;
+  background-color: $bg-footer;
   color: $text-white;
   display: flex;
   flex-direction: column;
@@ -2009,14 +1784,17 @@ export default {
 
 .switcher {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: flex-end;
   flex-wrap: wrap;
-  gap: 0;
+  gap: 4rem;
   border-bottom: none;
+  @include laptop {
+    gap: 2.5rem;
+  }
   @include tablet {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: auto auto;
     gap: 0;
     padding-bottom: 0;
     -webkit-overflow-scrolling: touch;
@@ -2025,65 +1803,12 @@ export default {
 }
 
 .tabCard {
-  &:nth-child(even) {
-    .switcherTab {
-      padding: 1.5rem;
-      @include tablet {
-        padding: 0.5rem 0.25rem 0.5rem 0;
-      }
-    }
-    .tabCardDesc {
-      padding: 0 1.5rem;
-      @include tablet {
-        padding: 0.5rem 0 0;
-      }
-    }
-  }
-}
-
-.switcherTab {
-  display: flex;
-  align-items: flex-end;
-  text-align: left;
-  padding: 1.5rem 0.5rem;
-  font-size: 3rem;
-  font-weight: 300;
-  color: #685137;
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  cursor: pointer;
-  font-family: inherit;
-  transition:
-    color 0.2s,
-    border-color 0.2s;
-
-  &:hover {
-    color: rgba(255, 255, 255, 0.85);
-  }
-  @include tablet {
-    font-size: 1rem;
-    padding: 0.5rem 0.25rem 0.5rem 0;
-    margin-bottom: 0;
-    white-space: nowrap;
-    flex-shrink: 0;
-    border-bottom: 2px solid #685137;
-  }
-}
-
-.switcherTabActive {
-  color: $text-white;
-  font-weight: 600;
-  border-bottom-color: $text-white;
-}
-
-.tabCard {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 0 0 auto;
   min-width: 0;
   cursor: pointer;
+
   @include tablet {
     display: contents;
   }
@@ -2093,24 +1818,53 @@ export default {
   }
 
   &:hover .switcherTabVilla {
-    color: $text-white;
+    color: rgba(255, 255, 255, 0.85);
     @include tablet {
-      color: #685137;
+      color: $text-accent;
     }
+  }
+}
 
-    &:hover .tabCardDesc {
-      color: $text-white;
-      @include tablet {
-        color: #685137;
-      }
-    }
+.switcherTab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  padding: 0;
+  font-size: 3rem;
+  font-weight: 300;
+  color: $text-accent;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.2s;
+  line-height: 1;
 
-    &:hover .tabCardLine {
-      background: $text-white;
-      @include tablet {
-        background: #685137;
-      }
-    }
+  &:hover {
+    color: rgba(255, 255, 255, 0.85);
+  }
+  @include laptop {
+    font-size: 2.25rem;
+  }
+  @include tablet {
+    font-size: 1rem;
+    padding: 0.5rem 0.25rem 0.5rem 0;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border-bottom: 2px solid $text-accent;
+  }
+}
+
+.switcherTabLabel {
+  display: block;
+}
+
+.switcherTabActive {
+  color: $text-white;
+  font-weight: 600;
+  @include tablet {
+    border-bottom-color: $text-white;
   }
 }
 
@@ -2118,9 +1872,8 @@ export default {
   display: block;
   font-size: 1rem;
   font-weight: 400;
-  color: #685137;
-  margin-bottom: 0.5rem;
-  margin-right: 0.5rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 0.35rem;
 
   @include tablet {
     display: none !important;
@@ -2128,78 +1881,19 @@ export default {
 }
 
 .switcherTabActive .switcherTabVilla {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.tabCardLine {
-  display: block;
-  height: 2px;
-  margin-top: -1px;
-  margin-bottom: 0;
-  background: #685137;
-  min-height: 2px;
-
-  @include tablet {
-    display: none !important;
-  }
-}
-
-.tabCard:has(.switcherTabActive) .tabCardLine {
-  background: $text-white;
-}
-
-.tabCardDesc {
-  display: block;
-  font-size: 1rem;
-  font-weight: 300;
-  line-height: 1.2;
-  color: $text-white;
-  margin-top: 0.75rem;
-  text-align: justify;
-
-  :global(p) {
-    margin: 0 0 0.5em 0;
-  }
-  :global(p:last-child) {
-    margin-bottom: 0;
-  }
-}
-
-.tabCardDescInactive {
-  color: #685137;
-}
-
-.tabCardDesc {
-  @include tablet {
-    display: none;
-    font-size: 0.625rem;
-    margin-top: 0;
-    padding: 0.5rem 0 0;
-    color: rgba(255, 255, 255, 0.85);
-    grid-row: 2;
-    grid-column: 1 / -1;
-  }
-}
-
-.tabCard:has(.switcherTabActive) .tabCardDesc {
-  @include tablet {
-    display: block;
-  }
+  color: rgba(255, 255, 255, 0.55);
 }
 
 @include tablet {
-  .switcher .tabCard:nth-child(1) .switcherTab,
-  .switcher .tabCard:nth-child(1) .tabCardLine {
+  .switcher .tabCard:nth-child(1) .switcherTab {
     grid-row: 1;
     grid-column: 1;
   }
-  .switcher .tabCard:nth-child(2) .switcherTab,
-  .switcher .tabCard:nth-child(2) .tabCardLine {
+  .switcher .tabCard:nth-child(2) .switcherTab {
     grid-row: 1;
     grid-column: 2;
   }
-  .switcher .tabCard:nth-child(3) .switcherTab,
-  .switcher .tabCard:nth-child(3) .tabCardLine {
+  .switcher .tabCard:nth-child(3) .switcherTab {
     grid-row: 1;
     grid-column: 3;
   }
@@ -2224,9 +1918,9 @@ export default {
   border-radius: 0;
   display: flex;
   overflow: hidden;
-  background: $text-primary;
+  background: $bg-footer;
   height: 100%;
-  min-height: 20rem;
+  min-height: 28rem;
   user-select: none;
   width: 100%;
   margin-left: calc(-50vw + 50%);
@@ -2267,7 +1961,7 @@ export default {
 }
 
 .carouselCounter {
-  display: block;
+  display: none;
   position: absolute;
   bottom: -0.625rem;
   left: 50%;
@@ -2275,7 +1969,7 @@ export default {
   z-index: 10;
   margin: 0;
   padding: 0.75rem 4.5rem;
-  background: $text-primary;
+  background: $bg-footer;
   color: $text-white;
   font-size: 2rem;
   font-weight: 300;
@@ -2302,7 +1996,7 @@ export default {
   top: 1.25rem;
   right: 1.5rem;
   z-index: 10;
-  display: inline-flex;
+  display: none;
   align-items: center;
   gap: 0.35rem;
   padding: 0.5rem 1rem;
@@ -2322,6 +2016,7 @@ export default {
     background: rgba(0, 0, 0, 0.6);
   }
   @include tablet {
+    display: inline-flex;
     top: 0.75rem;
     right: 0.75rem;
     padding: 0.4rem 0.75rem;
@@ -2678,7 +2373,7 @@ export default {
   margin-right: calc(-50vw + 50%);
   padding: 1.5rem 0;
   box-sizing: border-box;
-  background: $text-primary;
+  background: $bg-footer;
 
   @include tablet {
     width: 100%;
@@ -2987,23 +2682,24 @@ export default {
 .upcomingDatesNavWrap {
   display: flex;
   align-items: center;
-  min-height: 5.125rem;
+  gap: 0.5rem;
+  min-height: 5.5rem;
 }
 
 .upcomingDatesSkeleton {
   flex: 1;
   min-width: 0;
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
   align-items: center;
   overflow: hidden;
 }
 
 .upcomingDatesSkeletonCard {
   flex: 0 0 auto;
-  width: 10rem;
-  height: 4.5rem;
-  border-radius: 0.375rem;
+  width: 9.5rem;
+  height: 5.25rem;
+  border-radius: 0.5rem;
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0.06) 0%,
@@ -3025,33 +2721,41 @@ export default {
 
 .upcomingDatesNavBtn {
   flex-shrink: 0;
-  width: 1.5rem;
-  height: 5.125rem;
+  width: 3rem;
+  height: 3rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
   border: none;
-  border-radius: 0.5rem 0.5rem 0 0;
-  background: $bg-overlay
-    url("../../assets/img/sections/reserv/swiper-arrow.svg") no-repeat center;
-  background-size: 1rem;
+  border-radius: 50%;
+  background: transparent;
   cursor: pointer;
-  transition: background 0.2s;
-  @include tablet {
-    height: 4.5rem;
+  transition: opacity 0.2s;
+
+  img {
+    width: 3rem;
+    height: 3rem;
+    display: block;
+    object-fit: contain;
   }
-  &:hover {
-    background-color: rgba(50, 50, 50, 0.98);
+
+  &:hover:not(:disabled) {
+    opacity: 0.75;
+  }
+
+  &.upcomingDatesNavBtnDisabled,
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: auto;
   }
 }
 
-.upcomingDatesNavBtnPrev {
-  border-radius: 0 0.5rem 0.5rem 0;
-  transform: scaleX(-1);
-}
-
+.upcomingDatesNavBtnPrev,
 .upcomingDatesNavBtnNext {
-  border-radius: 0 0.5rem 0.5rem 0;
+  border-radius: 50%;
+  transform: none;
 }
 
 .upcomingDatesScroll {
@@ -3062,9 +2766,6 @@ export default {
   scrollbar-width: none;
   -ms-overflow-style: none;
   min-height: 5.5rem;
-  @include tablet {
-    min-height: auto;
-  }
 
   &::-webkit-scrollbar {
     display: none;
@@ -3073,95 +2774,142 @@ export default {
 
 .upcomingDatesScrollInner {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
   min-height: 5.5rem;
   align-items: center;
-  @include tablet {
-    min-height: 4.5rem;
-    gap: 0.5rem;
-  }
 }
 
 .dateCard {
   $date-card-ease: cubic-bezier(0.4, 0, 0.2, 1);
-
+  position: relative;
   flex: 0 0 auto;
-  min-height: 5.125rem;
-  padding: 0 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.375rem;
+  width: 10rem;
+  height: 5.125rem;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.5rem;
   background: transparent;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 0.75rem;
+  justify-content: space-between;
+  align-items: stretch;
   scroll-snap-align: start;
   cursor: pointer;
+  box-sizing: border-box;
   transition:
-    background 0.35s $date-card-ease,
-    border-color 0.35s $date-card-ease,
-    color 0.35s $date-card-ease;
+    background 0.3s $date-card-ease,
+    border-color 0.3s $date-card-ease;
   @include tablet {
-    min-height: 4rem;
-    gap: 0.25rem;
+    width: 8.25rem;
+    height: 4.75rem;
+    padding: 0.6rem 0.7rem;
   }
-
   &:hover:not(.dateCardUnavailable):not(.dateCardSelected) {
-    background: rgba(0, 0, 0, 0.5);
-    border-color: #000000;
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.22);
   }
 }
 
 .dateCardUnavailable {
-  background: rgba(255, 255, 255, 0.16);
-  background-clip: border-box;
-  border: 1px solid transparent;
+  background: #4a4a4a;
+  border-color: transparent;
   cursor: not-allowed;
   pointer-events: none;
-
-  .dateCardDates,
-  .dateCardPrice {
-    color: rgba(255, 255, 255, 0.45);
+  .dateCardBusy {
+    color: rgba(255, 255, 255, 0.9);
   }
-
-  .dateCardDiscount {
-    color: rgba(229, 115, 115, 0.7);
+  .dateCardDays,
+  .dateCardMonth {
+    color: rgba(255, 255, 255, 0.55);
   }
 }
-
 .dateCardSelected {
-  background: #004f68;
-  border-color: #004f68;
+  background: #000000;
+  border-color: #000000;
 
-  .dateCardDates,
-  .dateCardPrice {
+  .dateCardPrice,
+  .dateCardDays,
+  .dateCardMonth {
     color: $text-white;
   }
 }
-
-.dateCardDates {
-  font-size: 1rem;
-  color: $text-white;
+.dateCardDiscount {
+  position: absolute;
+  top: 0.35rem;
+  left: 0.5rem;
+  margin: 0;
+  padding: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+  color: $main-red;
+  background: none;
   @include tablet {
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
   }
 }
-
+.dateCardMain {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 0;
+  width: 100%;
+}
 .dateCardPrice {
-  font-size: 1rem;
+  font-size: 1.125rem;
   font-weight: 600;
   color: $text-white;
+  line-height: 1.2;
+  text-align: right;
+  white-space: nowrap;
   @include tablet {
     font-size: 0.875rem;
   }
 }
 
-.dateCardDiscount {
-  margin-left: 0.35em;
+.dateCardBusy {
   font-size: 1rem;
-  color: $main-red;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: $text-white;
+  line-height: 1.2;
+  text-align: right;
   @include tablet {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
+  }
+}
+
+.dateCardFooter {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.dateCardDays {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.2;
+  text-align: left;
+  @include tablet {
+    font-size: 0.6875rem;
+  }
+}
+
+.dateCardMonth {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.2;
+  text-align: right;
+  @include tablet {
+    font-size: 0.6875rem;
   }
 }
 
@@ -3651,12 +3399,14 @@ export default {
 
 .bottomBlocks {
   display: grid;
-  grid-template-columns: 25% 25% 25% 25%;
+  grid-template-columns: repeat(4, 1fr);
   padding: 2.5rem 0 0 0;
+  border-top: 1px solid rgba($text-accent, 0.45);
 
   @include tablet {
     grid-template-columns: 1fr;
-    padding-top: 2.5rem;
+    padding-top: 0;
+    border-top: none;
     gap: 0;
   }
 }
@@ -3665,16 +3415,16 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 0 1rem 0 1rem;
-  border-right: 1px solid #685137;
+  padding: 2rem 1.25rem 0;
+  border-right: 1px solid rgba($text-accent, 0.45);
   &:first-child {
-    padding: 0 1rem 0 0;
+    padding-left: 0;
     @include tablet {
       padding: 0;
     }
   }
   &:last-child {
-    padding: 0 0 0 1rem;
+    padding-right: 0;
     border-right: none;
     @include tablet {
       padding: 0;
@@ -3684,7 +3434,7 @@ export default {
     padding: 0;
     gap: 0;
     border-right: none;
-    border-top: 1px solid #685137;
+    border-top: 1px solid rgba($text-accent, 0.45);
     transition: border-top-color 0.2s ease;
   }
 }
@@ -3709,14 +3459,18 @@ export default {
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  font-size: 2rem;
-  font-weight: 300;
+  font-size: 1.5rem;
+  font-weight: 400;
   margin: 0;
-  color: $text-tertiary;
-  text-wrap: nowrap;
-  letter-spacing: -5%;
+  color: $text-accent;
+  text-wrap: balance;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  @include laptop {
+    font-size: 1.25rem;
+  }
   @include tablet {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     padding: 1rem 0;
     cursor: pointer;
     user-select: none;
@@ -3754,28 +3508,48 @@ export default {
 
 .blockTitleDesktopOnly {
   display: none;
-  @include tablet {
-    display: none;
-  }
 }
 
 .blockTitleTabletOnly {
-  display: inline;
-  @include tablet {
-    display: inline;
-  }
+  display: none;
 }
 
 .blockTitleIcon {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.25rem;
+  height: 1.25rem;
   flex-shrink: 0;
+  transform: rotate(-90deg);
+  opacity: 0.85;
+  @include tablet {
+    transform: none;
+  }
+}
+
+.blockDesc {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+
+  :global(p) {
+    margin: 0 0 0.75em;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  @include tablet {
+    font-size: 0.875rem;
+  }
 }
 
 .blockListInline {
   margin: 0;
   font-size: 1rem;
-  color: $text-white;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.85);
   line-height: 1.6;
   @include tablet {
     font-size: 0.875rem;
@@ -3785,14 +3559,15 @@ export default {
 .blockListTwoCol {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.5rem;
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.9);
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.85);
   line-height: 1.5;
 
   @include tablet {
     font-size: 0.875rem;
-    gap: 0.25rem;
+    gap: 0.35rem;
   }
 }
 
@@ -3804,13 +3579,15 @@ export default {
 }
 
 .blockListLabel {
-  flex-shrink: 0;
+  flex-shrink: 1;
   text-align: left;
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .blockListValue {
   flex-shrink: 0;
   text-align: right;
+  color: $text-white;
 }
 
 .blockList {
