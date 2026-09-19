@@ -17,5 +17,7 @@ export const attractions = attractionsJson.map((item) => ({
   images: item.images.map((img) => ({
     src: resolveImageUrl(typeof img === "string" ? img : img.src),
     size: typeof img === "object" && img.size ? img.size : "medium",
+    laptopSize:
+      typeof img === "object" && img.laptopSize ? img.laptopSize : null,
   })),
 }));
