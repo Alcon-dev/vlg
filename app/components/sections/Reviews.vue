@@ -1,99 +1,50 @@
 <template>
-  <div :class="$style.reviews">
-    <div :class="$style.reviewsHeader">
-      <div :class="$style.reviewsHeaderMobile">
-        <h3 :class="$style.reviewsSectionTitleMobile">Отзывы наших клиентов</h3>
-        <div :class="$style.reviewsHeaderMetaMobile">
-          <a
-            href="https://yandex.by/maps/org/rezidentsiya_volga/25605876128/reviews/?ll=49.372303%2C53.473734&z=16"
-            target="_blank"
-            rel="noopener noreferrer"
-            :class="$style.reviewsYandexSourceLinkMobile"
-          >
-            <span :class="$style.reviewsYandexSourceLine"
-              >На основании оценок пользователей</span
-            >
-            <span :class="$style.reviewsYandexSourceLine2">Яндекс.ru</span>
-          </a>
-          <div :class="$style.reviewsRatingCompactMobile">
-            <span :class="$style.reviewsRatingValueMobile">5.0</span>
-            <div :class="$style.reviewsRatingStarsMobile">
-              <img
-                v-for="i in 5"
-                :key="i"
-                :class="$style.reviewsHeaderStarIcon"
-                src="@app/assets/img/sections/about/star.svg"
-                alt=""
-                width="24"
-                height="24"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
+  <div :class="$style.wrapper">
+    <div :class="$style.header">
+      <div :class="$style.titleRow">
+        <h2 :class="$style.titlePrimary">ОТЗЫВЫ</h2>
+        <div :class="$style.rating">
+          <span :class="$style.ratingValue">5.0</span>
+          <div :class="$style.ratingStars" aria-hidden="true">
+            <img
+              v-for="i in 5"
+              :key="i"
+              :class="$style.starIcon"
+              src="@app/assets/img/sections/about/star.svg"
+              alt=""
+              width="24"
+              height="24"
+              loading="lazy"
+              decoding="async"
+            />
           </div>
-        </div>
-        <div :class="$style.reviewsRatingBlock">
-          <button
-            type="button"
-            :class="[$style.reviewsNavBtn, $style.reviewsNavBtnPrev]"
-            aria-label="Назад"
-            @click="onReviewsPrev"
-          />
-          <div :class="$style.reviewsRatingCenter">
-            <div :class="$style.reviewsRatingRow">
-              <span :class="$style.reviewsRatingValue">5.0</span>
-              <div :class="$style.reviewsRatingStars">
-                <img
-                  v-for="i in 5"
-                  :key="i"
-                  :class="$style.starIcon"
-                  src="@app/assets/img/sections/about/star.svg"
-                  alt=""
-                  width="24"
-                  height="24"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            </div>
-            <a
-              href="https://yandex.by/maps/org/rezidentsiya_volga/25605876128/reviews/?ll=49.372303%2C53.473734&z=16"
-              target="_blank"
-              rel="noopener noreferrer"
-              :class="$style.reviewsAvitoLink"
-              >На основании оценок пользователей Яндекс.ru</a
-            >
-          </div>
-          <button
-            type="button"
-            :class="[$style.reviewsNavBtn, $style.reviewsNavBtnNext]"
-            aria-label="Вперёд"
-            @click="onReviewsNext"
-          />
         </div>
       </div>
+      <h2 :class="$style.titleSecondary">И ВПЕЧАТЛЕНИЯ ГОСТЕЙ</h2>
     </div>
-    <div :class="$style.reviewsSwiperWrap">
-      <div :class="$style.reviewsSwiperOuter">
+
+    <div :class="$style.swiperWrap">
+      <div :class="$style.swiperOuter">
         <ClientOnly>
           <Swiper
             :modules="swiperModules"
             :slides-per-view="4"
             :space-between="8"
             :breakpoints="reviewsBreakpoints"
-            :class="$style.reviewsSwiper"
+            :class="$style.swiper"
             @swiper="onReviewsSwiper"
             @slide-change="onReviewsSlideChange"
+            @breakpoint="onReviewsBreakpoint"
           >
             <SwiperSlide
               v-for="(review, index) in reviews"
-              :key="index"
-              :class="$style.reviewSlide"
+              :key="'review-' + index"
+              :class="$style.slide"
             >
-              <div :class="$style.reviewCard">
-                <div :class="$style.reviewHeader">
+              <article :class="$style.card">
+                <div :class="$style.cardHeader">
                   <img
-                    :class="$style.reviewAvatar"
+                    :class="$style.avatar"
                     :src="review.avatar"
                     :alt="review.name"
                     width="64"
@@ -101,16 +52,14 @@
                     loading="lazy"
                     decoding="async"
                   />
-                  <div :class="$style.reviewMeta">
-                    <div :class="$style.reviewNameRow">
-                      <span :class="$style.reviewName">{{ review.name }}</span>
-                    </div>
-                    <div :class="$style.reviewStarsRow">
-                      <div :class="$style.reviewStars">
+                  <div :class="$style.cardMeta">
+                    <span :class="$style.name">{{ review.name }}</span>
+                    <div :class="$style.cardStarsRow">
+                      <div :class="$style.cardStars" aria-hidden="true">
                         <img
                           v-for="i in review.stars"
                           :key="i"
-                          :class="$style.starIcon"
+                          :class="$style.cardStarIcon"
                           src="@app/assets/img/sections/about/star.svg"
                           alt=""
                           width="24"
@@ -119,45 +68,41 @@
                           decoding="async"
                         />
                       </div>
-                      <span :class="$style.reviewDate">
-                        {{ review.date }}
-                      </span>
+                      <span :class="$style.date">{{ review.date }}</span>
                     </div>
                   </div>
                 </div>
-                <p :class="$style.reviewText">{{ review.text }}</p>
-                <div :class="$style.reviewFooter">
-                  <a
-                    :href="review.yandexUrl"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    :class="$style.reviewYandexLink"
-                  >
-                    Читать полностью на Яндекс Отзывах
-                    <img
-                      :class="$style.reviewYandexChevron"
-                      src="@app/assets/img/sections/about/arrow-right-blue.svg"
-                      alt=""
-                      width="5"
-                      height="9"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </a>
-                </div>
-              </div>
+                <p :class="$style.text">{{ review.text }}</p>
+                <a
+                  :href="review.yandexUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  :class="$style.yandexLink"
+                >
+                  Читать на яндекс отзывы
+                  <img
+                    :class="$style.yandexChevron"
+                    src="@app/assets/img/sections/about/arrow-right-blue.svg"
+                    alt=""
+                    width="5"
+                    height="9"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </a>
+              </article>
             </SwiperSlide>
           </Swiper>
           <template #fallback>
-            <div :class="[$style.reviewsSwiper, $style.reviewsGridFallback]">
-              <div
+            <div :class="[$style.swiper, $style.gridFallback]">
+              <article
                 v-for="(review, index) in reviews.slice(0, 4)"
                 :key="index"
-                :class="$style.reviewCard"
+                :class="$style.card"
               >
-                <div :class="$style.reviewHeader">
+                <div :class="$style.cardHeader">
                   <img
-                    :class="$style.reviewAvatar"
+                    :class="$style.avatar"
                     :src="review.avatar"
                     :alt="review.name"
                     width="64"
@@ -165,16 +110,14 @@
                     loading="lazy"
                     decoding="async"
                   />
-                  <div :class="$style.reviewMeta">
-                    <div :class="$style.reviewNameRow">
-                      <span :class="$style.reviewName">{{ review.name }}</span>
-                    </div>
-                    <div :class="$style.reviewStarsRow">
-                      <div :class="$style.reviewStars">
+                  <div :class="$style.cardMeta">
+                    <span :class="$style.name">{{ review.name }}</span>
+                    <div :class="$style.cardStarsRow">
+                      <div :class="$style.cardStars" aria-hidden="true">
                         <img
                           v-for="i in review.stars"
                           :key="i"
-                          :class="$style.starIcon"
+                          :class="$style.cardStarIcon"
                           src="@app/assets/img/sections/about/star.svg"
                           alt=""
                           width="24"
@@ -183,48 +126,43 @@
                           decoding="async"
                         />
                       </div>
-                      <span :class="$style.reviewDate">
-                        {{ review.date }}
-                      </span>
+                      <span :class="$style.date">{{ review.date }}</span>
                     </div>
                   </div>
                 </div>
-                <p :class="$style.reviewText">{{ review.text }}</p>
-                <div :class="$style.reviewFooter">
-                  <a
-                    :href="review.yandexUrl"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    :class="$style.reviewYandexLink"
-                  >
-                    Читать полностью на Яндекс Отзывах
-                    <img
-                      :class="$style.reviewYandexChevron"
-                      src="@app/assets/img/sections/about/arrow-right-blue.svg"
-                      alt=""
-                      width="5"
-                      height="9"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </a>
-                </div>
-              </div>
+                <p :class="$style.text">{{ review.text }}</p>
+                <a
+                  :href="review.yandexUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  :class="$style.yandexLink"
+                >
+                  Читать на яндекс отзывы
+                  <img
+                    :class="$style.yandexChevron"
+                    src="@app/assets/img/sections/about/arrow-right-blue.svg"
+                    alt=""
+                    width="5"
+                    height="9"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </a>
+              </article>
             </div>
           </template>
         </ClientOnly>
       </div>
     </div>
-    <div :class="$style.paginationBar">
+
+    <div :class="$style.pagination">
       <button
-        v-for="(_, i) in paginationBullets"
+        v-for="(_, i) in bullets"
         :key="i"
         type="button"
         :class="[
           $style.paginationBullet,
-          {
-            [$style.paginationBulletActive]: i === currentPaginationIndex,
-          },
+          { [$style.paginationBulletActive]: i === activeBullet },
         ]"
         :aria-label="`Слайд ${i + 1}`"
         @click="goToReviewSlide(i)"
@@ -238,461 +176,387 @@ import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/css";
 import { reviews } from "@app/data/reviews";
 
+const TABLET_QUERY = "(max-width: 768px)";
+
 export default {
   name: "Reviews",
   components: { Swiper, SwiperSlide },
   data() {
     return {
-      reviewsSwiperRef: null,
-      currentPaginationIndex: 0,
+      swiper: null,
+      activeBullet: 0,
+      isTablet: false,
       swiperModules: [],
       reviewsBreakpoints: {
         0: { slidesPerView: 1, slidesPerGroup: 1, spaceBetween: 8 },
         769: { slidesPerView: 3, slidesPerGroup: 1, spaceBetween: 8 },
         1291: { slidesPerView: 4, slidesPerGroup: 1, spaceBetween: 8 },
       },
-      isMobileView: false,
-      isMobileBreakpoint: false,
       reviews,
     };
   },
   computed: {
-    paginationBullets() {
-      const n = this.reviews?.length ?? 0;
-      const perView = this.isMobileBreakpoint ? 1 : this.isMobileView ? 3 : 4;
-      const count = Math.max(1, n - perView + 1);
-      return Array.from({ length: count });
+    bulletCount() {
+      const count = this.reviews.length;
+      if (!count) return 0;
+      return this.isTablet ? count : Math.ceil(count / 2);
+    },
+    bullets() {
+      return Array.from({ length: this.bulletCount });
     },
   },
   mounted() {
-    if (typeof window === "undefined") return;
-    const check = () => {
-      this.isMobileView = window.innerWidth <= 1290;
-      this.isMobileBreakpoint = window.innerWidth <= 768;
-    };
-    check();
-    window.addEventListener("resize", check);
-    this._resizeCleanup = () => window.removeEventListener("resize", check);
+    this.updateIsTablet();
+    window.addEventListener("resize", this.updateIsTablet);
   },
   beforeUnmount() {
-    if (this._resizeCleanup) this._resizeCleanup();
+    window.removeEventListener("resize", this.updateIsTablet);
   },
   methods: {
+    updateIsTablet() {
+      const next = window.matchMedia(TABLET_QUERY).matches;
+      if (next === this.isTablet) return;
+      this.isTablet = next;
+      this.$nextTick(() => this.syncBullet());
+    },
+    lastSlideIndex() {
+      if (!this.swiper) return 0;
+      const perView = Number(this.swiper.params.slidesPerView) || 1;
+      return Math.max(0, this.swiper.slides.length - perView);
+    },
+    slideFromBullet(bullet) {
+      const lastBullet = this.bulletCount - 1;
+      if (lastBullet <= 0) return 0;
+      return Math.round((bullet * this.lastSlideIndex()) / lastBullet);
+    },
+    bulletFromSlide(slide) {
+      const lastBullet = this.bulletCount - 1;
+      const lastSlide = this.lastSlideIndex();
+      if (lastBullet <= 0 || lastSlide <= 0) return 0;
+      return Math.min(lastBullet, Math.round((slide * lastBullet) / lastSlide));
+    },
+    syncBullet(swiper = this.swiper) {
+      if (!swiper) return;
+      this.activeBullet = this.isTablet
+        ? Math.min(swiper.activeIndex, this.bulletCount - 1)
+        : this.bulletFromSlide(swiper.activeIndex);
+    },
     onReviewsSwiper(swiper) {
-      this.reviewsSwiperRef = swiper;
-      this.currentPaginationIndex = swiper?.activeIndex ?? 0;
+      this.swiper = swiper;
+      this.updateIsTablet();
+      this.syncBullet(swiper);
+    },
+    onReviewsBreakpoint(swiper) {
+      this.syncBullet(swiper);
     },
     onReviewsSlideChange(swiper) {
-      this.currentPaginationIndex = swiper?.activeIndex ?? 0;
+      this.syncBullet(swiper);
     },
-    goToReviewSlide(index) {
-      this.reviewsSwiperRef?.slideTo?.(index);
-    },
-    onReviewsPrev() {
-      this.reviewsSwiperRef?.slidePrev?.();
-    },
-    onReviewsNext() {
-      this.reviewsSwiperRef?.slideNext?.();
+    goToReviewSlide(bullet) {
+      this.activeBullet = bullet;
+      if (!this.swiper) return;
+      const target = this.isTablet
+        ? Math.min(bullet, this.lastSlideIndex())
+        : this.slideFromBullet(bullet);
+      this.swiper.slideTo(target);
     },
   },
 };
 </script>
 
 <style lang="scss" module>
-.reviews {
+.wrapper {
   display: flex;
   flex-direction: column;
-}
-.reviewsHeader {
-  position: relative;
-}
-.reviewsHeaderMobile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 0 0 2.5rem 0;
-  gap: 1.5rem;
-  @include tablet {
-    padding: 0 0 1.5rem 0;
-  }
-  @include tablet {
-    align-items: stretch;
-    padding: 0 0 1.5rem 0;
-    gap: 1rem;
-  }
-}
-.reviewsSectionTitleMobile {
-  font-size: 3rem;
-  font-weight: 600;
-  margin: 0;
+  padding: 7.5rem 0;
+  gap: 2.75rem;
   color: $text-primary;
-  text-align: center;
-  width: 100%;
-  @include tablet {
-    font-size: 2rem;
+  @include laptop {
+    padding: 5rem 0;
+    gap: 3rem;
   }
   @include tablet {
-    font-size: 1.5rem;
-    font-weight: 600;
+    padding: 2.5rem 0;
+    gap: 1.5rem;
   }
-}
-.reviewsHeaderMetaMobile {
-  display: none;
-  @include tablet {
+  .header {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    gap: 0.75rem;
-    box-sizing: border-box;
-  }
-}
-.reviewsYandexSourceLinkMobile {
-  flex: 1;
-  font-size: 0.625rem;
-  line-height: 1.25;
-  color: #0d99ff;
-  text-decoration: underline;
-  text-align: left;
-  text-underline-offset: 0.125em;
-}
-.reviewsYandexSourceLine {
-  display: block;
-}
-.reviewsYandexSourceLine2 {
-  display: block;
-  margin-top: 0.125rem;
-}
-.reviewsRatingCompactMobile {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  flex-shrink: 0;
-  gap: 0.375rem;
-}
-.reviewsRatingValueMobile {
-  font-size: 1.25rem;
-  font-weight: 300;
-  line-height: 1;
-  color: $text-primary;
-}
-.reviewsRatingStarsMobile {
-  display: flex;
-  align-items: center;
-  gap: 0.125rem;
-}
-.reviewsHeaderStarIcon {
-  width: 1.25rem;
-  height: 1.25rem;
-  object-fit: contain;
-  display: block;
-}
-.reviewsRatingBlock {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  gap: 1rem;
-  @include tablet {
-    display: none;
-  }
-}
-.reviewsRatingCenter {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  flex: 1;
-  min-width: 0;
-}
-.reviewsRatingRow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-.reviewsRatingValue {
-  font-size: 3rem;
-  font-weight: 300;
-  color: $text-primary;
-  @include tablet {
-    font-size: 2rem;
-  }
-}
-.reviewsRatingStars {
-  display: flex;
-  gap: 0.25rem;
-  img {
-    width: 2rem;
-    height: 2rem;
-    object-fit: contain;
-    @include tablet {
-      width: 1.5rem;
-      height: 1.5rem;
+    flex-direction: column;
+    .titleRow {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      width: 100%;
+      gap: 1.5rem;
+      .titlePrimary {
+        margin: 0;
+        font-weight: 400;
+        font-size: 6.25rem;
+        letter-spacing: -0.04em;
+        text-transform: uppercase;
+        color: $text-primary;
+        line-height: 1;
+        @include laptop {
+          font-size: 3.75rem;
+        }
+        @include tablet {
+          font-size: 1.5rem;
+        }
+      }
+      .rating {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
+        padding-top: 0.5rem;
+        @include tablet {
+          padding-top: 0;
+          gap: 0.375rem;
+        }
+        .ratingValue {
+          font-size: 3rem;
+          font-weight: 300;
+          line-height: 1;
+          color: $text-primary;
+          @include laptop {
+            font-size: 2rem;
+          }
+          @include tablet {
+            font-size: 1.25rem;
+          }
+        }
+        .ratingStars {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+          .starIcon {
+            width: 2rem;
+            height: 2rem;
+            object-fit: contain;
+            display: block;
+            @include laptop {
+              width: 1.5rem;
+              height: 1.5rem;
+            }
+            @include tablet {
+              width: 1rem;
+              height: 1rem;
+            }
+          }
+        }
+      }
+    }
+    .titleSecondary {
+      margin: 0;
+      font-weight: 400;
+      font-size: 6.25rem;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      color: $text-accent;
+      align-self: flex-end;
+      line-height: 1;
+      @include laptop {
+        font-size: 3.75rem;
+      }
+      @include tablet {
+        font-size: 1.5rem;
+      }
     }
   }
-}
-.reviewsAvitoLink {
-  font-size: 0.875rem;
-  color: #0d99ff;
-  text-decoration: underline;
-  margin: 0;
-}
-.reviewsSwiperWrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 0;
-}
-.reviewsNavBtn {
-  display: block;
-  flex-shrink: 0;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-  border: none;
-  background: $bg-primary;
-  cursor: pointer;
-  background-image: url("../../assets/img/sections/about/swiper-arrow.svg");
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: 2rem;
-  padding: 0;
-  z-index: 2;
-  @include tablet {
-    display: block;
-    width: 2.5rem;
-    height: 2.5rem;
-    background-size: 1rem;
+  .swiperWrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    .swiperOuter {
+      flex: 1;
+      min-width: 0;
+      padding: 0 2.5rem;
+      overflow: hidden;
+      box-shadow: 0.25rem 0.5rem 3rem rgba(0, 0, 0, 0.08);
+      border-radius: 1rem;
+      @include tablet {
+        padding: 0;
+      }
+      .swiper {
+        margin: 0 -2.5rem;
+        width: calc(100% + 5rem);
+        overflow: visible;
+        @include tablet {
+          margin: 0;
+          width: 100%;
+        }
+        :global(.swiper-wrapper) {
+          align-items: stretch;
+          cursor: grab;
+        }
+        &:global(.swiper-grabbing) :global(.swiper-wrapper) {
+          cursor: grabbing;
+        }
+      }
+      .gridFallback {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.5rem;
+        @include laptop {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        @include tablet {
+          grid-template-columns: 1fr;
+        }
+      }
+      .slide {
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 4px 8px 48px rgba(0, 0, 0, 0.08);
+        border-radius: 1rem;
+      }
+      .card {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 2.5rem;
+        border-radius: 1rem;
+        flex: 1;
+        min-height: 0;
+        user-select: none;
+        @include tablet {
+          padding: 1.25rem;
+          gap: 0.75rem;
+          border-radius: 0.75rem;
+          background: $bg-white;
+          box-shadow: 2px 4px 24px rgba(0, 0, 0, 0.06);
+        }
+        img {
+          user-select: none;
+          -webkit-user-drag: none;
+        }
+        .cardHeader {
+          display: flex;
+          gap: 0.75rem;
+          align-items: flex-start;
+          .avatar {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            @include tablet {
+              width: 2.75rem;
+              height: 2.75rem;
+            }
+          }
+          .cardMeta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            min-width: 0;
+            flex: 1;
+            .name {
+              font-size: 1.5rem;
+              font-weight: 600;
+              line-height: 1.2;
+              @include laptop {
+                font-size: 1.25rem;
+              }
+              @include tablet {
+                font-size: 1rem;
+              }
+            }
+            .cardStarsRow {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 0.5rem;
+              min-width: 0;
+              .cardStars {
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+                .cardStarIcon {
+                  width: 1.5rem;
+                  height: 1.5rem;
+                  object-fit: contain;
+                  display: block;
+                  @include tablet {
+                    width: 1.125rem;
+                    height: 1.125rem;
+                  }
+                }
+              }
+              .date {
+                font-size: 0.75rem;
+                font-weight: 300;
+                line-height: 1.2;
+                color: $text-secondary;
+                flex-shrink: 0;
+              }
+            }
+          }
+        }
+        .text {
+          flex: 1;
+          min-height: 0;
+          margin: 0;
+          font-size: 1rem;
+          line-height: 1.2;
+          color: $text-primary;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 5;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          @include tablet {
+            font-size: 0.875rem;
+            -webkit-line-clamp: 4;
+          }
+        }
+        .yandexLink {
+          margin-top: auto;
+          display: flex;
+          align-items: center;
+          gap: 0.625rem;
+          width: fit-content;
+          margin-left: auto;
+          font-size: 0.75rem;
+          color: $main-blue;
+          text-decoration: underline;
+          text-underline-offset: 0.125em;
+          .yandexChevron {
+            flex-shrink: 0;
+            display: block;
+            width: 0.25rem;
+            height: 0.5rem;
+            object-fit: contain;
+          }
+        }
+      }
+    }
   }
-  @include tablet {
-    display: none;
-  }
-}
-.reviewsNavBtnPrev {
-  transform: scaleX(-1);
-}
-.reviewsSwiperOuter {
-  flex: 1;
-  min-width: 0;
-  padding: 0 2.5rem;
-  overflow: hidden;
-  box-shadow: 0.25rem 0.5rem 3rem rgba(0, 0, 0, 0.08);
-  border-radius: 1rem;
-  @include tablet {
-    padding: 0 0.5rem;
-  }
-  @include tablet {
-    padding: 0;
-  }
-}
-.reviewsSwiper {
-  margin: 0 -2.5rem;
-  width: calc(100% + 5rem);
-  overflow: visible;
-  @include tablet {
-    margin: 0 -0.5rem;
-    width: calc(100% + 1rem);
-  }
-  @include tablet {
-    margin: 0;
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
     width: 100%;
+    .paginationBullet {
+      flex: 1;
+      height: 0.25rem;
+      max-width: 7.5rem;
+      border-radius: 0.125rem;
+      background: $bg-primary;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: background 0.2s;
+      @include tablet {
+        height: 0.2rem;
+        background: #e0e0e0;
+      }
+    }
+    .paginationBulletActive {
+      background: #004f68;
+    }
   }
-  :global(.swiper-wrapper) {
-    align-items: stretch;
-    cursor: grab;
-  }
-  &:global(.swiper-grabbing) :global(.swiper-wrapper) {
-    cursor: grabbing;
-  }
-}
-.paginationBar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 1.5rem;
-  padding-top: 0.5rem;
-  @include tablet {
-    margin-top: 1rem;
-  }
-}
-.paginationBullet {
-  width: 18rem;
-  height: 0.25rem;
-  border-radius: 0.125rem;
-  background: $bg-primary;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition:
-    background 0.2s,
-    width 0.2s,
-    height 0.2s;
-  @include tablet {
-    width: 1.5rem;
-    height: 0.2rem;
-    background: #e0e0e0;
-  }
-}
-.paginationBulletActive {
-  background: #004f68;
-  @include tablet {
-    background: #004f68;
-  }
-}
-.paginationBulletActive:hover {
-  background: #004f68;
-}
-.reviewsGridFallback {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.5rem;
-}
-.reviewSlide {
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 4px 8px 48px rgba(0, 0, 0, 0.08);
-  border-radius: 1rem;
-}
-.reviewCard {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 2.5rem;
-  border-radius: 1rem;
-  flex: 1;
-  min-height: 0;
-  user-select: none;
-  font-family: "VelaSans", sans-serif;
-  @include tablet {
-    padding: 2rem;
-    gap: 0.5rem;
-    border-radius: 0.75rem;
-    background: $bg-white;
-    box-shadow: 2px 4px 24px rgba(0, 0, 0, 0.06);
-  }
-  img {
-    user-select: none;
-    -webkit-user-drag: none;
-  }
-}
-.reviewHeader {
-  display: flex;
-  gap: 0.75rem;
-  align-items: flex-start;
-  @include tablet {
-    gap: 0.5rem;
-  }
-}
-.reviewAvatar {
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  @include tablet {
-    width: 2.75rem;
-    height: 2.75rem;
-  }
-}
-.reviewMeta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  min-width: 0;
-  flex: 1;
-  @include tablet {
-    gap: 0.25rem;
-  }
-}
-.reviewNameRow {
-  display: flex;
-  align-items: flex-start;
-}
-.reviewStarsRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  min-width: 0;
-}
-.reviewName {
-  font-size: 1.5rem;
-  font-weight: 600;
-  @include tablet {
-    font-size: 1.125rem;
-  }
-}
-.reviewDate {
-  font-size: 0.75rem;
-  font-weight: 300;
-  line-height: 1.2;
-  color: $text-secondary;
-  flex-shrink: 0;
-  @include tablet {
-    font-size: 0.6875rem;
-  }
-}
-.reviewStars {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  @include tablet {
-    gap: 0.125rem;
-  }
-}
-.starIcon {
-  width: 1.5rem;
-  height: 1.5rem;
-  @include tablet {
-    width: 1.125rem;
-    height: 1.125rem;
-  }
-}
-.reviewText {
-  flex: 1;
-  min-height: 0;
-  font-size: 1rem;
-  line-height: 1.2;
-  margin: 0;
-  color: $text-primary;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 5;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  @include tablet {
-    font-size: 0.875rem;
-    line-height: 1.35;
-  }
-}
-.reviewFooter {
-  margin-top: auto;
-  text-align: right;
-  padding-top: 0.25rem;
-}
-.reviewYandexLink {
-  font-size: 0.75rem;
-  color: #0d99ff;
-  text-decoration: underline;
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  width: fit-content;
-  margin-left: auto;
-  @include tablet {
-    font-size: 0.75rem;
-  }
-}
-.reviewYandexChevron {
-  flex-shrink: 0;
-  display: block;
-  width: 0.25rem;
-  height: 0.5rem;
-  object-fit: contain;
 }
 </style>
