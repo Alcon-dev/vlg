@@ -141,7 +141,7 @@ export default {
           titleShort: "Правила",
           titleLong: " проживания",
           href: "#faq",
-          faqIndex: 2,
+          faqIndex: 0,
         },
       ],
       socialLinks: [

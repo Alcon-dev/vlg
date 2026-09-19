@@ -186,7 +186,7 @@ export default {
       }
     },
     scrollToFaqRules() {
-      this.$store.commit("setFaqOpenIndex", 2);
+      this.$store.commit("setFaqOpenIndex", 0);
       const el = document.getElementById("faq");
       if (el) {
         el.scrollIntoView({ behavior: "smooth", block: "start" });
