@@ -142,7 +142,7 @@ export default {
   @include tablet {
     padding: 5rem 2.5rem;
   }
-  @include mobile {
+  @include tablet {
     padding: 2.5rem 1rem;
   }
 }
@@ -152,7 +152,7 @@ export default {
   flex-direction: column;
   padding: 0 0 5rem 0;
   border-bottom: 1px solid $text-secondary;
-  @include mobile {
+  @include tablet {
     padding: 0 0 2.5rem 0;
     border-bottom: none;
   }
@@ -169,7 +169,7 @@ export default {
     font-weight: 300;
     line-height: 1.2;
     color: $text-primary;
-    @include mobile {
+    @include tablet {
       display: none;
     }
   }
@@ -184,7 +184,7 @@ export default {
   @include tablet {
     align-items: flex-end;
   }
-  @include mobile {
+  @include tablet {
     display: none;
   }
 
@@ -197,7 +197,7 @@ export default {
 .title {
   font-size: 6.25rem;
   font-weight: 400;
-  @include mobile {
+  @include tablet {
     font-size: 1.875rem;
     font-weight: 300;
   }
@@ -228,7 +228,7 @@ export default {
       margin: 0;
     }
   }
-  @include mobile {
+  @include tablet {
     justify-content: flex-end;
     align-items: flex-start;
 
@@ -256,7 +256,7 @@ export default {
 
 .item {
   border-bottom: 1px solid $text-secondary;
-  @include mobile {
+  @include tablet {
     &:first-child {
       border-top: 1px solid #e8e8e8;
     }
@@ -275,7 +275,7 @@ export default {
   background: none;
   cursor: pointer;
   text-align: left;
-  @include mobile {
+  @include tablet {
     grid-template-columns: 2.25rem 1fr auto;
     gap: 0.75rem;
     padding: 1rem 0;
@@ -288,7 +288,7 @@ export default {
   font-weight: 300;
   color: $text-secondary;
   line-height: 1;
-  @include mobile {
+  @include tablet {
     font-size: 1.5rem;
     font-weight: 300;
     color: $text-secondary;
@@ -298,7 +298,7 @@ export default {
 .question {
   font-size: 2rem;
   font-weight: 300;
-  @include mobile {
+  @include tablet {
     font-size: 1rem;
     font-weight: 300;
     color: $text-primary;
@@ -310,7 +310,7 @@ export default {
   font-weight: 300;
   color: $text-secondary;
   line-height: 1;
-  @include mobile {
+  @include tablet {
     font-size: 2.25rem;
     color: $text-secondary;
     flex-shrink: 0;
@@ -327,7 +327,7 @@ export default {
   max-height: 28rem;
   overflow-y: auto;
   overflow-x: hidden;
-  @include mobile {
+  @include tablet {
     max-height: 22rem;
   }
 }
@@ -340,7 +340,7 @@ export default {
   color: $text-primary;
   line-height: 1.5;
   white-space: pre-line;
-  @include mobile {
+  @include tablet {
     margin: 0 0 1rem;
     padding-left: 3rem;
     padding-right: 0;

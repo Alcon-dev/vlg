@@ -207,14 +207,14 @@ export default {
 .topSection {
   padding: 2.5rem 5rem;
   margin: 0 auto;
-  @include mobile {
+  @include tablet {
     padding: 2.5rem 1rem;
   }
 }
 
 .mobileNav {
   display: none;
-  @include mobile {
+  @include tablet {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -240,7 +240,7 @@ export default {
   grid-template-columns: 1fr 1fr auto 1fr 1fr;
   gap: 1.5rem;
   align-items: start;
-  @include mobile {
+  @include tablet {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -257,7 +257,7 @@ export default {
     align-items: flex-end;
     text-align: right;
   }
-  @include mobile {
+  @include tablet {
     display: none;
   }
 }
@@ -340,7 +340,7 @@ export default {
   align-items: center;
   gap: 2.5rem;
   padding: 0 2rem;
-  @include mobile {
+  @include tablet {
     gap: 2rem;
     padding: 0;
   }
@@ -349,7 +349,7 @@ export default {
 .logo {
   width: 12rem;
   height: auto;
-  @include mobile {
+  @include tablet {
     width: 10rem;
   }
 }
@@ -370,14 +370,14 @@ export default {
   &:hover {
     background: rgba(255, 255, 255, 0.2);
   }
-  @include mobile {
+  @include tablet {
     display: inline-block;
   }
 }
 
 .mobileContactRow {
   display: none;
-  @include mobile {
+  @include tablet {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -418,7 +418,7 @@ export default {
     height: 1.25rem;
     object-fit: contain;
   }
-  @include mobile {
+  @include tablet {
     width: 2.5rem;
     height: 2.5rem;
     :global(img) {
@@ -448,7 +448,7 @@ export default {
   font-size: 0.8125rem;
   color: rgba(255, 255, 255, 0.75);
   max-width: 100%;
-  @include mobile {
+  @include tablet {
     flex-direction: column;
     padding: 1rem 1rem 1.5rem;
   }
@@ -457,7 +457,7 @@ export default {
 .bottomDev {
   display: inline;
   text-align: right;
-  @include mobile {
+  @include tablet {
     font-size: 0.625rem;
     color: rgba(255, 255, 255, 0.6);
   }
@@ -465,7 +465,7 @@ export default {
 
 .bottomItem {
   white-space: nowrap;
-  @include mobile {
+  @include tablet {
     font-size: 0.625rem;
   }
 }
@@ -478,7 +478,7 @@ export default {
   &:hover {
     opacity: 0.9;
   }
-  @include mobile {
+  @include tablet {
     font-size: 0.625rem;
     text-align: center;
   }

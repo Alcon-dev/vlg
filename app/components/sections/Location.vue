@@ -1973,7 +1973,7 @@ export default {
     padding: 5rem 2.5rem 2.5rem 2.5rem;
     gap: 1rem;
   }
-  @include mobile {
+  @include tablet {
     padding: 2.5rem 1rem 1rem 1rem;
     gap: 1.5rem;
   }
@@ -2005,7 +2005,7 @@ export default {
       display: none;
     }
   }
-  @include mobile {
+  @include tablet {
     flex-direction: column;
     align-items: center;
     gap: 0;
@@ -2055,7 +2055,7 @@ export default {
     }
   }
 
-  @include mobile {
+  @include tablet {
     align-items: center;
     max-width: none;
     width: 100%;
@@ -2113,7 +2113,7 @@ export default {
       display: none;
     }
   }
-  @include mobile {
+  @include tablet {
     flex-direction: column;
     align-items: center;
     margin-top: 0;
@@ -2166,7 +2166,7 @@ export default {
     gap: 0.5rem;
     margin: 5rem 0 0 0;
   }
-  @include mobile {
+  @include tablet {
     display: none;
   }
 }
@@ -2203,7 +2203,7 @@ a.contactItem:hover {
   font-size: 1.5rem;
   line-height: 1.2;
   text-align: right;
-  @include mobile {
+  @include tablet {
     text-align: center;
   }
 }
@@ -2211,7 +2211,7 @@ a.contactItem:hover {
 .titleDescMobile {
   display: none;
 
-  @include mobile {
+  @include tablet {
     display: block;
     font-size: 0.625rem;
     font-weight: 300;
@@ -2234,7 +2234,7 @@ a.contactItem:hover {
     gap: 1rem;
     align-items: stretch;
   }
-  @include mobile {
+  @include tablet {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -2244,7 +2244,7 @@ a.contactItem:hover {
 .locationContactRowMobile {
   display: none;
 
-  @include mobile {
+  @include tablet {
     display: none;
   }
 }
@@ -2255,7 +2255,7 @@ a.contactItem:hover {
   flex-shrink: 0;
   border-radius: 1.25rem;
   overflow: hidden;
-  @include mobile {
+  @include tablet {
     border-radius: 1rem;
   }
 }
@@ -2269,7 +2269,7 @@ a.contactItem:hover {
   @include tablet {
     height: 32.5rem;
   }
-  @include mobile {
+  @include tablet {
     height: 16rem;
     border-radius: 1rem;
   }
@@ -2298,7 +2298,7 @@ a.contactItem:hover {
   @include tablet {
     height: 20.5rem;
   }
-  @include mobile {
+  @include tablet {
     height: 16rem;
     border-radius: 1rem;
   }
@@ -2318,7 +2318,7 @@ a.contactItem:hover {
   @include tablet {
     min-height: 20.5rem;
   }
-  @include mobile {
+  @include tablet {
     min-height: 0;
     padding: 0.95rem;
     border-radius: 1rem;
@@ -2338,7 +2338,7 @@ a.contactItem:hover {
   font-size: 1rem;
   line-height: 1.2;
   color: $text-white;
-  @include mobile {
+  @include tablet {
     flex-wrap: wrap;
     gap: 0.25rem 0.75rem;
   }
@@ -2360,7 +2360,7 @@ a.contactItem:hover {
   @include tablet {
     font-size: 1.75rem;
   }
-  @include mobile {
+  @include tablet {
     font-size: 1.4rem;
   }
 }
@@ -2382,7 +2382,7 @@ a.contactItem:hover {
   border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 0.45rem;
   overflow: visible;
-  @include mobile {
+  @include tablet {
     grid-template-columns: 1fr;
   }
 }
@@ -2393,7 +2393,7 @@ a.contactItem:hover {
   &:not(:first-child) {
     border-left: 1px solid rgba(255, 255, 255, 0.24);
   }
-  @include mobile {
+  @include tablet {
     &:not(:first-child) {
       border-left: none;
       border-top: 1px solid rgba(255, 255, 255, 0.24);
@@ -2684,7 +2684,7 @@ a.contactItem:hover {
     border-radius: 1.5rem;
     min-height: 0;
   }
-  @include mobile {
+  @include tablet {
     display: flex;
     flex-direction: column;
     padding: 1.25rem 1rem;
@@ -3350,7 +3350,7 @@ a.contactItem:hover {
     outline: none;
     border-bottom-color: $text-white;
   }
-  @include mobile {
+  @include tablet {
     padding: 0.75rem 0;
     font-size: 0.9375rem;
   }

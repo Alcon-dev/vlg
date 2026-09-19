@@ -303,7 +303,7 @@ export default {
   justify-content: center;
   flex-wrap: wrap;
   padding: 1.5rem 1rem;
-  @include mobile {
+  @include tablet {
     grid-template-columns: repeat(2, 1fr);
     padding: 0.75rem 0.5rem 1rem;
     gap: 0.25rem;
@@ -321,7 +321,7 @@ export default {
     padding: 1rem 1.25rem;
     gap: 1rem;
   }
-  @include mobile {
+  @include tablet {
     padding: 0.5rem 0.375rem;
     gap: 0.5rem;
   }
@@ -336,7 +336,7 @@ export default {
     width: 2.5rem;
     height: 2.5rem;
   }
-  @include mobile {
+  @include tablet {
     width: 1.5rem;
     height: 1.5rem;
     flex-shrink: 0;
@@ -354,7 +354,7 @@ export default {
     font-size: 1rem;
     max-width: 10rem;
   }
-  @include mobile {
+  @include tablet {
     font-size: 0.6875rem;
     line-height: 1.25;
     max-width: none;

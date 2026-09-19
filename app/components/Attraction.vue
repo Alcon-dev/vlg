@@ -95,7 +95,7 @@ export default {
   @include tablet {
     gap: 1rem;
   }
-  @include mobile {
+  @include tablet {
     width: 100%;
     min-width: 0;
     gap: 0;
@@ -107,7 +107,7 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  @include mobile {
+  @include tablet {
     display: grid;
     grid-template-columns: 1fr 4.5rem;
     grid-template-rows: auto auto;
@@ -121,7 +121,7 @@ export default {
   font-size: 2rem;
   font-weight: 600;
   white-space: nowrap;
-  @include mobile {
+  @include tablet {
     font-size: 0.875rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -138,14 +138,14 @@ export default {
   display: flex;
   gap: 0.75rem;
   color: $text-secondary;
-  @include mobile {
+  @include tablet {
     display: contents;
   }
 }
 .description {
   font-size: 1rem;
   font-weight: 400;
-  @include mobile {
+  @include tablet {
     font-size: 0.75rem;
     margin: 0;
     padding: 0;
@@ -163,7 +163,7 @@ export default {
   span {
     font-size: 2rem;
   }
-  @include mobile {
+  @include tablet {
     font-size: 1.875rem;
     font-weight: 300;
     color: $text-secondary;
@@ -195,7 +195,7 @@ export default {
       display: none;
     }
   }
-  @include mobile {
+  @include tablet {
     display: none;
   }
 }

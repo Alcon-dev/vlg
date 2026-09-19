@@ -415,14 +415,14 @@ export default {
   @include tablet {
     padding: 5rem 2.5rem;
   }
-  @include mobile {
+  @include tablet {
     padding: 2.5rem 1rem;
     gap: 2.5rem;
   }
 }
 
 .titleWrapper {
-  @include mobile {
+  @include tablet {
     margin-bottom: 0;
   }
 }
@@ -431,7 +431,7 @@ export default {
 .titleLine2 {
   display: flex;
   justify-content: center;
-  @include mobile {
+  @include tablet {
     justify-content: flex-start;
   }
 }
@@ -457,12 +457,12 @@ export default {
 
 .titleLine1 {
   justify-content: space-between;
-  @include mobile {
+  @include tablet {
     align-items: center;
   }
 }
 .titleLine2 {
-  @include mobile {
+  @include tablet {
     justify-content: flex-end;
   }
 }
@@ -472,7 +472,7 @@ export default {
   color: $text-primary;
   text-align: center;
   font-weight: 400;
-  @include mobile {
+  @include tablet {
     text-align: left;
     font-weight: 300;
     font-size: 1.875rem;
@@ -488,7 +488,7 @@ export default {
 .rating span {
   font-size: 3rem;
   margin: 0 1rem 0 0;
-  @include mobile {
+  @include tablet {
     font-size: 1.25rem;
     margin: 0 0.25rem 0 0;
   }
@@ -497,7 +497,7 @@ export default {
 .rating img {
   width: 2.5rem;
   height: 2.5rem;
-  @include mobile {
+  @include tablet {
     width: 1.25rem;
     height: 1.25rem;
   }
@@ -506,7 +506,7 @@ export default {
 .points {
   display: flex;
   justify-content: space-between;
-  @include mobile {
+  @include tablet {
     display: grid;
     grid-template-columns: 50% 50%;
     gap: 0;
@@ -518,7 +518,7 @@ export default {
   align-items: flex-end;
   padding: 1rem;
   width: 100%;
-  @include mobile {
+  @include tablet {
     align-items: center;
     width: auto;
     gap: 0.5rem;
@@ -540,14 +540,14 @@ export default {
   line-height: 0.8;
   margin: 0 1rem 0 0;
   color: $text-secondary;
-  @include mobile {
+  @include tablet {
     display: none;
   }
 }
 
 .pointIcon {
   display: none;
-  @include mobile {
+  @include tablet {
     display: block;
     width: 1.5rem;
     height: 1.5rem;
@@ -565,7 +565,7 @@ export default {
   max-width: 14rem;
   font-size: 1.5rem;
   font-weight: 300;
-  @include mobile {
+  @include tablet {
     max-width: none;
     font-size: 0.75rem;
     font-weight: 400;
@@ -577,7 +577,7 @@ export default {
 .attractions {
   display: flex;
   flex-direction: column;
-  @include mobile {
+  @include tablet {
     gap: 0;
   }
 }
@@ -588,7 +588,7 @@ export default {
   @include tablet {
     border-bottom: 1px solid #d8d8d8;
   }
-  @include mobile {
+  @include tablet {
     grid-template-columns: 1fr;
     border-bottom: none;
     gap: 0;
@@ -599,7 +599,7 @@ export default {
   min-width: 0;
   padding: 1rem 0;
   border-bottom: 1px solid #d8d8d8;
-  @include mobile {
+  @include tablet {
     padding: 0.75rem 0;
     border-bottom: 1px solid #e8e8e8;
     overflow: hidden;
@@ -615,7 +615,7 @@ export default {
     display: flex;
     justify-content: end;
   }
-  @include mobile {
+  @include tablet {
     grid-column: span 1;
     display: block;
   }
@@ -631,7 +631,7 @@ export default {
     display: flex;
     justify-content: end;
   }
-  @include mobile {
+  @include tablet {
     grid-column: span 1;
     display: block;
     width: auto;
@@ -647,7 +647,7 @@ export default {
   gap: 1rem;
   padding: 0 0 2.5rem 0;
   border-bottom: 1px solid #d8d8d8;
-  @include mobile {
+  @include tablet {
     align-items: center;
     text-align: center;
     padding: 0 0 1rem 0;
@@ -656,7 +656,7 @@ export default {
   .title {
     font-size: 3rem;
     font-weight: 600;
-    @include mobile {
+    @include tablet {
       font-size: 1.25rem;
     }
   }
@@ -664,7 +664,7 @@ export default {
     font-size: 1rem;
     line-height: 1;
     color: $text-secondary;
-    @include mobile {
+    @include tablet {
       font-size: 0.75rem;
       line-height: 1.4;
     }
@@ -690,7 +690,7 @@ export default {
   @include tablet {
     padding: 0 0 1.5rem 0;
   }
-  @include mobile {
+  @include tablet {
     align-items: stretch;
     padding: 0 0 1.5rem 0;
     gap: 1rem;
@@ -707,7 +707,7 @@ export default {
   @include tablet {
     font-size: 2rem;
   }
-  @include mobile {
+  @include tablet {
     font-size: 1.5rem;
     font-weight: 600;
   }
@@ -715,7 +715,7 @@ export default {
 
 .reviewsHeaderMetaMobile {
   display: none;
-  @include mobile {
+  @include tablet {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -779,7 +779,7 @@ export default {
   justify-content: space-between;
   width: 100%;
   gap: 1rem;
-  @include mobile {
+  @include tablet {
     display: none;
   }
 }
@@ -860,7 +860,7 @@ export default {
     height: 2.5rem;
     background-size: 1rem;
   }
-  @include mobile {
+  @include tablet {
     display: none;
   }
 }
@@ -880,7 +880,7 @@ export default {
   @include tablet {
     padding: 0 0.5rem;
   }
-  @include mobile {
+  @include tablet {
     padding: 0;
   }
 }
@@ -894,7 +894,7 @@ export default {
     margin: 0 -0.5rem;
     width: calc(100% + 1rem);
   }
-  @include mobile {
+  @include tablet {
     margin: 0;
     width: 100%;
   }
@@ -916,7 +916,7 @@ export default {
   gap: 0.5rem;
   margin-top: 1.5rem;
   padding-top: 0.5rem;
-  @include mobile {
+  @include tablet {
     margin-top: 1rem;
   }
 }
@@ -933,7 +933,7 @@ export default {
     background 0.2s,
     width 0.2s,
     height 0.2s;
-  @include mobile {
+  @include tablet {
     width: 1.5rem;
     height: 0.2rem;
     background: #e0e0e0;
@@ -942,7 +942,7 @@ export default {
 
 .paginationBulletActive {
   background: #004f68;
-  @include mobile {
+  @include tablet {
     background: #004f68;
   }
 }
@@ -975,7 +975,7 @@ export default {
   min-height: 0;
   user-select: none;
   font-family: "VelaSans", sans-serif;
-  @include mobile {
+  @include tablet {
     padding: 2rem;
     gap: 0.5rem;
     border-radius: 0.75rem;
@@ -993,7 +993,7 @@ export default {
   display: flex;
   gap: 0.75rem;
   align-items: flex-start;
-  @include mobile {
+  @include tablet {
     gap: 0.5rem;
   }
 }
@@ -1004,7 +1004,7 @@ export default {
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
-  @include mobile {
+  @include tablet {
     width: 2.75rem;
     height: 2.75rem;
   }
@@ -1016,7 +1016,7 @@ export default {
   gap: 0.5rem;
   min-width: 0;
   flex: 1;
-  @include mobile {
+  @include tablet {
     gap: 0.25rem;
   }
 }
@@ -1037,7 +1037,7 @@ export default {
 .reviewName {
   font-size: 1.5rem;
   font-weight: 600;
-  @include mobile {
+  @include tablet {
     font-size: 1.125rem;
   }
 }
@@ -1048,7 +1048,7 @@ export default {
   line-height: 1.2;
   color: $text-secondary;
   flex-shrink: 0;
-  @include mobile {
+  @include tablet {
     font-size: 0.6875rem;
   }
 }
@@ -1057,7 +1057,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  @include mobile {
+  @include tablet {
     gap: 0.125rem;
   }
 }
@@ -1065,7 +1065,7 @@ export default {
 .starIcon {
   width: 1.5rem;
   height: 1.5rem;
-  @include mobile {
+  @include tablet {
     width: 1.125rem;
     height: 1.125rem;
   }
@@ -1082,7 +1082,7 @@ export default {
   -webkit-line-clamp: 5;
   overflow: hidden;
   text-overflow: ellipsis;
-  @include mobile {
+  @include tablet {
     font-size: 0.875rem;
     line-height: 1.35;
   }
@@ -1103,7 +1103,7 @@ export default {
   gap: 0.625rem;
   width: fit-content;
   margin-left: auto;
-  @include mobile {
+  @include tablet {
     font-size: 0.75rem;
   }
 }

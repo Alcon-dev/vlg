@@ -23,8 +23,12 @@ const Reserv = defineAsyncComponent(
 const Services = defineAsyncComponent(
   () => import("@app/components/sections/Services.vue")
 );
-const About = defineAsyncComponent(() => import("@app/components/sections/About.vue"));
-const Faq = defineAsyncComponent(() => import("@app/components/sections/Faq.vue"));
+const About = defineAsyncComponent(
+  () => import("@app/components/sections/About.vue")
+);
+const Faq = defineAsyncComponent(
+  () => import("@app/components/sections/Faq.vue")
+);
 const Location = defineAsyncComponent(
   () => import("@app/components/sections/Location.vue")
 );
@@ -61,6 +65,8 @@ export default {
 
 <style lang="scss" module>
 .wrapper {
+  max-width: 105rem;
+  width: 100%;
   margin: 0 auto;
 }
 </style>

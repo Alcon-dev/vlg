@@ -319,7 +319,7 @@ header {
   }
 }
 
-@include mobile {
+@include tablet {
   header {
     grid-template-columns: auto 1fr auto;
     padding: 1rem 1rem 1.25rem;
@@ -414,7 +414,7 @@ header {
   -webkit-backdrop-filter: blur(4px);
 }
 
-@include mobile {
+@include tablet {
   .mobileMenuOverlay {
     display: block;
   }

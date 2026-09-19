@@ -1010,7 +1010,7 @@ export default {
   backdrop-filter: blur(4px);
   overflow-y: auto;
 
-  @include mobile {
+  @include tablet {
     padding: 0;
     align-items: stretch;
     justify-content: stretch;
@@ -1032,7 +1032,7 @@ export default {
   box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.32);
   padding: 2.5rem;
 
-  @include mobile {
+  @include tablet {
     width: 100vw;
     height: 100vh;
     max-width: none;
@@ -1062,7 +1062,7 @@ export default {
   padding-bottom: 0.5rem;
   background: $text-primary;
 
-  @include mobile {
+  @include tablet {
     position: static;
     top: auto;
     z-index: auto;
@@ -1084,7 +1084,7 @@ export default {
   color: $text-white;
   line-height: 0.96;
   letter-spacing: -0.05em;
-  @include mobile {
+  @include tablet {
     font-size: 1.5rem;
   }
 }
@@ -1096,7 +1096,7 @@ export default {
   color: #685137;
   line-height: 0.96;
   letter-spacing: -0.05em;
-  @include mobile {
+  @include tablet {
     font-size: 1.375rem;
   }
 }
@@ -1143,7 +1143,7 @@ export default {
   flex-shrink: 0;
   margin: 0 0 2.5rem 0;
 
-  @include mobile {
+  @include tablet {
     flex-direction: column;
     margin-bottom: 1.5rem;
   }
@@ -1450,7 +1450,7 @@ export default {
   overflow-y: auto;
   scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
 
-  @include mobile {
+  @include tablet {
     flex: 0 0 auto;
     min-height: auto;
     overflow: visible;
@@ -1522,7 +1522,7 @@ export default {
   justify-content: space-between;
   gap: 0.75rem;
   margin-bottom: 0.75rem;
-  @include mobile {
+  @include tablet {
     flex-wrap: wrap;
     align-items: flex-start;
   }
@@ -1550,7 +1550,7 @@ export default {
   color: $text-white;
   line-height: 1;
   letter-spacing: -0.05em;
-  @include mobile {
+  @include tablet {
     font-size: 1.875rem;
   }
 }
@@ -1636,7 +1636,7 @@ export default {
   border-radius: 1.5rem;
   overflow: hidden;
   min-height: 18rem;
-  @include mobile {
+  @include tablet {
     grid-template-columns: 1fr;
     grid-template-rows: auto;
   }
@@ -1647,7 +1647,7 @@ export default {
   grid-row: 1 / -1;
   background: rgba(0, 0, 0, 0.3);
   overflow: hidden;
-  @include mobile {
+  @include tablet {
     grid-row: auto;
     min-height: 12rem;
   }
@@ -1668,7 +1668,7 @@ export default {
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   gap: 0;
-  @include mobile {
+  @include tablet {
     grid-column: 1;
     grid-row: auto;
     grid-template-columns: repeat(2, 1fr);

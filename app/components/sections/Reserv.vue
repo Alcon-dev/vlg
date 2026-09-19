@@ -1890,7 +1890,7 @@ export default {
   background-color: $text-primary;
   color: $text-white;
   gap: 5rem;
-  @include mobile {
+  @include tablet {
     padding: 5rem 1rem;
     gap: 2.5rem;
   }
@@ -1898,7 +1898,7 @@ export default {
     color: $text-tertiary;
     font-weight: 300;
     line-height: 0.8;
-    @include mobile {
+    @include tablet {
       font-size: 1.875rem;
       color: $text-white;
     }
@@ -1908,7 +1908,7 @@ export default {
     font-weight: 300;
     margin: 0.25rem 0 0 0;
     line-height: 120%;
-    @include mobile {
+    @include tablet {
       font-size: 0.625rem;
       color: $text-tertiary;
       margin: 0;
@@ -1922,7 +1922,7 @@ export default {
   width: 100%;
   display: flex;
   flex-direction: column;
-  @include mobile {
+  @include tablet {
     gap: 0.25rem;
   }
 }
@@ -1933,7 +1933,7 @@ export default {
   gap: 0;
   justify-content: space-between;
   letter-spacing: -4%;
-  @include mobile {
+  @include tablet {
     gap: 0;
   }
 }
@@ -1945,7 +1945,7 @@ export default {
   h2 {
     color: #685137;
   }
-  @include mobile {
+  @include tablet {
   }
 }
 
@@ -1978,7 +1978,7 @@ export default {
   flex-direction: column;
   gap: 2.5rem;
   width: stretch;
-  @include mobile {
+  @include tablet {
     gap: 1.5rem;
     width: stretch;
   }
@@ -2013,7 +2013,7 @@ export default {
   flex-wrap: wrap;
   gap: 0;
   border-bottom: none;
-  @include mobile {
+  @include tablet {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: auto auto;
@@ -2028,13 +2028,13 @@ export default {
   &:nth-child(even) {
     .switcherTab {
       padding: 1.5rem;
-      @include mobile {
+      @include tablet {
         padding: 0.5rem 0.25rem 0.5rem 0;
       }
     }
     .tabCardDesc {
       padding: 0 1.5rem;
-      @include mobile {
+      @include tablet {
         padding: 0.5rem 0 0;
       }
     }
@@ -2062,7 +2062,7 @@ export default {
   &:hover {
     color: rgba(255, 255, 255, 0.85);
   }
-  @include mobile {
+  @include tablet {
     font-size: 1rem;
     padding: 0.5rem 0.25rem 0.5rem 0;
     margin-bottom: 0;
@@ -2084,7 +2084,7 @@ export default {
   flex: 1;
   min-width: 0;
   cursor: pointer;
-  @include mobile {
+  @include tablet {
     display: contents;
   }
 
@@ -2094,20 +2094,20 @@ export default {
 
   &:hover .switcherTabVilla {
     color: $text-white;
-    @include mobile {
+    @include tablet {
       color: #685137;
     }
 
     &:hover .tabCardDesc {
       color: $text-white;
-      @include mobile {
+      @include tablet {
         color: #685137;
       }
     }
 
     &:hover .tabCardLine {
       background: $text-white;
-      @include mobile {
+      @include tablet {
         background: #685137;
       }
     }
@@ -2122,7 +2122,7 @@ export default {
   margin-bottom: 0.5rem;
   margin-right: 0.5rem;
 
-  @include mobile {
+  @include tablet {
     display: none !important;
   }
 }
@@ -2139,7 +2139,7 @@ export default {
   background: #685137;
   min-height: 2px;
 
-  @include mobile {
+  @include tablet {
     display: none !important;
   }
 }
@@ -2170,7 +2170,7 @@ export default {
 }
 
 .tabCardDesc {
-  @include mobile {
+  @include tablet {
     display: none;
     font-size: 0.625rem;
     margin-top: 0;
@@ -2182,12 +2182,12 @@ export default {
 }
 
 .tabCard:has(.switcherTabActive) .tabCardDesc {
-  @include mobile {
+  @include tablet {
     display: block;
   }
 }
 
-@include mobile {
+@include tablet {
   .switcher .tabCard:nth-child(1) .switcherTab,
   .switcher .tabCard:nth-child(1) .tabCardLine {
     grid-row: 1;
@@ -2207,7 +2207,7 @@ export default {
 
 .villaDescDesktopOnly {
   display: none !important;
-  @include mobile {
+  @include tablet {
     display: none;
   }
 }
@@ -2232,7 +2232,7 @@ export default {
   margin-left: calc(-50vw + 50%);
   margin-right: calc(-50vw + 50%);
 
-  @include mobile {
+  @include tablet {
     display: flex;
     width: 100%;
     margin-left: 0;
@@ -2245,7 +2245,7 @@ export default {
 .carouselPriceOverlay {
   display: none;
 
-  @include mobile {
+  @include tablet {
     display: none;
     position: absolute;
     top: 0.75rem;
@@ -2282,7 +2282,7 @@ export default {
   pointer-events: none;
   clip-path: url(#carouselCounterClip);
 
-  @include mobile {
+  @include tablet {
     display: block;
     position: absolute;
     bottom: 0.5rem;
@@ -2321,7 +2321,7 @@ export default {
     opacity: 0.95;
     background: rgba(0, 0, 0, 0.6);
   }
-  @include mobile {
+  @include tablet {
     top: 0.75rem;
     right: 0.75rem;
     padding: 0.4rem 0.75rem;
@@ -2576,7 +2576,7 @@ export default {
   @include tablet {
     height: 32.25rem;
   }
-  @include mobile {
+  @include tablet {
     height: 11.25rem;
     margin: 0;
     border-radius: 1.5rem;
@@ -2608,7 +2608,7 @@ export default {
     top: 55%;
     bottom: auto;
 
-    @include mobile {
+    @include tablet {
       display: none;
     }
   }
@@ -2680,7 +2680,7 @@ export default {
   box-sizing: border-box;
   background: $text-primary;
 
-  @include mobile {
+  @include tablet {
     width: 100%;
     margin-left: 0;
     margin-right: 0;
@@ -2736,7 +2736,7 @@ export default {
   gap: 1.5rem;
   padding: 0 0 1.5rem 0;
 
-  @include mobile {
+  @include tablet {
     flex-direction: column;
     padding: 0 0 1rem 0;
     gap: 0;
@@ -2812,7 +2812,7 @@ export default {
     line-height: 1.2;
   }
 
-  @include mobile {
+  @include tablet {
     flex-direction: column;
     align-items: stretch;
 
@@ -2844,14 +2844,14 @@ export default {
   flex: 1;
   min-width: 0;
 
-  @include mobile {
+  @include tablet {
     padding: 0 0 1rem 0;
   }
 
   &:last-child {
     padding: 0;
 
-    @include mobile {
+    @include tablet {
       padding: 0 0 1rem 0;
     }
   }
@@ -2861,7 +2861,7 @@ export default {
   font-size: 1rem;
   font-weight: 600;
   color: $text-white;
-  @include mobile {
+  @include tablet {
     display: none;
   }
 }
@@ -2879,7 +2879,7 @@ export default {
 .formGroupContact {
   padding: 0 0 2.5rem 0;
 
-  @include mobile {
+  @include tablet {
     padding: 0 0 1.5rem 0;
   }
 }
@@ -2889,7 +2889,7 @@ export default {
   flex-direction: row;
   gap: 1.5rem;
 
-  @include mobile {
+  @include tablet {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -2906,7 +2906,7 @@ export default {
   font-weight: 300;
   color: $text-tertiary;
   margin-bottom: 0.5rem;
-  @include mobile {
+  @include tablet {
     display: none;
   }
 }
@@ -2921,7 +2921,7 @@ export default {
   font-size: 1rem;
   font-family: inherit;
   width: 100%;
-  @include mobile {
+  @include tablet {
     padding: 0.75rem;
     width: auto;
     border-radius: 0.5rem;
@@ -2937,7 +2937,7 @@ export default {
     transition: all 0.2s ease;
     outline: none;
     border-bottom-color: $text-white;
-    @include mobile {
+    @include tablet {
       border-color: $text-white;
     }
   }
@@ -2945,7 +2945,7 @@ export default {
 
 .formInputError {
   border-color: $main-red !important;
-  @include mobile {
+  @include tablet {
     border-color: $main-red !important;
   }
 }
@@ -2961,7 +2961,7 @@ export default {
   flex-shrink: 0;
   min-height: 0.5rem;
   margin-top: 0.25rem;
-  @include mobile {
+  @include tablet {
     min-height: 0;
   }
 }
@@ -2971,7 +2971,7 @@ export default {
   font-size: 0.75rem;
   color: $main-red;
   line-height: 1.3;
-  @include mobile {
+  @include tablet {
     font-size: 0.6875rem;
   }
 }
@@ -3037,7 +3037,7 @@ export default {
   background-size: 1rem;
   cursor: pointer;
   transition: background 0.2s;
-  @include mobile {
+  @include tablet {
     height: 4.5rem;
   }
   &:hover {
@@ -3062,7 +3062,7 @@ export default {
   scrollbar-width: none;
   -ms-overflow-style: none;
   min-height: 5.5rem;
-  @include mobile {
+  @include tablet {
     min-height: auto;
   }
 
@@ -3076,7 +3076,7 @@ export default {
   gap: 0.75rem;
   min-height: 5.5rem;
   align-items: center;
-  @include mobile {
+  @include tablet {
     min-height: 4.5rem;
     gap: 0.5rem;
   }
@@ -3101,7 +3101,7 @@ export default {
     background 0.35s $date-card-ease,
     border-color 0.35s $date-card-ease,
     color 0.35s $date-card-ease;
-  @include mobile {
+  @include tablet {
     min-height: 4rem;
     gap: 0.25rem;
   }
@@ -3142,7 +3142,7 @@ export default {
 .dateCardDates {
   font-size: 1rem;
   color: $text-white;
-  @include mobile {
+  @include tablet {
     font-size: 0.75rem;
   }
 }
@@ -3151,7 +3151,7 @@ export default {
   font-size: 1rem;
   font-weight: 600;
   color: $text-white;
-  @include mobile {
+  @include tablet {
     font-size: 0.875rem;
   }
 }
@@ -3160,7 +3160,7 @@ export default {
   margin-left: 0.35em;
   font-size: 1rem;
   color: $main-red;
-  @include mobile {
+  @include tablet {
     font-size: 0.75rem;
   }
 }
@@ -3177,7 +3177,7 @@ export default {
   color: $text-white;
   font-size: 1rem;
   font-family: inherit;
-  @include mobile {
+  @include tablet {
     padding: 0.75rem;
     font-size: 1rem;
   }
@@ -3268,7 +3268,7 @@ export default {
     margin-top: 0.25rem;
   }
 
-  @include mobile {
+  @include tablet {
     flex-wrap: wrap;
     .formGroup {
       min-width: 0;
@@ -3613,7 +3613,7 @@ export default {
   transition: background 0.2s;
   width: 46rem;
   justify-content: center;
-  @include mobile {
+  @include tablet {
     margin-top: 0.5rem;
     padding: 0.875rem 1rem;
   }
@@ -3654,7 +3654,7 @@ export default {
   grid-template-columns: 25% 25% 25% 25%;
   padding: 2.5rem 0 0 0;
 
-  @include mobile {
+  @include tablet {
     grid-template-columns: 1fr;
     padding-top: 2.5rem;
     gap: 0;
@@ -3669,18 +3669,18 @@ export default {
   border-right: 1px solid #685137;
   &:first-child {
     padding: 0 1rem 0 0;
-    @include mobile {
+    @include tablet {
       padding: 0;
     }
   }
   &:last-child {
     padding: 0 0 0 1rem;
     border-right: none;
-    @include mobile {
+    @include tablet {
       padding: 0;
     }
   }
-  @include mobile {
+  @include tablet {
     padding: 0;
     gap: 0;
     border-right: none;
@@ -3690,7 +3690,7 @@ export default {
 }
 
 .blockExpanded {
-  @include mobile {
+  @include tablet {
     border-top-color: $text-white;
 
     .blockTitle {
@@ -3715,7 +3715,7 @@ export default {
   color: $text-tertiary;
   text-wrap: nowrap;
   letter-spacing: -5%;
-  @include mobile {
+  @include tablet {
     font-size: 1.5rem;
     padding: 1rem 0;
     cursor: pointer;
@@ -3732,7 +3732,7 @@ export default {
 }
 
 .blockContent {
-  @include mobile {
+  @include tablet {
     display: grid;
     grid-template-rows: 0fr;
     transition: grid-template-rows 0.3s ease-out;
@@ -3746,7 +3746,7 @@ export default {
 }
 
 .blockExpanded .blockContent {
-  @include mobile {
+  @include tablet {
     grid-template-rows: 1fr;
     padding-bottom: 0.75rem;
   }
@@ -3754,14 +3754,14 @@ export default {
 
 .blockTitleDesktopOnly {
   display: none;
-  @include mobile {
+  @include tablet {
     display: none;
   }
 }
 
 .blockTitleTabletOnly {
   display: inline;
-  @include mobile {
+  @include tablet {
     display: inline;
   }
 }
@@ -3777,7 +3777,7 @@ export default {
   font-size: 1rem;
   color: $text-white;
   line-height: 1.6;
-  @include mobile {
+  @include tablet {
     font-size: 0.875rem;
   }
 }
@@ -3790,7 +3790,7 @@ export default {
   color: rgba(255, 255, 255, 0.9);
   line-height: 1.5;
 
-  @include mobile {
+  @include tablet {
     font-size: 0.875rem;
     gap: 0.25rem;
   }

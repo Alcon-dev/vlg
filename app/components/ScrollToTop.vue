@@ -89,7 +89,7 @@ export default {
     transform: scale(0.96);
   }
 
-  @include mobile {
+  @include tablet {
     right: 1rem;
     bottom: 1rem;
     width: 2.75rem;

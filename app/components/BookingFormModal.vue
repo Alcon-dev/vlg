@@ -663,7 +663,7 @@ export default {
   align-items: flex-end;
   gap: 0.9rem;
   padding-top: 0.1rem;
-  @include mobile {
+  @include tablet {
     flex-wrap: wrap;
     gap: 0.35rem 0.75rem;
   }
@@ -725,7 +725,7 @@ export default {
     transform: scale(0.96);
   }
 
-  @include mobile {
+  @include tablet {
     width: 2.75rem;
     height: 2.75rem;
   }
@@ -756,7 +756,7 @@ export default {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
-  @include mobile {
+  @include tablet {
     padding: 1.5rem 0.5rem;
     padding-top: 1.5rem;
     flex: 1 1 0;
@@ -788,7 +788,7 @@ export default {
   display: grid;
   grid-template-columns: 1fr 1fr;
   overflow: visible;
-  @include mobile {
+  @include tablet {
     grid-template-columns: 1fr;
   }
 }
@@ -798,7 +798,7 @@ export default {
   grid-template-columns: 1fr 1fr;
   width: 100%;
   min-width: 0;
-  @include mobile {
+  @include tablet {
     grid-template-columns: 1fr;
   }
 }
@@ -820,7 +820,7 @@ export default {
   gap: 0;
   column-gap: 0;
   overflow: hidden;
-  @include mobile {
+  @include tablet {
     grid-template-columns: 1fr;
   }
 }
@@ -844,7 +844,7 @@ export default {
   &:not(:first-child) {
     border-left: 1px solid rgba(255, 255, 255, 0.22);
   }
-  @include mobile {
+  @include tablet {
     &:not(:first-child) {
       border-left: none;
       border-top: 1px solid rgba(255, 255, 255, 0.22);
@@ -932,7 +932,7 @@ export default {
   &:not(:first-child) {
     border-left: 1px solid rgba(255, 255, 255, 0.22);
   }
-  @include mobile {
+  @include tablet {
     &:not(:first-child) {
       border-left: none;
       border-top: 1px solid rgba(255, 255, 255, 0.22);
@@ -1125,7 +1125,7 @@ export default {
   }
 }
 
-@include mobile {
+@include tablet {
   .overlay {
     padding: 0;
     align-items: stretch;
