@@ -4,7 +4,7 @@
 @use "./mixins.scss" as *;
 
 html {
-  // font-size: calc(100vw * 16 / 1920);
+  font-size: calc(100vw * 16 / 1920);
   scroll-behavior: smooth;
   // Prevent layout shifts: `100vw` changes when the vertical scrollbar appears/disappears,
   // which changes root `rem` sizing across the page (visible as header "jump" on load).
@@ -38,9 +38,9 @@ h2 {
   font-weight: 300;
 }
 
-@include tablet {
+@include laptop {
   html {
-    font-size: calc(100vw * 16 / 1290);
+    font-size: calc(100vw * 16 / 1280);
   }
 }
 

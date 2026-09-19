@@ -39,8 +39,6 @@
           :src="item.image"
           :alt="item.title"
           :class="$style.banner"
-          width="420"
-          height="280"
           loading="lazy"
           decoding="async"
         />
@@ -99,11 +97,15 @@ export default {
 .wrapper {
   display: flex;
   flex-direction: column;
-  padding: 7.5rem 0;
+  padding: 7.5rem 2rem;
   gap: 5rem;
   color: $text-primary;
+  @include laptop {
+    padding: 5rem 2rem;
+    gap: 3rem;
+  }
   @include tablet {
-    padding: 2.5rem 0;
+    padding: 2.5rem 1rem;
     gap: 1.5rem;
   }
   .header {
@@ -115,10 +117,6 @@ export default {
       align-items: flex-start;
       width: 100%;
       gap: 1.5rem;
-      @include tablet {
-        flex-wrap: wrap;
-        gap: 0.75rem 1rem;
-      }
       .titlePrimary {
         margin: 0;
         font-weight: 400;
@@ -126,6 +124,9 @@ export default {
         letter-spacing: -0.04em;
         text-transform: uppercase;
         color: $text-primary;
+        @include laptop {
+          font-size: 3.75rem;
+        }
         @include tablet {
           font-size: 1.5rem;
         }
@@ -135,12 +136,11 @@ export default {
         align-items: center;
         gap: 1rem;
         flex-shrink: 0;
-
         img {
           width: 2.5rem;
           height: 2.5rem;
         }
-        @include tablet {
+        @include laptop {
           display: none;
         }
       }
@@ -153,7 +153,9 @@ export default {
       text-transform: uppercase;
       color: $text-accent;
       align-self: flex-end;
-      padding-left: 0;
+      @include laptop {
+        font-size: 3.75rem;
+      }
       @include tablet {
         font-size: 1.5rem;
       }
@@ -168,56 +170,84 @@ export default {
       gap: 0.75rem;
     }
     .servicesItem {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      align-items: stretch;
-      gap: 0.75rem;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 0.5rem;
+      background: $bg-white;
       border: 1px solid $border-main;
       border-radius: 1.5rem;
-      padding: 0.5rem;
       overflow: hidden;
-      @include tablet {
-        grid-template-columns: 1fr auto;
-        gap: 0.5rem;
-        align-items: center;
-        border-radius: 1rem;
-      }
       &.servicesItemReversed {
-        .servicesItemContent {
-          order: 2;
+        flex-direction: row-reverse;
+      }
+      @include tablet {
+        gap: 0.75rem;
+        border-radius: 1rem;
+        &.servicesItemReversed {
+          flex-direction: row;
         }
-        .banner {
-          order: 1;
+        &:nth-child(even) {
+          flex-direction: row-reverse;
         }
       }
       .servicesItemContent {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
-        padding: 1.5rem;
+        flex: 1 1 auto;
+        justify-content: center;
+        gap: 0.75rem;
         min-width: 0;
-        border: 1px solid $border-secondary;
-        border-radius: 1.5rem;
+        padding: 1.5rem;
+        color: $text-primary;
+        @include tablet {
+          padding: 0.5rem;
+          gap: 0.5rem;
+        }
         .servicesItemTitle {
-          font-size: 2rem;
+          margin: 0;
+          font-size: 1.75rem;
           font-weight: 400;
           letter-spacing: -0.04em;
-          color: $text-primary;
+          @include laptop {
+            font-size: 1.5rem;
+          }
+          @include tablet {
+            font-size: 1rem;
+          }
         }
         .servicesItemDescription {
           margin: 0;
           font-size: 1rem;
           font-weight: 300;
           line-height: 1.4;
-          color: $text-primary;
+          color: $text-secondary;
+          @include tablet {
+            font-size: 0.625rem;
+            line-height: 1.2;
+          }
         }
       }
       .banner {
-        width: 100%;
+        flex: none;
+        width: 20.83vw;
+        max-width: 20.83vw;
+        max-height: 20.83vw;
         height: 100%;
-        max-height: 25rem;
         object-fit: cover;
         border-radius: 1rem;
+        @include laptop {
+          width: 15.625vw;
+          max-width: 15.625vw;
+          max-height: none;
+        }
+        @include tablet {
+          width: 38.46vw;
+          max-width: 38.46vw;
+          max-height: 12.5rem;
+          border-radius: 0.75rem;
+        }
       }
     }
   }
