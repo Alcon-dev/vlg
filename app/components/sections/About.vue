@@ -75,13 +75,39 @@
     </div>
     <div :class="$style.reviews">
       <div :class="$style.reviewsHeader">
-        <h3 :class="$style.reviewsSectionTitle">
-          Отзывы наших клиентов на avito.ru
-        </h3>
         <div :class="$style.reviewsHeaderMobile">
           <h3 :class="$style.reviewsSectionTitleMobile">
-            Отзывы наших клиентов на avito.ru
+            Отзывы наших клиентов
           </h3>
+          <div :class="$style.reviewsHeaderMetaMobile">
+            <a
+              href="https://yandex.by/maps/org/rezidentsiya_volga/25605876128/reviews/?ll=49.372303%2C53.473734&z=16"
+              target="_blank"
+              rel="noopener noreferrer"
+              :class="$style.reviewsYandexSourceLinkMobile"
+            >
+              <span :class="$style.reviewsYandexSourceLine"
+                >На основании оценок пользователей</span
+              >
+              <span :class="$style.reviewsYandexSourceLine2">Яндекс.ru</span>
+            </a>
+            <div :class="$style.reviewsRatingCompactMobile">
+              <span :class="$style.reviewsRatingValueMobile">5.0</span>
+              <div :class="$style.reviewsRatingStarsMobile">
+                <img
+                  v-for="i in 5"
+                  :key="i"
+                  :class="$style.reviewsHeaderStarIcon"
+                  src="@app/assets/img/sections/about/star.svg"
+                  alt=""
+                  width="24"
+                  height="24"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+          </div>
           <div :class="$style.reviewsRatingBlock">
             <button
               type="button"
@@ -107,11 +133,11 @@
                 </div>
               </div>
               <a
-                href="https://www.avito.ru/tolyatti/doma_dachi_kottedzhi/5-k._dom_185_m_7860719763?utm_campaign=native&utm_medium=item_page_ios&utm_source=soc_sharing_seller"
+                href="https://yandex.by/maps/org/rezidentsiya_volga/25605876128/reviews/?ll=49.372303%2C53.473734&z=16"
                 target="_blank"
                 rel="noopener noreferrer"
                 :class="$style.reviewsAvitoLink"
-                >На основании оценок пользователей avito.ru</a
+                >На основании оценок пользователей Яндекс.ru</a
               >
             </div>
             <button
@@ -156,27 +182,47 @@
                         <span :class="$style.reviewName">{{
                           review.name
                         }}</span>
-                        <span :class="$style.reviewDate">
-                          {{ review.date }}{{ review.guest ? " · Гость" : "" }}
-                        </span>
                       </div>
-                      <div :class="$style.reviewStars">
-                        <img
-                          v-for="i in review.stars"
-                          :key="i"
-                          :class="$style.starIcon"
-                          src="@app/assets/img/sections/about/star.svg"
-                          alt=""
-                          width="24"
-                          height="24"
-                          loading="lazy"
-                          decoding="async"
-                        />
+                      <div :class="$style.reviewStarsRow">
+                        <div :class="$style.reviewStars">
+                          <img
+                            v-for="i in review.stars"
+                            :key="i"
+                            :class="$style.starIcon"
+                            src="@app/assets/img/sections/about/star.svg"
+                            alt=""
+                            width="24"
+                            height="24"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        </div>
+                        <span :class="$style.reviewDate">
+                          {{ review.date }}
+                        </span>
                       </div>
                     </div>
                   </div>
-                  <p :class="$style.reviewStay">{{ review.stayInfo }}</p>
                   <p :class="$style.reviewText">{{ review.text }}</p>
+                  <div :class="$style.reviewFooter">
+                    <a
+                      :href="review.yandexUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      :class="$style.reviewYandexLink"
+                    >
+                      Читать полностью на Яндекс Отзывах
+                      <img
+                        :class="$style.reviewYandexChevron"
+                        src="@app/assets/img/sections/about/arrow-right-blue.svg"
+                        alt=""
+                        width="5"
+                        height="9"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </a>
+                  </div>
                 </div>
               </SwiperSlide>
             </Swiper>
@@ -202,27 +248,47 @@
                         <span :class="$style.reviewName">{{
                           review.name
                         }}</span>
-                        <span :class="$style.reviewDate">
-                          {{ review.date }}{{ review.guest ? " · Гость" : "" }}
-                        </span>
                       </div>
-                      <div :class="$style.reviewStars">
-                        <img
-                          v-for="i in review.stars"
-                          :key="i"
-                          :class="$style.starIcon"
-                          src="@app/assets/img/sections/about/star.svg"
-                          alt=""
-                          width="24"
-                          height="24"
-                          loading="lazy"
-                          decoding="async"
-                        />
+                      <div :class="$style.reviewStarsRow">
+                        <div :class="$style.reviewStars">
+                          <img
+                            v-for="i in review.stars"
+                            :key="i"
+                            :class="$style.starIcon"
+                            src="@app/assets/img/sections/about/star.svg"
+                            alt=""
+                            width="24"
+                            height="24"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        </div>
+                        <span :class="$style.reviewDate">
+                          {{ review.date }}
+                        </span>
                       </div>
                     </div>
                   </div>
-                  <p :class="$style.reviewStay">{{ review.stayInfo }}</p>
                   <p :class="$style.reviewText">{{ review.text }}</p>
+                  <div :class="$style.reviewFooter">
+                    <a
+                      :href="review.yandexUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      :class="$style.reviewYandexLink"
+                    >
+                      Читать полностью на Яндекс Отзывах
+                      <img
+                        :class="$style.reviewYandexChevron"
+                        src="@app/assets/img/sections/about/arrow-right-blue.svg"
+                        alt=""
+                        width="5"
+                        height="9"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </a>
+                  </div>
                 </div>
               </div>
             </template>
@@ -374,8 +440,6 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  /* Скрываем блок, но оставляем занимаемое место,
-     чтобы `titleLine1` (space-between) не переставил остальные элементы. */
   visibility: hidden;
   pointer-events: none;
   span {
@@ -616,25 +680,6 @@ export default {
   position: relative;
 }
 
-.reviewsSectionTitle {
-  font-size: 3rem;
-  font-weight: 600;
-  text-align: center;
-  padding: 0 0 2.5rem 0;
-  display: none;
-
-  @include tablet {
-    display: none;
-  }
-  @include mobile {
-    display: block;
-    font-weight: 400;
-    font-size: 1.25rem;
-    text-align: center;
-    padding: 0 0 2.5rem 0;
-  }
-}
-
 .reviewsHeaderMobile {
   display: flex;
   flex-direction: column;
@@ -643,11 +688,12 @@ export default {
   padding: 0 0 2.5rem 0;
   gap: 1.5rem;
   @include tablet {
-    display: flex;
     padding: 0 0 1.5rem 0;
   }
   @include mobile {
-    display: none;
+    align-items: stretch;
+    padding: 0 0 1.5rem 0;
+    gap: 1rem;
   }
 }
 
@@ -656,9 +702,75 @@ export default {
   font-weight: 600;
   margin: 0;
   color: $text-primary;
+  text-align: center;
+  width: 100%;
   @include tablet {
     font-size: 2rem;
   }
+  @include mobile {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+}
+
+.reviewsHeaderMetaMobile {
+  display: none;
+  @include mobile {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 0.75rem;
+    box-sizing: border-box;
+  }
+}
+
+.reviewsYandexSourceLinkMobile {
+  flex: 1;
+  font-size: 0.625rem;
+  line-height: 1.25;
+  color: #0d99ff;
+  text-decoration: underline;
+  text-align: left;
+  text-underline-offset: 0.125em;
+}
+
+.reviewsYandexSourceLine {
+  display: block;
+}
+
+.reviewsYandexSourceLine2 {
+  display: block;
+  margin-top: 0.125rem;
+}
+
+.reviewsRatingCompactMobile {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 0.375rem;
+}
+
+.reviewsRatingValueMobile {
+  font-size: 1.25rem;
+  font-weight: 300;
+  line-height: 1;
+  color: $text-primary;
+}
+
+.reviewsRatingStarsMobile {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.reviewsHeaderStarIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  object-fit: contain;
+  display: block;
 }
 
 .reviewsRatingBlock {
@@ -667,6 +779,9 @@ export default {
   justify-content: space-between;
   width: 100%;
   gap: 1rem;
+  @include mobile {
+    display: none;
+  }
 }
 
 .reviewsRatingCenter {
@@ -908,8 +1023,15 @@ export default {
 
 .reviewNameRow {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
+}
+
+.reviewStarsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 0;
 }
 
 .reviewName {
@@ -922,9 +1044,10 @@ export default {
 
 .reviewDate {
   font-size: 0.75rem;
+  font-weight: 300;
+  line-height: 1.2;
   color: $text-secondary;
   flex-shrink: 0;
-  font-weight: 700;
   @include mobile {
     font-size: 0.6875rem;
   }
@@ -932,6 +1055,7 @@ export default {
 
 .reviewStars {
   display: flex;
+  align-items: center;
   gap: 0.25rem;
   @include mobile {
     gap: 0.125rem;
@@ -946,16 +1070,6 @@ export default {
     height: 1.125rem;
   }
 }
-
-.reviewStay {
-  font-size: 0.875rem;
-  color: $text-secondary;
-  margin: 0;
-  @include mobile {
-    font-size: 0.75rem;
-  }
-}
-
 .reviewText {
   flex: 1;
   min-height: 0;
@@ -963,9 +1077,42 @@ export default {
   line-height: 1.2;
   margin: 0;
   color: $text-primary;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+  text-overflow: ellipsis;
   @include mobile {
     font-size: 0.875rem;
     line-height: 1.35;
   }
+}
+
+.reviewFooter {
+  margin-top: auto;
+  text-align: right;
+  padding-top: 0.25rem;
+}
+
+.reviewYandexLink {
+  font-size: 0.75rem;
+  color: #0D99FF;
+  text-decoration: underline;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  width: fit-content;
+  margin-left: auto;
+  @include mobile {
+    font-size: 0.75rem;
+  }
+}
+
+.reviewYandexChevron {
+  flex-shrink: 0;
+  display: block;
+  width: 0.25rem;
+  height: 0.5rem;
+  object-fit: contain;
 }
 </style>

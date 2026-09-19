@@ -18,4 +18,5 @@ export const reviews = reviewsJson.map((item) => ({
   guest: item.guest ?? false,
   stayInfo: item.stayInfo,
   text: item.text,
+  yandexUrl: item.yandexUrl,
 }));
