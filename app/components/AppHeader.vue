@@ -195,11 +195,14 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 0;
-  max-width: 105rem;
+  padding: 1.5rem 2.5rem;
+  max-width: min(105rem, 1680px);
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
+  @include laptop {
+    padding: 1.5rem 2rem;
+  }
   .menu {
     display: flex;
     align-items: center;
@@ -331,7 +334,7 @@ header {
     -webkit-backdrop-filter: blur(4px);
   }
   @include tablet {
-    padding: 1rem 0 1.25rem;
+    padding: 1rem 1rem 1.25rem;
     gap: 0.5rem;
     .menu,
     .socialLinks {
@@ -347,6 +350,7 @@ header {
       border: 1px solid $bg-transparent-16;
       background: transparent;
       box-sizing: border-box;
+      flex-shrink: 0;
       transition:
         background 0.2s ease,
         border-color 0.2s ease;
@@ -367,13 +371,14 @@ header {
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.3125rem;
       width: 3rem;
       height: 3rem;
       border-radius: 50%;
       border: 1px solid $bg-transparent-16;
       background: transparent;
       box-sizing: border-box;
+      flex-shrink: 0;
       cursor: pointer;
       transition:
         background 0.2s ease,
@@ -395,18 +400,21 @@ header {
     }
     &.menuOpen {
       .burgerLine:nth-child(1) {
-        transform: translateY(0.42rem) rotate(45deg);
+        transform: translateY(0.4375rem) rotate(45deg);
       }
       .burgerLine:nth-child(2) {
         opacity: 0;
       }
       .burgerLine:nth-child(3) {
-        transform: translateY(-0.42rem) rotate(-45deg);
+        transform: translateY(-0.4375rem) rotate(-45deg);
       }
     }
     .logo {
       width: 8rem;
       top: 1rem;
+      @include tablet {
+        width: 5.75rem;
+      }
     }
     .mobileMenuOverlay {
       display: block;

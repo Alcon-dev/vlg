@@ -74,7 +74,7 @@
           </h1>
           <div :class="$style.descRow">
             <div :class="$style.desc">
-              <p>
+              <p :class="$style.descLead">
                 Приватная резиденция на берегу Волги — это эксклюзивный формат
                 отдыха в сосновом лесу для тех, кто перерос классические
                 загородные отели. Всего 15 минут от города, и вы попадаете в мир
@@ -82,7 +82,7 @@
                 подогреваемый бассейн и вдохновляющий панорамный вид на Волгу и
                 Жигулевские горы.
               </p>
-              <p>
+              <p :class="$style.descTrail">
                 Здесь вам не придется думать о мелочах: персональный консьерж
                 полностью организует ваше пребывание — от изысканного питания до
                 любых сценариев отдыха и развлечений.
@@ -94,7 +94,9 @@
               aria-label="Смотреть видеообзор резиденции"
               @click="onVideoClick"
             >
-              <span :class="$style.videoCircleText">ВИДЕООБЗОР РЕЗИДЕНЦИИ</span>
+              <span :class="$style.videoCircleText">
+                ВИДЕООБЗОР<br />РЕЗИДЕНЦИИ
+              </span>
             </button>
           </div>
         </div>
@@ -141,7 +143,7 @@ export default {
         { icon: "mainBlockFlag", text: "Подогреваемый\nбассейн 12м." },
         {
           icon: "mainBlockEye",
-          text: "Панорамный вид\nна горы и Волгу",
+          text: "Панорамный вид\nна волгу и горы",
         },
       ],
     };
@@ -301,8 +303,6 @@ export default {
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.55);
     background: $bg-transparent-16;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -365,16 +365,17 @@ export default {
     justify-content: space-between;
     gap: 8rem;
     width: 100%;
-    max-width: 105rem;
+    max-width: min(105rem, 1680px);
     margin: 0 auto;
-    padding: 5rem 0 2.5rem;
+    padding: 5rem 2.5rem 2.5rem;
     box-sizing: border-box;
     @include laptop {
-      padding: 2rem 0;
+      padding: 2rem;
     }
     @include tablet {
-      padding: 1.5rem 0 1rem;
-      gap: 1.5rem;
+      padding: 0.75rem 1rem 1.25rem;
+      gap: 1.25rem;
+      justify-content: flex-start;
     }
     .heroRow {
       display: flex;
@@ -383,6 +384,10 @@ export default {
       flex: 1;
       min-height: 0;
       width: 100%;
+      @include tablet {
+        flex: 0 0 auto;
+        justify-content: flex-start;
+      }
       .heroCopy {
         display: flex;
         flex-direction: column;
@@ -390,10 +395,10 @@ export default {
         width: 100%;
         min-width: 0;
         @include laptop {
-          gap: 1.5rem;
+          gap: 5.25rem;
         }
         @include tablet {
-          gap: 1rem;
+          gap: 1.25rem;
         }
         .title {
           display: flex;
@@ -411,7 +416,10 @@ export default {
               font-size: 3rem;
             }
             @include tablet {
+              width: 100%;
               font-size: 1.75rem;
+              letter-spacing: -0.04em;
+              white-space: nowrap;
             }
           }
           .titleSecondary {
@@ -427,7 +435,8 @@ export default {
             }
             @include tablet {
               font-size: 1.5rem;
-              gap: 1rem;
+              letter-spacing: -0.04em;
+              gap: 0.75rem;
             }
           }
         }
@@ -438,9 +447,14 @@ export default {
           gap: 2rem;
           width: 100%;
           @include tablet {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1.25rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-areas:
+              "lead"
+              "video"
+              "trail";
+            gap: 2.625rem;
+            align-items: stretch;
           }
           .desc {
             display: flex;
@@ -448,6 +462,10 @@ export default {
             gap: 1.5rem;
             max-width: 30rem;
             min-width: 0;
+            @include tablet {
+              display: contents;
+              max-width: none;
+            }
             p {
               margin: 0;
               font-size: 1.125rem;
@@ -455,10 +473,21 @@ export default {
               line-height: 1.2;
               color: $text-white;
               @include laptop {
-                font-size: 0.875rem;
+                font-size: 1rem;
               }
               @include tablet {
-                font-size: 0.8125rem;
+                font-size: 0.875rem;
+                font-weight: 400;
+              }
+            }
+            .descLead {
+              @include tablet {
+                grid-area: lead;
+              }
+            }
+            .descTrail {
+              @include tablet {
+                grid-area: trail;
               }
             }
           }
@@ -474,7 +503,6 @@ export default {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem;
             box-sizing: border-box;
             transition:
               background 0.2s ease,
@@ -484,20 +512,18 @@ export default {
               border-color: $text-white;
             }
             @include laptop {
-              width: 11rem;
-              height: 11rem;
-              padding: 1.25rem;
+              width: 12.5rem;
+              height: 12.5rem;
             }
             @include tablet {
-              width: 8.5rem;
-              height: 8.5rem;
-              padding: 1rem;
-              align-self: center;
+              grid-area: video;
+              justify-self: center;
+              background: $bg-overlay;
+              border: none;
             }
             .videoCircleText {
               font-size: 1.125rem;
               font-weight: 600;
-              paragraph-spacing: 0.5rem;
               line-height: 1.2;
               text-align: center;
               text-transform: uppercase;
@@ -506,8 +532,9 @@ export default {
                 max-width: 6rem;
               }
               @include tablet {
-                font-size: 0.625rem;
-                max-width: 5rem;
+                font-size: 0.8125rem;
+                line-height: 1.2;
+                max-width: 7rem;
               }
             }
           }
@@ -521,17 +548,23 @@ export default {
       display: flex;
       align-items: stretch;
       gap: 3rem;
-      padding: 1.5rem;
-      border-radius: 1.5rem;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      height: 8.875rem;
+      padding: 1.2375rem 1.5rem;
+      border-radius: 0.5rem;
+      background: $bg-overlay;
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
       box-sizing: border-box;
       @include tablet {
+        max-width: none;
+        height: auto;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 0;
-        border-radius: 1rem;
+        padding: 0;
+        margin-top: auto;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
       }
       .featureItem {
         position: relative;
@@ -540,7 +573,7 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: center;
         gap: 1rem;
         text-align: center;
         &:not(:last-child)::after {
@@ -550,20 +583,24 @@ export default {
           right: -1.5rem;
           transform: translate(50%, -50%);
           width: 1px;
-          height: 4.5rem;
+          height: 6.4rem;
           background: $text-accent;
         }
         @include tablet {
-          gap: 0.5rem;
-          padding: 0.75rem 0.5rem;
+          flex-direction: row;
+          align-items: center;
+          justify-content: flex-start;
+          gap: 0.75rem;
+          padding: 0.75rem;
+          text-align: left;
           &:not(:last-child)::after {
             display: none;
           }
           &:nth-child(odd) {
-            border-right: 1px solid $text-accent;
+            border-right: 1px solid rgba($text-accent, 0.5);
           }
           &:nth-child(-n + 2) {
-            border-bottom: 1px solid $text-accent;
+            border-bottom: 1px solid rgba($text-accent, 0.5);
           }
         }
         .featureIcon {
@@ -572,21 +609,24 @@ export default {
           object-fit: contain;
           flex-shrink: 0;
           @include tablet {
-            width: 1.75rem;
-            height: 1.75rem;
+            width: 1.625rem;
+            height: 1.625rem;
           }
         }
         .featureText {
           margin: 0;
           font-size: 1rem;
-          line-height: 1.25;
-          font-weight: 400;
+          line-height: 1.2;
+          font-weight: 600;
           text-align: center;
           color: $text-white;
           white-space: pre-line;
           @include tablet {
             font-size: 0.75rem;
             font-weight: 300;
+            line-height: 1.2;
+            text-align: left;
+            letter-spacing: -0.04em;
           }
         }
       }

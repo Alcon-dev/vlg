@@ -1739,7 +1739,7 @@ export default {
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 105rem;
+  max-width: min(105rem, 1680px);
   margin: 0 auto;
 }
 
@@ -1826,7 +1826,7 @@ export default {
 }
 
 .reservContainer {
-  max-width: 105rem;
+  max-width: min(105rem, 1680px);
   margin: 0 auto;
   display: flex;
   flex-direction: column;
