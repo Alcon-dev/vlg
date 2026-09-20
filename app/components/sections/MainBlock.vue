@@ -1,12 +1,19 @@
 <template>
   <section
     id="main"
-    :class="[$style.wrapper, isPlaying && $style.wrapperPlaying]"
+    :class="[
+      $style.wrapper,
+      isPlaying && $style.wrapperPlaying,
+      showRotate && $style.wrapperNeedsRotate,
+    ]"
   >
     <div :class="$style.media">
       <img
         :src="heroImage"
-        :class="[$style.poster, { [$style.posterHidden]: isPlaying }]"
+        :class="[
+          $style.poster,
+          { [$style.posterHidden]: isPlaying || showRotate },
+        ]"
         alt=""
         width="1920"
         height="1080"
@@ -22,27 +29,40 @@
         playsinline
         preload="none"
         :poster="heroImage"
+        @playing="isPlaying = true"
         @pause="isPlaying = false"
         @ended="isPlaying = false"
-        @playing="onVideoPlaying"
       >
         <source v-if="videoSrc" :src="videoSrc" type="video/webm" />
       </video>
     </div>
 
-    <AppHeader />
+    <div :class="$style.headerWrap" @click.capture="onHeaderClick">
+      <AppHeader />
+    </div>
+
+    <div v-if="showRotate" :class="$style.rotatePrompt" aria-live="polite">
+      <img
+        :src="rotatePhoneIcon"
+        :class="$style.rotateIcon"
+        alt="Поверните устройство горизонтально"
+        width="115"
+        height="120"
+        decoding="async"
+      />
+    </div>
 
     <button
       v-if="isPlaying"
       type="button"
       :class="$style.pauseButton"
       aria-label="Пауза"
-      @click="pauseVideo"
+      @click="exitVideo"
     >
       <span :class="$style.pauseIcon" aria-hidden="true" />
     </button>
 
-    <div v-show="!isPlaying" :class="$style.content">
+    <div v-show="!isPlaying && !showRotate" :class="$style.content">
       <div :class="$style.heroRow">
         <div :class="$style.heroCopy">
           <h1 :class="$style.title">
@@ -72,7 +92,7 @@
               type="button"
               :class="$style.videoCircle"
               aria-label="Смотреть видеообзор резиденции"
-              @click="playVideo"
+              @click="onVideoClick"
             >
               <span :class="$style.videoCircleText">ВИДЕООБЗОР РЕЗИДЕНЦИИ</span>
             </button>
@@ -102,7 +122,7 @@
 import AppHeader from "@app/components/AppHeader.vue";
 import mainVideo from "@app/assets/video/main.webm";
 import heroImage from "@app/assets/img/sections/main-block/hero.webp";
-
+import rotatePhoneIcon from "@app/assets/img/sections/main-block/rotate_phone.svg";
 export default {
   name: "MainBlock",
   components: {
@@ -111,8 +131,10 @@ export default {
   data() {
     return {
       heroImage,
+      rotatePhoneIcon,
       videoSrc: null,
       isPlaying: false,
+      showRotate: false,
       features: [
         { icon: "mainBlockMapPin", text: "Уникальное\nрасположение" },
         { icon: "mainBlockUsers", text: "Размещение до\n30 гостей" },
@@ -124,8 +146,49 @@ export default {
       ],
     };
   },
+  mounted() {
+    if (typeof window === "undefined") return;
+    window.addEventListener("resize", this.onScreenChange);
+    window.addEventListener("orientationchange", this.onScreenChange);
+  },
+  beforeUnmount() {
+    if (typeof window === "undefined") return;
+    window.removeEventListener("resize", this.onScreenChange);
+    window.removeEventListener("orientationchange", this.onScreenChange);
+  },
   methods: {
-    async playVideo() {
+    isMobile() {
+      return typeof window !== "undefined" && window.innerWidth <= 768;
+    },
+    isPortrait() {
+      return (
+        typeof window !== "undefined" && window.innerHeight > window.innerWidth
+      );
+    },
+    onVideoClick() {
+      if (this.isMobile() && this.isPortrait()) {
+        this.showRotate = true;
+        return;
+      }
+      this.startVideo();
+    },
+    onHeaderClick() {
+      if (!this.showRotate) return;
+      this.showRotate = false;
+    },
+    onScreenChange() {
+      if (this.showRotate && !this.isPortrait()) {
+        this.showRotate = false;
+        this.startVideo();
+        return;
+      }
+      if (this.isPlaying && this.isMobile() && this.isPortrait()) {
+        this.$refs.videoRef?.pause();
+        this.isPlaying = false;
+        this.showRotate = true;
+      }
+    },
+    async startVideo() {
       const video = this.$refs.videoRef;
       if (!video) return;
       if (!this.videoSrc) {
@@ -133,15 +196,13 @@ export default {
         await this.$nextTick();
         video.load?.();
       }
+      this.showRotate = false;
       video.play().catch(() => {});
     },
-    onVideoPlaying() {
-      this.isPlaying = true;
-    },
-    pauseVideo() {
-      const video = this.$refs.videoRef;
-      if (!video) return;
-      video.pause();
+    exitVideo() {
+      this.$refs.videoRef?.pause();
+      this.isPlaying = false;
+      this.showRotate = false;
     },
   },
 };
@@ -159,6 +220,44 @@ export default {
     :global(header) {
       position: relative;
       z-index: 4;
+    }
+    @include tablet {
+      :global(header) {
+        display: none;
+      }
+    }
+  }
+  &.wrapperNeedsRotate {
+    :global(header) {
+      position: relative;
+      z-index: 4;
+    }
+    background: #2b2b2b;
+    .media {
+      background: #2b2b2b;
+    }
+  }
+  .headerWrap {
+    position: relative;
+    z-index: 4;
+  }
+  .rotatePrompt {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #2b2b2b;
+    pointer-events: none;
+    .rotateIcon {
+      width: 7.1875rem;
+      height: 7.5rem;
+      object-fit: contain;
+      @include tablet {
+        width: 5.75rem;
+        height: 6rem;
+      }
     }
   }
   .media {
