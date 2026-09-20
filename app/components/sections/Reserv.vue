@@ -8,7 +8,7 @@
       <div :class="$style.titleRow">
         <h2 :class="$style.titlePrimary">ВЫБЕРИТЕ ВИЛЛУ</h2>
         <div :class="$style.titleBrand">
-          <p>РЕЗИДЕНЦИЯ</p>
+          <p>Резиденция</p>
           <p>ВОЛГА</p>
         </div>
       </div>
@@ -47,23 +47,6 @@
           <div :key="currentApartment.id" :class="$style.tabContentInner">
             <div :class="$style.mainContent">
               <div :class="$style.carouselWrap">
-                <svg
-                  aria-hidden="true"
-                  class="visually-hidden"
-                  width="0"
-                  height="0"
-                >
-                  <defs>
-                    <clipPath
-                      id="carouselCounterClip"
-                      clipPathUnits="objectBoundingBox"
-                    >
-                      <path
-                        d="M 0.07 1 Q 0 1 0.008 0.93 L 0.112 0.07 Q 0.12 0 0.19 0 L 0.81 0 Q 0.88 0 0.888 0.07 L 0.992 0.935 Q 1 1 0.93 1 L 0.07 1 Z"
-                      />
-                    </clipPath>
-                  </defs>
-                </svg>
                 <p :class="$style.carouselPriceOverlay">
                   от
                   {{
@@ -73,37 +56,6 @@
                   }}
                   Р
                 </p>
-                <p :class="$style.carouselCounter">
-                  {{ carouselActiveIndex
-                  }}<span :class="$style.carouselCounterTotal">
-                    / {{ carouselPhotos.length }}</span
-                  >
-                </p>
-                <button
-                  v-if="carouselPhotos.length"
-                  type="button"
-                  :class="$style.carouselAllPhotos"
-                  aria-label="Открыть все фотографии"
-                  @click.prevent="openPhotoGallery"
-                >
-                  <span :class="$style.carouselAllPhotosText">Все фото</span>
-                  <svg
-                    :class="$style.carouselAllPhotosChevron"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M6 12l4-4-4-4"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </button>
                 <button
                   type="button"
                   :class="[
@@ -1726,81 +1678,80 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 7.5rem 2.5rem;
-  background-color: $bg-footer;
+  background-color: $bg-brown;
   color: $text-white;
   gap: 5rem;
-  @include tablet {
-    padding: 5rem 1rem;
-    gap: 2.5rem;
-  }
-}
-
-.header {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: min(105rem, 1680px);
-  margin: 0 auto;
-}
-
-.titleRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  width: 100%;
-  gap: 1.5rem;
-}
-
-.titlePrimary {
-  margin: 0;
-  font-weight: 400;
-  font-size: 6.25rem;
-  letter-spacing: -0.04em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
-  line-height: 1;
   @include laptop {
-    font-size: 3.75rem;
+    gap: 3.5rem;
   }
   @include tablet {
-    font-size: 1.5rem;
+    padding: 2.5rem 1rem;
+    gap: 1.5rem;
   }
-}
-
-.titleSecondary {
-  margin: 0;
-  font-weight: 400;
-  font-size: 6.25rem;
-  letter-spacing: -0.04em;
-  text-transform: uppercase;
-  color: $text-accent;
-  align-self: flex-end;
-  line-height: 1;
-  @include laptop {
-    font-size: 3.75rem;
-  }
-  @include tablet {
-    font-size: 1.5rem;
-    align-self: center;
-    text-align: center;
-  }
-}
-
-.titleBrand {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  flex-shrink: 0;
-  font-size: 1.5rem;
-  font-weight: 300;
-  letter-spacing: -0.04em;
-  line-height: 1.2;
-  text-transform: uppercase;
-  color: $text-tertiary;
-  text-align: right;
-  @include tablet {
-    font-size: 0.75rem;
-    padding-top: 0.125rem;
+  .header {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: min(105rem, 1680px);
+    margin: 0 auto;
+    .titleRow {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      width: 100%;
+      gap: 0.25rem;
+      .titlePrimary {
+        margin: 0;
+        font-weight: 400;
+        font-size: 6.25rem;
+        letter-spacing: -0.04em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.55);
+        line-height: 1;
+        @include laptop {
+          font-size: 5rem;
+        }
+        @include tablet {
+          font-size: 1.75rem;
+        }
+      }
+      .titleBrand {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        flex-shrink: 0;
+        font-size: 1.5rem;
+        font-weight: 300;
+        letter-spacing: -0.04em;
+        line-height: 1.2;
+        text-transform: uppercase;
+        color: $text-tertiary;
+        text-align: right;
+        @include tablet {
+          font-size: 0.75rem;
+          padding-top: 0.125rem;
+          p:first-child {
+            text-transform: none;
+          }
+        }
+      }
+    }
+    .titleSecondary {
+      margin: 0;
+      font-weight: 400;
+      font-size: 6.25rem;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      color: $text-accent;
+      align-self: flex-end;
+      line-height: 1;
+      @include laptop {
+        font-size: 5rem;
+      }
+      @include tablet {
+        font-size: 1.5rem;
+      }
+    }
   }
 }
 .embeddedWrap {
@@ -1812,7 +1763,6 @@ export default {
   height: 100%;
   min-height: 0;
   overflow: auto;
-
   .carouselWrap {
     width: 100%;
     margin-left: 0;
@@ -1824,7 +1774,6 @@ export default {
     margin-right: 0;
   }
 }
-
 .reservContainer {
   max-width: min(105rem, 1680px);
   margin: 0 auto;
@@ -1836,331 +1785,1365 @@ export default {
     gap: 1.5rem;
     width: stretch;
   }
-}
-
-.tabContentInner {
-  display: block;
-}
-
-:global(.tab-content-enter-active),
-:global(.tab-content-leave-active) {
-  transition:
-    opacity 0.15s ease,
-    transform 0.15s ease;
-}
-
-:global(.tab-content-enter-from),
-:global(.tab-content-leave-to) {
-  opacity: 0;
-  transform: translateY(0.625rem);
-}
-
-:global(.tab-content-enter-to),
-:global(.tab-content-leave-from) {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.switcher {
-  display: flex;
-  justify-content: space-around;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  gap: 4rem;
-  border-bottom: none;
-  @include laptop {
-    gap: 2.5rem;
-  }
-  @include tablet {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0;
-    padding-bottom: 0;
-    -webkit-overflow-scrolling: touch;
+  .switcher {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 4rem;
     border-bottom: none;
-  }
-}
-
-.tabCard {
-  display: flex;
-  flex-direction: column;
-  flex: 0 0 auto;
-  min-width: 0;
-  cursor: pointer;
-
-  @include tablet {
-    display: contents;
-  }
-
-  &:hover .switcherTab {
-    color: $text-white;
-  }
-
-  &:hover .switcherTabVilla {
-    color: rgba(255, 255, 255, 0.85);
+    @include laptop {
+      gap: 2.5rem;
+    }
     @include tablet {
-      color: $text-accent;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      padding-bottom: 0;
+      -webkit-overflow-scrolling: touch;
+      border-bottom: none;
+      .tabCard:nth-child(1) .switcherTab {
+        grid-row: 1;
+        grid-column: 1;
+      }
+      .tabCard:nth-child(2) .switcherTab {
+        grid-row: 1;
+        grid-column: 2;
+      }
+      .tabCard:nth-child(3) .switcherTab {
+        grid-row: 1;
+        grid-column: 3;
+      }
+    }
+    .tabCard {
+      display: flex;
+      flex-direction: column;
+      flex: 0 0 auto;
+      min-width: 0;
+      cursor: pointer;
+      @include tablet {
+        display: contents;
+      }
+      &:hover .switcherTab {
+        color: $text-white;
+      }
+      &:hover .switcherTabVilla {
+        color: rgba(255, 255, 255, 0.85);
+        @include tablet {
+          color: $text-accent;
+        }
+      }
+      .switcherTab {
+        display: flex;
+        align-items: flex-end;
+        gap: 1rem;
+        text-align: left;
+        padding: 0;
+        font-size: 3rem;
+        font-weight: 300;
+        color: $text-accent;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+        transition: color 0.2s;
+        line-height: 1;
+        &:hover {
+          color: rgba(255, 255, 255, 0.85);
+        }
+        @include laptop {
+          font-size: 2.25rem;
+        }
+        @include tablet {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.15rem;
+          font-size: 1rem;
+          font-weight: 400;
+          padding: 0.35rem 0.15rem 0.5rem 0;
+          white-space: nowrap;
+          flex-shrink: 0;
+          border-bottom: 2px solid rgba($text-accent, 0.45);
+        }
+        &.switcherTabActive {
+          color: $text-white;
+          font-weight: 600;
+          @include tablet {
+            border-bottom-color: $text-white;
+            font-weight: 600;
+          }
+          .switcherTabVilla {
+            color: rgba(255, 255, 255, 0.55);
+          }
+        }
+        .switcherTabLabel {
+          display: block;
+        }
+        .switcherTabVilla {
+          display: block;
+          font-size: 1rem;
+          font-weight: 400;
+          color: rgba(255, 255, 255, 0.45);
+          margin-bottom: 0.35rem;
+          @include tablet {
+            display: block !important;
+            font-size: 0.625rem;
+            font-weight: 400;
+            margin-bottom: 0;
+            color: rgba(255, 255, 255, 0.45);
+            line-height: 1.2;
+          }
+        }
+      }
+    }
+  }
+  .tabContentInner {
+    display: block;
+    .mainContent {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      align-items: stretch;
+      width: 100%;
+      .carouselWrap {
+        position: relative;
+        border-radius: 0;
+        display: block;
+        overflow: hidden;
+        background: $bg-footer;
+        min-height: 28rem;
+        user-select: none;
+        width: 100vw;
+        max-width: 100vw;
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        @include tablet {
+          width: 100%;
+          max-width: 100%;
+          margin-left: 0;
+          margin-right: 0;
+          border-radius: 0;
+          min-height: auto;
+        }
+        .carouselPriceOverlay {
+          display: none;
+          @include tablet {
+            display: none;
+            position: absolute;
+            top: 0.75rem;
+            left: 0.75rem;
+            z-index: 10;
+            margin: 0;
+            padding: 0.5rem 0.75rem;
+            background: $bg-overlay;
+            backdrop-filter: blur(0.5rem);
+            border-radius: 0.5rem;
+            color: $text-white;
+            font-size: 0.875rem;
+            font-weight: 500;
+          }
+        }
+        .carouselNavBtn {
+          position: absolute;
+          top: 50%;
+          z-index: 12;
+          width: 3rem;
+          height: 3rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          border: none;
+          border-radius: 50%;
+          background: transparent;
+          cursor: pointer;
+          transform: translateY(-50%);
+          transition: opacity 0.2s;
+          img {
+            width: 3rem;
+            height: 3rem;
+            display: block;
+            object-fit: contain;
+          }
+          &:hover:not(:disabled) {
+            opacity: 0.75;
+          }
+          &.carouselNavBtnDisabled,
+          &:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+          }
+          @include tablet {
+            display: none;
+          }
+          &.carouselNavBtnPrev {
+            left: 1.5rem;
+          }
+          &.carouselNavBtnNext {
+            right: 1.5rem;
+          }
+        }
+        .carousel {
+          width: 100%;
+          height: 46rem;
+          min-height: 0;
+          border-radius: 0;
+          :global(.swiper-wrapper) {
+            height: 100% !important;
+          }
+          :global(.swiper-slide) {
+            position: relative;
+            height: 100% !important;
+            min-height: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: stretch;
+            border-radius: 0;
+            &::after {
+              content: "";
+              position: absolute;
+              inset: 0;
+              background: rgba(0, 0, 0, 0.55);
+              opacity: 1;
+              transition: opacity 0.3s ease;
+              pointer-events: none;
+              z-index: 1;
+            }
+            &:global(.swiper-slide-active)::after {
+              opacity: 0;
+            }
+          }
+          :global(.swiper-button-prev),
+          :global(.swiper-button-next) {
+            display: none !important;
+          }
+          @include tablet {
+            height: 11.25rem;
+            margin: 0;
+            border-radius: 0;
+            :global(.swiper-slide) {
+              border-radius: 0;
+              &::after {
+                display: none;
+              }
+            }
+          }
+        }
+        .carouselPagination {
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 2.5rem;
+          display: none;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          z-index: 2;
+          .carouselPaginationDot {
+            width: 1rem;
+            height: 1rem;
+            padding: 0;
+            border: 2px solid #685137;
+            background-color: #000000;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            &.carouselPaginationDotActive {
+              width: 5rem;
+              background: #004f68;
+              border: 2px solid $bg-transparent-16;
+              border-radius: 1rem;
+            }
+          }
+        }
+        .carouselImg {
+          width: 100%;
+          height: 100%;
+          min-height: 0;
+          max-height: 100%;
+          object-fit: cover;
+          object-position: center;
+          display: block;
+        }
+      }
+      .detailsColumn {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        box-sizing: border-box;
+        .detailsHeader {
+          display: flex;
+          align-items: baseline;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          &.detailsHeaderDesktopOnly {
+            display: none;
+          }
+          .villaTitle {
+            font-size: 2rem;
+            font-weight: 300;
+            margin: 0;
+          }
+          .villaPrice {
+            display: none;
+            font-size: 2rem;
+            color: $text-tertiary;
+            font-weight: 300;
+            margin: 0;
+          }
+        }
+        .villaDesc {
+          font-size: 1rem;
+          font-family: "Montserrat", sans-serif;
+          color: $text-white;
+          font-weight: 300;
+          line-height: 1.2;
+          text-align: justify;
+          margin: 1rem 0 2.5rem 0;
+          :global(p) {
+            margin: 0 0 0.5em;
+            &:last-child {
+              margin-bottom: 0;
+            }
+          }
+          &.villaDescDesktopOnly {
+            display: none !important;
+            @include tablet {
+              display: none;
+            }
+          }
+        }
+        .upcomingDates {
+          display: flex;
+          flex-direction: column;
+          order: -1;
+          width: 100%;
+          padding: 1.5rem 0;
+          box-sizing: border-box;
+          @include tablet {
+            padding: 1.5rem 0 0;
+          }
+          .upcomingDatesTitle {
+            font-size: 1rem;
+            font-weight: 600;
+            color: $text-white;
+            margin: 0 0 0.5rem 0;
+            display: none;
+          }
+          .upcomingDatesNavWrap {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+            min-height: 0;
+            @include tablet {
+              gap: 0;
+            }
+            .upcomingDatesSkeleton {
+              flex: 1;
+              min-width: 0;
+              display: flex;
+              gap: 0.5rem;
+              align-items: center;
+              overflow: hidden;
+              .upcomingDatesSkeletonCard {
+                flex: 0 0 auto;
+                width: 10rem;
+                max-width: 10rem;
+                min-height: 4.5rem;
+                height: auto;
+                border-radius: 0.5rem;
+                background: linear-gradient(
+                  90deg,
+                  rgba(255, 255, 255, 0.06) 0%,
+                  rgba(255, 255, 255, 0.14) 50%,
+                  rgba(255, 255, 255, 0.06) 100%
+                );
+                background-size: 200% 100%;
+                animation: upcomingDatesShimmer 1.5s ease-in-out infinite;
+                @include tablet {
+                  width: 7.5rem;
+                  max-width: 7.5rem;
+                  min-height: 3.75rem;
+                }
+              }
+            }
+            .upcomingDatesNavBtn {
+              flex-shrink: 0;
+              width: 3rem;
+              height: 3rem;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 0;
+              border: none;
+              border-radius: 50%;
+              background: transparent;
+              cursor: pointer;
+              transition: opacity 0.2s;
+              img {
+                width: 3rem;
+                height: 3rem;
+                display: block;
+                object-fit: contain;
+              }
+              &:hover:not(:disabled) {
+                opacity: 0.75;
+              }
+              &.upcomingDatesNavBtnDisabled,
+              &:disabled {
+                opacity: 0.35;
+                cursor: not-allowed;
+                pointer-events: auto;
+              }
+              @include tablet {
+                display: none;
+              }
+              &.upcomingDatesNavBtnPrev,
+              &.upcomingDatesNavBtnNext {
+                border-radius: 50%;
+                transform: none;
+              }
+            }
+            .upcomingDatesScroll {
+              flex: 1;
+              min-width: 0;
+              overflow-x: auto;
+              scroll-snap-type: x proximity;
+              scrollbar-width: none;
+              -ms-overflow-style: none;
+              min-height: 0;
+              &::-webkit-scrollbar {
+                display: none;
+              }
+              .upcomingDatesScrollInner {
+                display: flex;
+                gap: 0.5rem;
+                min-height: 0;
+                align-items: stretch;
+                @include tablet {
+                  gap: 0.5rem;
+                }
+                .dateCard {
+                  $date-card-ease: cubic-bezier(0.4, 0, 0.2, 1);
+                  position: relative;
+                  flex: 0 0 auto;
+                  width: max-content;
+                  max-width: 10rem;
+                  height: auto;
+                  padding: 1rem;
+                  border: 1px solid rgba(255, 255, 255, 0.16);
+                  border-radius: 0.5rem;
+                  background: transparent;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: flex-start;
+                  align-items: stretch;
+                  gap: 0.75rem;
+                  scroll-snap-align: start;
+                  cursor: pointer;
+                  box-sizing: border-box;
+                  transition:
+                    background 0.3s $date-card-ease,
+                    border-color 0.3s $date-card-ease;
+                  @include tablet {
+                    max-width: 7.5rem;
+                    padding: 0.75rem;
+                    border-radius: 0.5rem;
+                    border-color: rgba(255, 255, 255, 0.22);
+                  }
+                  &:hover:not(.dateCardUnavailable):not(.dateCardSelected) {
+                    background: rgba(255, 255, 255, 0.04);
+                    border-color: rgba(255, 255, 255, 0.22);
+                  }
+                  &.dateCardUnavailable {
+                    background: #4a4a4a;
+                    border-color: transparent;
+                    cursor: not-allowed;
+                    pointer-events: none;
+                    .dateCardBusy {
+                      color: rgba(255, 255, 255, 0.9);
+                    }
+                    .dateCardDays,
+                    .dateCardMonth {
+                      color: rgba(255, 255, 255, 0.55);
+                    }
+                    @include tablet {
+                      background: #3d3d3d;
+                      border-color: transparent;
+                    }
+                  }
+                  &.dateCardSelected {
+                    background: #000000;
+                    border-color: #000000;
+                    .dateCardPrice,
+                    .dateCardDays,
+                    .dateCardMonth {
+                      color: $text-white;
+                    }
+                  }
+                  .dateCardDiscount {
+                    position: absolute;
+                    top: 0.35rem;
+                    left: 0.5rem;
+                    margin: 0;
+                    padding: 0;
+                    font-size: 0.75rem;
+                    font-weight: 500;
+                    line-height: 1;
+                    color: $main-red;
+                    background: none;
+                    @include tablet {
+                      top: 0.5rem;
+                      left: 0.625rem;
+                      font-size: 0.625rem;
+                      font-weight: 600;
+                    }
+                  }
+                  .dateCardMain {
+                    flex: 0 0 auto;
+                    display: flex;
+                    align-items: flex-end;
+                    justify-content: flex-end;
+                    min-height: 0;
+                    width: 100%;
+                    .dateCardPrice {
+                      font-size: 1.125rem;
+                      font-weight: 600;
+                      color: $text-white;
+                      line-height: 1.2;
+                      text-align: right;
+                      white-space: nowrap;
+                      @include tablet {
+                        font-size: 0.875rem;
+                        font-weight: 600;
+                        letter-spacing: -0.02em;
+                      }
+                    }
+                    .dateCardBusy {
+                      font-size: 1rem;
+                      font-weight: 600;
+                      letter-spacing: 0.04em;
+                      text-transform: uppercase;
+                      color: $text-white;
+                      line-height: 1.2;
+                      text-align: right;
+                      @include tablet {
+                        font-size: 0.875rem;
+                        font-weight: 600;
+                        letter-spacing: 0.02em;
+                      }
+                    }
+                  }
+                  .dateCardFooter {
+                    display: flex;
+                    align-items: baseline;
+                    justify-content: space-between;
+                    width: 100%;
+                    gap: 0.5rem;
+                    .dateCardDays {
+                      flex-shrink: 0;
+                      font-size: 0.75rem;
+                      font-weight: 300;
+                      color: rgba(255, 255, 255, 0.75);
+                      line-height: 1.2;
+                      text-align: left;
+                      @include tablet {
+                        font-size: 0.6875rem;
+                        color: rgba(255, 255, 255, 0.55);
+                      }
+                    }
+                    .dateCardMonth {
+                      flex-shrink: 0;
+                      font-size: 0.75rem;
+                      font-weight: 300;
+                      color: rgba(255, 255, 255, 0.75);
+                      line-height: 1.2;
+                      text-align: right;
+                      @include tablet {
+                        font-size: 0.6875rem;
+                        color: rgba(255, 255, 255, 0.55);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        .formRow {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+          padding: 0 0 1.5rem 0;
+          @include tablet {
+            flex-direction: column;
+            padding: 0 0 1rem 0;
+            gap: 0;
+            padding: 0;
+          }
+        }
+        .formRowOneRow {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          align-items: flex-start;
+          gap: 1rem;
+          padding: 0 0 1rem 0;
+          & > .dateSelectWrap,
+          & > .formGroupGuests,
+          & > .bookButton {
+            flex: 1 1 calc((100% - 3rem) / 4);
+            width: calc((100% - 3rem) / 4);
+            min-width: 0;
+          }
+          & > .dateSelectWrap,
+          & > .formGroupGuests {
+            position: relative;
+            padding: 0.45rem 0 0 0;
+            gap: 0;
+          }
+          & > .dateSelectWrap .formLabel,
+          & > .formGroupGuests .formLabel {
+            position: absolute;
+            top: 0.45rem;
+            left: 0.75rem;
+            transform: translateY(-50%);
+            margin: 0;
+            padding: 0 0.35rem;
+            font-size: 0.625rem;
+            font-weight: 300;
+            line-height: 1;
+            color: rgba(255, 255, 255, 0.6);
+            background: $text-primary;
+            z-index: 2;
+          }
+          & > .bookButton {
+            padding: 0 1rem;
+            height: 3rem;
+            min-height: 3rem;
+            box-sizing: border-box;
+            margin-top: 0.45rem;
+          }
+          .dateSelectTriggerWrap .formInput,
+          .guestsSelectWrap .formInput {
+            height: 3rem;
+            min-height: 3rem;
+            box-sizing: border-box;
+          }
+          .dateSelectTrigger,
+          .guestsSelectTrigger {
+            display: flex;
+            align-items: center;
+            text-align: left;
+          }
+          .dateSelectTrigger span,
+          .guestsSelectTrigger span {
+            width: 100%;
+            text-align: left;
+            line-height: 1.2;
+          }
+          @include tablet {
+            flex-direction: column;
+            align-items: stretch;
+            & > .dateSelectWrap,
+            & > .formGroupGuests,
+            & > .bookButton {
+              width: 100%;
+              flex: 1 1 100%;
+            }
+            & > .bookButton {
+              height: auto;
+              margin-top: 0.5rem;
+              padding: 0.875rem 1rem;
+            }
+          }
+        }
+        .formRowFullWidth {
+          flex-basis: 100%;
+          width: 100%;
+        }
+        .formGroup {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          padding: 0 0 1.5rem 0;
+          flex: 1;
+          min-width: 0;
+          @include tablet {
+            padding: 0 0 1rem 0;
+          }
+          &:last-child {
+            padding: 0;
+            @include tablet {
+              padding: 0 0 1rem 0;
+            }
+          }
+        }
+        .formLabel {
+          font-size: 1rem;
+          font-weight: 600;
+          color: $text-white;
+          @include tablet {
+            display: none;
+          }
+        }
+        .dateField {
+          .formInput {
+            border-color: #685137 !important;
+          }
+          .formLabel {
+            color: #685137 !important;
+          }
+        }
+        .formGroupContact {
+          padding: 0 0 2.5rem 0;
+          @include tablet {
+            padding: 0 0 1.5rem 0;
+          }
+        }
+        .formContactRow {
+          display: flex;
+          flex-direction: row;
+          gap: 1.5rem;
+          @include tablet {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+          }
+          .formInputUnderline {
+            flex: 1;
+            min-width: 0;
+          }
+        }
+        .formLabelContact {
+          font-size: 2.375rem;
+          font-weight: 300;
+          color: $text-tertiary;
+          margin-bottom: 0.5rem;
+          @include tablet {
+            display: none;
+          }
+        }
+        .formInputUnderline {
+          padding: 1.125rem 0;
+          border: none;
+          border-bottom: 1px solid #685137;
+          border-radius: 0;
+          background: transparent;
+          color: $text-white;
+          font-size: 1rem;
+          font-family: inherit;
+          width: 100%;
+          @include tablet {
+            padding: 0.75rem;
+            width: auto;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid $bg-transparent-16;
+          }
+          &::placeholder {
+            color: $text-tertiary;
+          }
+          &:focus {
+            transition: all 0.2s ease;
+            outline: none;
+            border-bottom-color: $text-white;
+            @include tablet {
+              border-color: $text-white;
+            }
+          }
+        }
+        .formInputError {
+          border-color: $main-red !important;
+          @include tablet {
+            border-color: $main-red !important;
+          }
+        }
+        .bookingValidationMessage {
+          margin: 0 0 0.75rem 0;
+          font-size: 0.875rem;
+          color: $main-red;
+          line-height: 1.3;
+        }
+        .fieldErrorSlot {
+          flex-shrink: 0;
+          min-height: 0.5rem;
+          margin-top: 0.25rem;
+          @include tablet {
+            min-height: 0;
+          }
+        }
+        .fieldError {
+          margin: 0;
+          font-size: 0.75rem;
+          color: $main-red;
+          line-height: 1.3;
+          @include tablet {
+            font-size: 0.6875rem;
+          }
+        }
+        .formInputWrap {
+          position: relative;
+        }
+        .formInput {
+          padding: 1rem;
+          border: 1px solid $bg-transparent-16 !important;
+          border-radius: 0.5rem;
+          background: transparent;
+          color: $text-white;
+          font-size: 1rem;
+          font-family: inherit;
+          @include tablet {
+            padding: 0.75rem;
+            font-size: 1rem;
+          }
+          &::placeholder {
+            color: rgba(255, 255, 255, 0.45);
+          }
+          &.formInputError {
+            border-color: $main-red !important;
+          }
+        }
+        .formInputWithIcon {
+          padding-right: 2.75rem;
+        }
+        .formInputIcon {
+          position: absolute;
+          right: 0.75rem;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 1.25rem;
+          height: 1.25rem;
+          pointer-events: none;
+          opacity: 0.7;
+        }
+        .dateSelectClearBtn {
+          position: absolute;
+          right: 0.5rem;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 1.75rem;
+          height: 1.75rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          border: none;
+          border-radius: 0.25rem;
+          background: transparent;
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 1.5rem;
+          line-height: 1;
+          cursor: pointer;
+          font-family: inherit;
+          transition:
+            color 0.2s,
+            background 0.2s;
+          &:hover {
+            color: $text-white;
+            background: rgba(255, 255, 255, 0.1);
+          }
+        }
+        .dateSelectWrap {
+          position: relative;
+          z-index: 0;
+          &.dateSelectWrapOpen {
+            z-index: 3;
+          }
+        }
+        .dateSelectWrapRow {
+          display: flex;
+          flex-wrap: nowrap;
+          gap: 1rem;
+          align-items: flex-end;
+          flex: 0 1 auto;
+          min-width: 0;
+          .formGroup {
+            padding: 0;
+            flex: 0 1 auto;
+            min-width: 10rem;
+            width: 30rem;
+            @include tablet {
+              width: 37rem;
+            }
+          }
+          .calendarDropdown {
+            position: absolute;
+            left: 0;
+            top: 100%;
+            margin-top: 0.25rem;
+          }
+          @include tablet {
+            flex-wrap: wrap;
+            .formGroup {
+              min-width: 0;
+              width: 100%;
+            }
+          }
+        }
+        .dateSelectTriggerWrap {
+          position: relative;
+          display: block;
+        }
+        .dateSelectTrigger {
+          width: 100%;
+          text-align: left;
+          cursor: pointer;
+          border: none;
+          font-family: inherit;
+          appearance: none;
+        }
+        .dateRangeText {
+          color: inherit;
+        }
+        .calendarDropdown {
+          position: absolute;
+          left: 0;
+          top: calc(100% + 0.25rem);
+          padding: 0.5rem;
+          background: rgba(30, 30, 30, 0.98);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 0.375rem;
+          box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3);
+          --dp-disabled-color: rgba(255, 255, 255, 0.08);
+          --dp-disabled-color-text: rgba(255, 255, 255, 0.35);
+          :global(.dp__cell_inner.dp__cell_disabled) {
+            background: rgba(80, 50, 50, 0.4) !important;
+            color: rgba(255, 255, 255, 0.35) !important;
+            cursor: not-allowed;
+            text-decoration: line-through;
+            opacity: 0.85;
+          }
+          :global(.dp__cell_inner.dp__cell_disabled:hover) {
+            background: rgba(80, 50, 50, 0.5) !important;
+          }
+          :global(.dp__main) {
+            border: none;
+            background: transparent;
+          }
+          :global(.dp__input_wrap) {
+            display: none;
+          }
+          :global(.dp__calendar_wrap),
+          :global(.dp__calendar) {
+            background: transparent;
+          }
+          :global(.dp__cell_inner),
+          :global(.dp__calendar_item) {
+            color: rgba(255, 255, 255, 0.9);
+          }
+          :global(.dp__active_date),
+          :global(.dp__range_start),
+          :global(.dp__range_end),
+          :global(.dp__range_between) {
+            background: rgba(255, 255, 255, 0.2);
+            color: $text-white;
+          }
+          :global(.dp__month_year_select),
+          :global(.dp__arrow_top) {
+            color: $text-white;
+          }
+          :global(.dp__inner_nav:hover),
+          :global(.dp__cell_inner:hover) {
+            background: rgba(255, 255, 255, 0.15);
+          }
+          :global(.dp--time-overlay-btn),
+          :global(.dp__button.dp__overlay_action),
+          :global([data-dp-toggle-time]) {
+            display: none !important;
+          }
+        }
+        .guestsSelectWrap {
+          position: relative;
+          z-index: 0;
+          &.guestsSelectWrapOpen {
+            z-index: 2;
+          }
+        }
+        .guestsSelectTrigger {
+          width: 100%;
+          text-align: left;
+          cursor: pointer;
+          border: none;
+          font-family: inherit;
+          appearance: none;
+        }
+        .guestsPlaceholder {
+          color: rgba(255, 255, 255, 0.45);
+        }
+        .guestsSelectIconOpen {
+          transform: translateY(-50%) rotate(180deg);
+          transition: transform 0.25s ease;
+        }
+        .guestsDropdown {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: calc(100% + 0.25rem);
+          max-height: 20rem;
+          overflow-y: auto;
+          scrollbar-width: 0.125rem;
+          scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+          background: rgba(30, 30, 30, 0.98);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 0.375rem;
+          box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3);
+          .guestsDropdownInner {
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            .guestsRow {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 1rem;
+              .guestsRowLabel {
+                font-size: 0.9375rem;
+                color: rgba(255, 255, 255, 0.9);
+              }
+              .guestsCounter {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                .guestsCounterBtn {
+                  width: 2rem;
+                  height: 2rem;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  border-radius: 50%;
+                  background: rgba(255, 255, 255, 0.15);
+                  border: none;
+                  color: $text-white;
+                  font-size: 1.25rem;
+                  line-height: 1;
+                  cursor: pointer;
+                  font-family: inherit;
+                  transition: background 0.15s;
+                  &:hover:not(:disabled) {
+                    background: rgba(255, 255, 255, 0.25);
+                  }
+                  &:disabled {
+                    opacity: 0.4;
+                    cursor: not-allowed;
+                  }
+                }
+                .guestsCounterValue {
+                  min-width: 1.5rem;
+                  text-align: center;
+                  font-size: 1rem;
+                  font-weight: 500;
+                }
+              }
+            }
+            .guestsChildRow {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 0.5rem;
+              padding: 0.5rem 0.75rem;
+              background: rgba(255, 255, 255, 0.08);
+              border-radius: 0.375rem;
+              .guestsChildLabel {
+                font-size: 0.875rem;
+                color: rgba(255, 255, 255, 0.9);
+              }
+              .guestsChildSelect {
+                margin-left: 0.25rem;
+                padding: 0.25rem 0.5rem;
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 0.25rem;
+                color: $text-white;
+                font-size: 0.875rem;
+                font-family: inherit;
+                cursor: pointer;
+              }
+              .guestsChildRemove {
+                width: 1.5rem;
+                height: 1.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+                background: none;
+                border: none;
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 1.25rem;
+                line-height: 1;
+                cursor: pointer;
+                border-radius: 0.25rem;
+                transition:
+                  color 0.15s,
+                  background 0.15s;
+                &:hover {
+                  color: $text-white;
+                  background: rgba(255, 255, 255, 0.1);
+                }
+              }
+            }
+            .guestsAddChild {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              width: 100%;
+              padding: 0.5rem 0.75rem;
+              background: rgba(255, 255, 255, 0.08);
+              border: none;
+              border-radius: 0.375rem;
+              color: rgba(255, 255, 255, 0.9);
+              font-size: 0.875rem;
+              font-family: inherit;
+              cursor: pointer;
+              text-align: left;
+              transition: background 0.15s;
+              &:hover {
+                background: rgba(255, 255, 255, 0.12);
+              }
+              .guestsAddChildChevron {
+                font-size: 0.75rem;
+                opacity: 0.8;
+              }
+            }
+          }
+        }
+        .bookButton {
+          padding: 1rem 0;
+          background: #004f68;
+          color: $text-white;
+          border: none;
+          border-radius: 0.5rem;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          transition: background 0.2s;
+          width: 46rem;
+          justify-content: center;
+          @include tablet {
+            margin-top: 0.5rem;
+            padding: 0.875rem 1rem;
+          }
+          &:hover:not(:disabled) {
+            background: #006080;
+          }
+          &:disabled {
+            cursor: not-allowed;
+            opacity: 0.9;
+          }
+          .bookButtonSpinner {
+            width: 1.5rem;
+            height: 1.5rem;
+            min-width: 1.5rem;
+            min-height: 1.5rem;
+            flex-shrink: 0;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            border-top-color: $text-white;
+            border-radius: 50%;
+            box-sizing: border-box;
+            animation: spinnerRotate 0.8s linear infinite;
+          }
+          .bookButtonIcon {
+            width: 1.5rem;
+            height: 1.5rem;
+            min-width: 1.5rem;
+            min-height: 1.5rem;
+            flex-shrink: 0;
+          }
+        }
+      }
+    }
+    .bottomBlocks {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      margin: 5rem 0 0 0;
+      @include tablet {
+        grid-template-columns: 1fr;
+        margin-top: 1.5rem;
+        padding-top: 0;
+        border-top: none;
+        gap: 0;
+      }
+      .block {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 0 1.5rem;
+        border-right: 1px solid rgba($text-accent, 0.45);
+        &:last-child {
+          border-right: none;
+        }
+        @include tablet {
+          padding: 0;
+          gap: 0;
+          border-right: none;
+          border-top: 1px solid rgba($text-accent, 0.45);
+          transition: border-top-color 0.2s ease;
+        }
+        &.blockExpanded {
+          @include tablet {
+            .blockTitle {
+              color: $text-white;
+            }
+            .blockTitleIcon {
+              transform: scaleY(-1);
+              filter: brightness(0) invert(1);
+            }
+          }
+          .blockContent {
+            @include tablet {
+              grid-template-rows: 1fr;
+              padding-bottom: 0.75rem;
+            }
+          }
+        }
+        .blockTitle {
+          display: inline-flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 0.5rem;
+          font-size: 2rem;
+          font-weight: 300;
+          letter-spacing: -0.04rem;
+          line-height: 1.2;
+          margin: 0;
+          color: $text-tertiary;
+          text-wrap: balance;
+          @include laptop {
+            font-size: 1.25rem;
+          }
+          @include tablet {
+            font-size: 1.25rem;
+            padding: 1rem 0;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            transition: color 0.2s ease;
+            .blockTitleIcon {
+              flex-shrink: 0;
+              transition:
+                transform 0.2s ease,
+                filter 0.2s ease;
+            }
+          }
+          &.blockTitleDesktopOnly {
+            display: none;
+          }
+          &.blockTitleTabletOnly {
+            display: none;
+          }
+          .blockTitleIcon {
+            width: 1.5rem;
+            height: 1.5rem;
+            flex-shrink: 0;
+            transform: none;
+            opacity: 0.85;
+            @include tablet {
+              transform: none;
+            }
+          }
+        }
+        .blockContent {
+          @include tablet {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.3s ease-out;
+            padding-bottom: 0;
+            & > * {
+              min-height: 0;
+              overflow: hidden;
+            }
+          }
+          .blockDesc {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.4;
+            color: $text-white;
+            :global(p) {
+              margin: 0 0 0.75em;
+              &:last-child {
+                margin-bottom: 0;
+              }
+            }
+            @include tablet {
+              font-size: 0.875rem;
+            }
+          }
+          .blockListInline {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 300;
+            color: $text-white;
+            line-height: 1.6;
+            @include tablet {
+              font-size: 0.875rem;
+            }
+          }
+          .blockListTwoCol {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 300;
+            color: $text-white;
+            line-height: 1.5;
+            @include tablet {
+              font-size: 0.875rem;
+              gap: 0.35rem;
+            }
+            .blockListRow {
+              display: flex;
+              justify-content: space-between;
+              align-items: baseline;
+              gap: 1rem;
+              .blockListLabel {
+                flex-shrink: 1;
+                text-align: left;
+                color: $text-white;
+              }
+              .blockListValue {
+                flex-shrink: 0;
+                text-align: right;
+                color: $text-white;
+              }
+            }
+          }
+          .blockList {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            font-size: 1rem;
+            color: $text-white;
+            line-height: 1.6;
+            li {
+              margin-bottom: 0.25rem;
+            }
+          }
+        }
+      }
+    }
+  }
+  .loadingWrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 20rem;
+    padding: 3rem;
+    .spinner {
+      width: 3rem;
+      height: 3rem;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-top-color: $text-white;
+      border-radius: 50%;
+      animation: spinnerRotate 0.8s linear infinite;
     }
   }
 }
-
-.switcherTab {
-  display: flex;
-  align-items: flex-end;
-  gap: 1rem;
-  text-align: left;
-  padding: 0;
-  font-size: 3rem;
-  font-weight: 300;
-  color: $text-accent;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-  transition: color 0.2s;
-  line-height: 1;
-
-  &:hover {
-    color: rgba(255, 255, 255, 0.85);
-  }
-  @include laptop {
-    font-size: 2.25rem;
-  }
-  @include tablet {
-    font-size: 1rem;
-    padding: 0.5rem 0.25rem 0.5rem 0;
-    white-space: nowrap;
-    flex-shrink: 0;
-    border-bottom: 2px solid $text-accent;
-  }
-}
-
-.switcherTabLabel {
-  display: block;
-}
-
-.switcherTabActive {
-  color: $text-white;
-  font-weight: 600;
-  @include tablet {
-    border-bottom-color: $text-white;
-  }
-}
-
-.switcherTabVilla {
-  display: block;
-  font-size: 1rem;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.45);
-  margin-bottom: 0.35rem;
-
-  @include tablet {
-    display: none !important;
-  }
-}
-
-.switcherTabActive .switcherTabVilla {
-  color: rgba(255, 255, 255, 0.55);
-}
-
-@include tablet {
-  .switcher .tabCard:nth-child(1) .switcherTab {
-    grid-row: 1;
-    grid-column: 1;
-  }
-  .switcher .tabCard:nth-child(2) .switcherTab {
-    grid-row: 1;
-    grid-column: 2;
-  }
-  .switcher .tabCard:nth-child(3) .switcherTab {
-    grid-row: 1;
-    grid-column: 3;
-  }
-}
-
-.villaDescDesktopOnly {
-  display: none !important;
-  @include tablet {
-    display: none;
-  }
-}
-
-.mainContent {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  align-items: stretch;
-  width: 100%;
-}
-
-.carouselWrap {
-  position: relative;
-  border-radius: 0;
-  display: block;
-  overflow: hidden;
-  background: $bg-footer;
-  min-height: 28rem;
-  user-select: none;
-  width: 100vw;
-  max-width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-
-  @include tablet {
-    width: 100%;
-    max-width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-    border-radius: 0;
-    min-height: auto;
-  }
-}
-
-.carouselNavBtn {
-  position: absolute;
-  top: 50%;
-  z-index: 12;
-  width: 3rem;
-  height: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  cursor: pointer;
-  transform: translateY(-50%);
-  transition: opacity 0.2s;
-
-  img {
-    width: 3rem;
-    height: 3rem;
-    display: block;
-    object-fit: contain;
-  }
-
-  &:hover:not(:disabled) {
-    opacity: 0.75;
-  }
-
-  &.carouselNavBtnDisabled,
-  &:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-  }
-
-  @include tablet {
-    display: none;
-  }
-}
-
-.carouselNavBtnPrev {
-  left: 1.5rem;
-}
-
-.carouselNavBtnNext {
-  right: 1.5rem;
-}
-
-.carouselPriceOverlay {
-  display: none;
-
-  @include tablet {
-    display: none;
-    position: absolute;
-    top: 0.75rem;
-    left: 0.75rem;
-    z-index: 10;
-    margin: 0;
-    padding: 0.5rem 0.75rem;
-    background: $bg-overlay;
-    backdrop-filter: blur(0.5rem);
-    border-radius: 0.5rem;
-    color: $text-white;
-    font-size: 0.875rem;
-    font-weight: 500;
-  }
-}
-
-.carouselCounterTotal {
-  color: #685137;
-}
-
-.carouselCounter {
-  display: none;
-  position: absolute;
-  bottom: -0.625rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  margin: 0;
-  padding: 0.75rem 4.5rem;
-  background: $bg-footer;
-  color: $text-white;
-  font-size: 2rem;
-  font-weight: 300;
-  pointer-events: none;
-  clip-path: url(#carouselCounterClip);
-
-  @include tablet {
-    display: block;
-    position: absolute;
-    bottom: 0.5rem;
-    left: 0.5rem;
-    transform: none;
-    padding: 0.625rem 1.5rem;
-    background: $bg-overlay;
-    backdrop-filter: blur(0.5rem);
-    border-radius: 6rem;
-    font-size: 1.5rem;
-    clip-path: none;
-  }
-}
-
-.carouselAllPhotos {
-  position: absolute;
-  top: 1.25rem;
-  right: 1.5rem;
-  z-index: 10;
-  display: none;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.5rem 1rem;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(0.5rem);
-  border-radius: 999px;
-  border: 0;
-  color: $text-white;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition:
-    opacity 0.2s,
-    background 0.2s;
-  &:hover {
-    opacity: 0.95;
-    background: rgba(0, 0, 0, 0.6);
-  }
-  @include tablet {
-    display: inline-flex;
-    top: 0.75rem;
-    right: 0.75rem;
-    padding: 0.4rem 0.75rem;
-    font-size: 0.75rem;
-  }
-}
-
-.carouselAllPhotosText {
-  display: block;
-}
-
-.carouselAllPhotosChevron {
-  flex-shrink: 0;
-  opacity: 0.95;
-}
-
-/* Photo gallery modal */
 .photoGalleryOverlay {
   position: fixed;
   inset: 0;
@@ -2169,197 +3152,164 @@ export default {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-
-.photoGalleryPanel {
-  flex: 1 1 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.photoGalleryHeader {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-  padding-top: max(1rem, env(safe-area-inset-top));
-  background: #000;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.photoGalleryBack {
-  flex-shrink: 0;
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  background: transparent;
-  border: 0;
-  color: $text-white;
-  cursor: pointer;
-  border-radius: 0.5rem;
-  transition:
-    background 0.2s,
-    opacity 0.2s;
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
+  .photoGalleryPanel {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    .photoGalleryHeader {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      padding-top: max(1rem, env(safe-area-inset-top));
+      background: #000;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      .photoGalleryBack {
+        flex-shrink: 0;
+        width: 2.5rem;
+        height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        color: $text-white;
+        cursor: pointer;
+        border-radius: 0.5rem;
+        transition:
+          background 0.2s,
+          opacity 0.2s;
+        &:hover {
+          background: rgba(255, 255, 255, 0.1);
+        }
+      }
+      .photoGalleryTitle {
+        flex: 1;
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: $text-white;
+        text-align: center;
+      }
+      .photoGalleryHeaderSpacer {
+        width: 2.5rem;
+        flex-shrink: 0;
+      }
+    }
+    .photoGalleryGrid {
+      flex: 1 1 0;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 0.5rem;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-auto-rows: minmax(min(40vmin, 12rem), auto);
+      gap: 0.5rem;
+      align-content: start;
+      .photoGalleryItem {
+        position: relative;
+        min-height: min(40vmin, 12rem);
+        overflow: hidden;
+        background: #1a1a1a;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+        display: block;
+        width: 100%;
+        text-align: left;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          pointer-events: none;
+        }
+      }
+    }
+    .photoFullscreenOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10001;
+      background: rgba(0, 0, 0, 0.97);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      box-sizing: border-box;
+      .photoFullscreenClose {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        z-index: 2;
+        width: 2.5rem;
+        height: 2.5rem;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.1);
+        border: 0;
+        border-radius: 50%;
+        color: $text-white;
+        cursor: pointer;
+        transition: background 0.2s;
+        top: max(1rem, env(safe-area-inset-top));
+        right: max(1rem, env(safe-area-inset-right));
+        &:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+      }
+      .photoFullscreenNav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 2;
+        width: 3rem;
+        height: 3rem;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.15);
+        border: 0;
+        border-radius: 50%;
+        color: $text-white;
+        cursor: pointer;
+        transition: background 0.2s;
+        &:hover {
+          background: rgba(255, 255, 255, 0.25);
+        }
+        &.photoFullscreenPrev {
+          left: 1rem;
+        }
+        &.photoFullscreenNext {
+          right: 1rem;
+        }
+      }
+      .photoFullscreenImgWrap {
+        max-width: 100%;
+        max-height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .photoFullscreenImg {
+          max-width: 100%;
+          max-height: 100%;
+          width: auto;
+          height: auto;
+          object-fit: cover;
+          display: block;
+        }
+      }
+    }
   }
 }
-
-.photoGalleryTitle {
-  flex: 1;
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: $text-white;
-  text-align: center;
-}
-
-.photoGalleryHeaderSpacer {
-  width: 2.5rem;
-  flex-shrink: 0;
-}
-
-.photoGalleryGrid {
-  flex: 1 1 0;
-  min-height: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 0.5rem;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-auto-rows: minmax(min(40vmin, 12rem), auto);
-  gap: 0.5rem;
-  align-content: start;
-}
-
-.photoGalleryItem {
-  position: relative;
-  min-height: min(40vmin, 12rem);
-  overflow: hidden;
-  background: #1a1a1a;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-  display: block;
-  width: 100%;
-  text-align: left;
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    pointer-events: none;
-  }
-}
-
-.photoFullscreenOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 10001;
-  background: rgba(0, 0, 0, 0.97);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem;
-  box-sizing: border-box;
-}
-
-.photoFullscreenClose {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  z-index: 2;
-  width: 2.5rem;
-  height: 2.5rem;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.1);
-  border: 0;
-  border-radius: 50%;
-  color: $text-white;
-  cursor: pointer;
-  transition: background 0.2s;
-  top: max(1rem, env(safe-area-inset-top));
-  right: max(1rem, env(safe-area-inset-right));
-  &:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
-}
-
-.photoFullscreenNav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-  width: 3rem;
-  height: 3rem;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.15);
-  border: 0;
-  border-radius: 50%;
-  color: $text-white;
-  cursor: pointer;
-  transition: background 0.2s;
-  &:hover {
-    background: rgba(255, 255, 255, 0.25);
-  }
-}
-
-.photoFullscreenPrev {
-  left: 1rem;
-}
-
-.photoFullscreenNext {
-  right: 1rem;
-}
-
-.photoFullscreenImgWrap {
-  max-width: 100%;
-  max-height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.photoFullscreenImg {
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
-  object-fit: cover;
-  display: block;
-}
-
-:global(.photo-fullscreen-enter-active),
-:global(.photo-fullscreen-leave-active) {
-  transition: opacity 0.2s ease;
-}
-:global(.photo-fullscreen-enter-from),
-:global(.photo-fullscreen-leave-to) {
-  opacity: 0;
-}
-
-:global(.photo-gallery-enter-active),
-:global(.photo-gallery-leave-active) {
-  transition: opacity 0.2s ease;
-}
-:global(.photo-gallery-enter-from),
-:global(.photo-gallery-leave-to) {
-  opacity: 0;
-}
-
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -2371,451 +3321,94 @@ export default {
   white-space: nowrap;
   border: 0;
 }
-
-.carousel {
-  width: 100%;
-  height: 46rem;
-  min-height: 0;
-  border-radius: 0;
-
-  :global(.swiper-wrapper) {
-    height: 100% !important;
-  }
-
-  :global(.swiper-slide) {
-    position: relative;
-    height: 100% !important;
-    min-height: 0;
-    overflow: hidden;
-    display: flex;
-    align-items: stretch;
-    border-radius: 0;
-
-    &::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.55);
-      opacity: 1;
-      transition: opacity 0.3s ease;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    &:global(.swiper-slide-active)::after {
-      opacity: 0;
-    }
-  }
-
-  :global(.swiper-button-prev),
-  :global(.swiper-button-next) {
-    display: none !important;
-  }
-
-  @include tablet {
-    height: 11.25rem;
-    margin: 0;
-    border-radius: 0;
-
-    :global(.swiper-slide) {
-      border-radius: 0;
-
-      &::after {
-        display: none;
-      }
-    }
-  }
+:global(.tab-content-enter-active),
+:global(.tab-content-leave-active) {
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
-
-.carouselPagination {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 2.5rem;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  z-index: 2;
+:global(.tab-content-enter-from),
+:global(.tab-content-leave-to) {
+  opacity: 0;
+  transform: translateY(0.625rem);
 }
-
-.carouselPaginationDot {
-  width: 1rem;
-  height: 1rem;
-  padding: 0;
-  border: 2px solid #685137;
-  background-color: #000000;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &.carouselPaginationDotActive {
-    width: 5rem;
-    background: #004f68;
-    border: 2px solid $bg-transparent-16;
-    border-radius: 1rem;
-  }
+:global(.tab-content-enter-to),
+:global(.tab-content-leave-from) {
+  opacity: 1;
+  transform: translateY(0);
 }
-
-.carouselImg {
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  max-height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
+:global(.photo-fullscreen-enter-active),
+:global(.photo-fullscreen-leave-active) {
+  transition: opacity 0.2s ease;
 }
-
-.detailsColumn {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  box-sizing: border-box;
+:global(.photo-fullscreen-enter-from),
+:global(.photo-fullscreen-leave-to) {
+  opacity: 0;
 }
-
-.upcomingDates {
-  display: flex;
-  flex-direction: column;
-  order: -1;
-  width: 100%;
-  padding: 1.5rem 0;
-  box-sizing: border-box;
-  background: $bg-footer;
-
-  @include tablet {
-    padding: 1.5rem 0 1rem 0;
-  }
+:global(.photo-gallery-enter-active),
+:global(.photo-gallery-leave-active) {
+  transition: opacity 0.2s ease;
 }
-
-.detailsHeader {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  flex-wrap: wrap;
+:global(.photo-gallery-enter-from),
+:global(.photo-gallery-leave-to) {
+  opacity: 0;
 }
-
-.detailsHeaderDesktopOnly {
-  display: none;
+:global(.date-dropdown-enter-active),
+:global(.date-dropdown-leave-active) {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
-
-.villaTitle {
-  font-size: 2rem;
-  font-weight: 300;
-  margin: 0;
+:global(.date-dropdown-enter-from),
+:global(.date-dropdown-leave-to) {
+  opacity: 0;
+  transform: translateY(-0.5rem);
 }
-
-.villaPrice {
-  display: none;
-  font-size: 2rem;
-  color: $text-tertiary;
-  font-weight: 300;
-  margin: 0;
+:global(.date-dropdown-enter-to),
+:global(.date-dropdown-leave-from) {
+  opacity: 1;
+  transform: translateY(0);
 }
-
-.villaDesc {
-  font-size: 1rem;
-  font-family: "Montserrat", sans-serif;
-  color: $text-white;
-  font-weight: 300;
-  line-height: 1.2;
-  text-align: justify;
-  margin: 1rem 0 2.5rem 0;
-  :global(p) {
-    margin: 0 0 0.5em;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
+:global(.field-error-enter-active),
+:global(.field-error-leave-active) {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
-
-.formRow {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 0 0 1.5rem 0;
-
-  @include tablet {
-    flex-direction: column;
-    padding: 0 0 1rem 0;
-    gap: 0;
-    padding: 0;
-  }
+:global(.field-error-enter-from),
+:global(.field-error-leave-to) {
+  opacity: 0;
+  transform: translateY(0.25rem);
 }
-
-.formRowOneRow {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 1rem;
-  padding: 0 0 1rem 0;
-
-  & > .dateSelectWrap,
-  & > .formGroupGuests,
-  & > .bookButton {
-    flex: 1 1 calc((100% - 3rem) / 4);
-    width: calc((100% - 3rem) / 4);
-    min-width: 0;
-  }
-
-  & > .dateSelectWrap,
-  & > .formGroupGuests {
-    position: relative;
-    padding: 0.45rem 0 0 0;
-    gap: 0;
-  }
-
-  & > .dateSelectWrap .formLabel,
-  & > .formGroupGuests .formLabel {
-    position: absolute;
-    top: 0.45rem;
-    left: 0.75rem;
-    transform: translateY(-50%);
-    margin: 0;
-    padding: 0 0.35rem;
-    font-size: 0.625rem;
-    font-weight: 300;
-    line-height: 1;
-    color: rgba(255, 255, 255, 0.6);
-    background: $text-primary;
-    z-index: 2;
-  }
-
-  & > .bookButton {
-    padding: 0 1rem;
-    height: 3rem;
-    min-height: 3rem;
-    box-sizing: border-box;
-    margin-top: 0.45rem;
-  }
-
-  .dateSelectTriggerWrap .formInput,
-  .guestsSelectWrap .formInput {
-    height: 3rem;
-    min-height: 3rem;
-    box-sizing: border-box;
-  }
-
-  .dateSelectTrigger,
-  .guestsSelectTrigger {
-    display: flex;
-    align-items: center;
-    text-align: left;
-  }
-
-  .dateSelectTrigger span,
-  .guestsSelectTrigger span {
-    width: 100%;
-    text-align: left;
-    line-height: 1.2;
-  }
-
-  @include tablet {
-    flex-direction: column;
-    align-items: stretch;
-
-    & > .dateSelectWrap,
-    & > .formGroupGuests,
-    & > .bookButton {
-      width: 100%;
-      flex: 1 1 100%;
-    }
-
-    & > .bookButton {
-      height: auto;
-      margin-top: 0.5rem;
-      padding: 0.875rem 1rem;
-    }
-  }
+:global(.field-error-enter-to),
+:global(.field-error-leave-from) {
+  opacity: 1;
+  transform: translateY(0);
 }
-
-.formRowFullWidth {
-  flex-basis: 100%;
-  width: 100%;
+:global(.guests-dropdown-enter-active),
+:global(.guests-dropdown-leave-active) {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
-
-.formGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 0 0 1.5rem 0;
-  flex: 1;
-  min-width: 0;
-
-  @include tablet {
-    padding: 0 0 1rem 0;
-  }
-
-  &:last-child {
-    padding: 0;
-
-    @include tablet {
-      padding: 0 0 1rem 0;
-    }
-  }
+:global(.guests-dropdown-enter-from),
+:global(.guests-dropdown-leave-to) {
+  opacity: 0;
+  transform: translateY(-0.5rem);
 }
-
-.formLabel {
-  font-size: 1rem;
-  font-weight: 600;
-  color: $text-white;
-  @include tablet {
-    display: none;
-  }
+:global(.guests-dropdown-enter-to),
+:global(.guests-dropdown-leave-from) {
+  opacity: 1;
+  transform: translateY(0);
 }
-
-.dateField {
-  .formInput {
-    border-color: #685137 !important;
-  }
-
-  .formLabel {
-    color: #685137 !important;
-  }
+.nav-btn-enter-active,
+.nav-btn-leave-active {
+  transition: opacity 0.25s ease;
 }
-
-.formGroupContact {
-  padding: 0 0 2.5rem 0;
-
-  @include tablet {
-    padding: 0 0 1.5rem 0;
-  }
+.nav-btn-enter-from,
+.nav-btn-leave-to {
+  opacity: 0;
 }
-
-.formContactRow {
-  display: flex;
-  flex-direction: row;
-  gap: 1.5rem;
-
-  @include tablet {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-}
-
-.formContactRow .formInputUnderline {
-  flex: 1;
-  min-width: 0;
-}
-
-.formLabelContact {
-  font-size: 2.375rem;
-  font-weight: 300;
-  color: $text-tertiary;
-  margin-bottom: 0.5rem;
-  @include tablet {
-    display: none;
-  }
-}
-
-.formInputUnderline {
-  padding: 1.125rem 0;
-  border: none;
-  border-bottom: 1px solid #685137;
-  border-radius: 0;
-  background: transparent;
-  color: $text-white;
-  font-size: 1rem;
-  font-family: inherit;
-  width: 100%;
-  @include tablet {
-    padding: 0.75rem;
-    width: auto;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    border: 1px solid $bg-transparent-16;
-  }
-
-  &::placeholder {
-    color: $text-tertiary;
-  }
-
-  &:focus {
-    transition: all 0.2s ease;
-    outline: none;
-    border-bottom-color: $text-white;
-    @include tablet {
-      border-color: $text-white;
-    }
-  }
-}
-
-.formInputError {
-  border-color: $main-red !important;
-  @include tablet {
-    border-color: $main-red !important;
-  }
-}
-
-.bookingValidationMessage {
-  margin: 0 0 0.75rem 0;
-  font-size: 0.875rem;
-  color: $main-red;
-  line-height: 1.3;
-}
-
-.fieldErrorSlot {
-  flex-shrink: 0;
-  min-height: 0.5rem;
-  margin-top: 0.25rem;
-  @include tablet {
-    min-height: 0;
-  }
-}
-
-.fieldError {
-  margin: 0;
-  font-size: 0.75rem;
-  color: $main-red;
-  line-height: 1.3;
-  @include tablet {
-    font-size: 0.6875rem;
-  }
-}
-
-.upcomingDatesTitle {
-  font-size: 1rem;
-  font-weight: 600;
-  color: $text-white;
-  margin: 0 0 0.5rem 0;
-  display: none;
-}
-
-.upcomingDatesNavWrap {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-  min-height: 5.5rem;
-}
-
-.upcomingDatesSkeleton {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  overflow: hidden;
-}
-
-.upcomingDatesSkeletonCard {
-  flex: 0 0 auto;
-  width: 9.5rem;
-  height: 5.25rem;
-  border-radius: 0.5rem;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.06) 0%,
-    rgba(255, 255, 255, 0.14) 50%,
-    rgba(255, 255, 255, 0.06) 100%
-  );
-  background-size: 200% 100%;
-  animation: upcomingDatesShimmer 1.5s ease-in-out infinite;
-}
-
 @keyframes upcomingDatesShimmer {
   0% {
     background-position: 200% 0;
@@ -2824,907 +3417,6 @@ export default {
     background-position: -200% 0;
   }
 }
-
-.upcomingDatesNavBtn {
-  flex-shrink: 0;
-  width: 3rem;
-  height: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  cursor: pointer;
-  transition: opacity 0.2s;
-
-  img {
-    width: 3rem;
-    height: 3rem;
-    display: block;
-    object-fit: contain;
-  }
-
-  &:hover:not(:disabled) {
-    opacity: 0.75;
-  }
-
-  &.upcomingDatesNavBtnDisabled,
-  &:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-    pointer-events: auto;
-  }
-}
-
-.upcomingDatesNavBtnPrev,
-.upcomingDatesNavBtnNext {
-  border-radius: 50%;
-  transform: none;
-}
-
-.upcomingDatesScroll {
-  flex: 1;
-  min-width: 0;
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  min-height: 5.5rem;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-.upcomingDatesScrollInner {
-  display: flex;
-  gap: 0.5rem;
-  min-height: 5.5rem;
-  align-items: center;
-}
-
-.dateCard {
-  $date-card-ease: cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  flex: 0 0 auto;
-  width: 10rem;
-  height: 5.125rem;
-  padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 0.5rem;
-  background: transparent;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: stretch;
-  scroll-snap-align: start;
-  cursor: pointer;
-  box-sizing: border-box;
-  transition:
-    background 0.3s $date-card-ease,
-    border-color 0.3s $date-card-ease;
-  @include tablet {
-    width: 8.25rem;
-    height: 4.75rem;
-    padding: 0.6rem 0.7rem;
-  }
-  &:hover:not(.dateCardUnavailable):not(.dateCardSelected) {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(255, 255, 255, 0.22);
-  }
-}
-
-.dateCardUnavailable {
-  background: #4a4a4a;
-  border-color: transparent;
-  cursor: not-allowed;
-  pointer-events: none;
-  .dateCardBusy {
-    color: rgba(255, 255, 255, 0.9);
-  }
-  .dateCardDays,
-  .dateCardMonth {
-    color: rgba(255, 255, 255, 0.55);
-  }
-}
-.dateCardSelected {
-  background: #000000;
-  border-color: #000000;
-
-  .dateCardPrice,
-  .dateCardDays,
-  .dateCardMonth {
-    color: $text-white;
-  }
-}
-.dateCardDiscount {
-  position: absolute;
-  top: 0.35rem;
-  left: 0.5rem;
-  margin: 0;
-  padding: 0;
-  font-size: 0.75rem;
-  font-weight: 500;
-  line-height: 1;
-  color: $main-red;
-  background: none;
-  @include tablet {
-    font-size: 0.6875rem;
-  }
-}
-.dateCardMain {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  min-height: 0;
-  width: 100%;
-}
-.dateCardPrice {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: $text-white;
-  line-height: 1.2;
-  text-align: right;
-  white-space: nowrap;
-  @include tablet {
-    font-size: 0.875rem;
-  }
-}
-
-.dateCardBusy {
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: $text-white;
-  line-height: 1.2;
-  text-align: right;
-  @include tablet {
-    font-size: 0.875rem;
-  }
-}
-
-.dateCardFooter {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  width: 100%;
-  gap: 0.5rem;
-}
-
-.dateCardDays {
-  flex-shrink: 0;
-  font-size: 0.75rem;
-  font-weight: 300;
-  color: rgba(255, 255, 255, 0.75);
-  line-height: 1.2;
-  text-align: left;
-  @include tablet {
-    font-size: 0.6875rem;
-  }
-}
-
-.dateCardMonth {
-  flex-shrink: 0;
-  font-size: 0.75rem;
-  font-weight: 300;
-  color: rgba(255, 255, 255, 0.75);
-  line-height: 1.2;
-  text-align: right;
-  @include tablet {
-    font-size: 0.6875rem;
-  }
-}
-
-.formInputWrap {
-  position: relative;
-}
-
-.formInput {
-  padding: 1rem;
-  border: 1px solid $bg-transparent-16 !important;
-  border-radius: 0.5rem;
-  background: transparent;
-  color: $text-white;
-  font-size: 1rem;
-  font-family: inherit;
-  @include tablet {
-    padding: 0.75rem;
-    font-size: 1rem;
-  }
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.45);
-  }
-}
-
-.formInputWithIcon {
-  padding-right: 2.75rem;
-}
-
-.formInput.formInputError {
-  border-color: $main-red !important;
-}
-
-.formInputIcon {
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1.25rem;
-  height: 1.25rem;
-  pointer-events: none;
-  opacity: 0.7;
-}
-
-.dateSelectClearBtn {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1.75rem;
-  height: 1.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: none;
-  border-radius: 0.25rem;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1.5rem;
-  line-height: 1;
-  cursor: pointer;
-  font-family: inherit;
-  transition:
-    color 0.2s,
-    background 0.2s;
-}
-
-.dateSelectClearBtn:hover {
-  color: $text-white;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.dateSelectWrap {
-  position: relative;
-  z-index: 0;
-
-  &.dateSelectWrapOpen {
-    z-index: 3;
-  }
-}
-
-.dateSelectWrapRow {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 1rem;
-  align-items: flex-end;
-  flex: 0 1 auto;
-  min-width: 0;
-
-  .formGroup {
-    padding: 0;
-    flex: 0 1 auto;
-    min-width: 10rem;
-    width: 30rem;
-    @include tablet {
-      width: 37rem;
-    }
-  }
-
-  .calendarDropdown {
-    position: absolute;
-    left: 0;
-    top: 100%;
-    margin-top: 0.25rem;
-  }
-
-  @include tablet {
-    flex-wrap: wrap;
-    .formGroup {
-      min-width: 0;
-      width: 100%;
-    }
-  }
-}
-
-.dateSelectTriggerWrap {
-  position: relative;
-  display: block;
-}
-
-.dateSelectTrigger {
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-  border: none;
-  font-family: inherit;
-  appearance: none;
-}
-
-.dateRangeText {
-  color: inherit;
-}
-
-.calendarDropdown {
-  position: absolute;
-  left: 0;
-  top: calc(100% + 0.25rem);
-  padding: 0.5rem;
-  background: rgba(30, 30, 30, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.375rem;
-  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3);
-
-  --dp-disabled-color: rgba(255, 255, 255, 0.08);
-  --dp-disabled-color-text: rgba(255, 255, 255, 0.35);
-
-  :global(.dp__cell_inner.dp__cell_disabled) {
-    background: rgba(80, 50, 50, 0.4) !important;
-    color: rgba(255, 255, 255, 0.35) !important;
-    cursor: not-allowed;
-    text-decoration: line-through;
-    opacity: 0.85;
-  }
-
-  :global(.dp__cell_inner.dp__cell_disabled:hover) {
-    background: rgba(80, 50, 50, 0.5) !important;
-  }
-
-  :global(.dp__main) {
-    border: none;
-    background: transparent;
-  }
-
-  :global(.dp__input_wrap) {
-    display: none;
-  }
-
-  :global(.dp__calendar_wrap),
-  :global(.dp__calendar) {
-    background: transparent;
-  }
-
-  :global(.dp__cell_inner),
-  :global(.dp__calendar_item) {
-    color: rgba(255, 255, 255, 0.9);
-  }
-
-  :global(.dp__active_date),
-  :global(.dp__range_start),
-  :global(.dp__range_end),
-  :global(.dp__range_between) {
-    background: rgba(255, 255, 255, 0.2);
-    color: $text-white;
-  }
-
-  :global(.dp__month_year_select),
-  :global(.dp__arrow_top) {
-    color: $text-white;
-  }
-
-  :global(.dp__inner_nav:hover),
-  :global(.dp__cell_inner:hover) {
-    background: rgba(255, 255, 255, 0.15);
-  }
-
-  :global(.dp--time-overlay-btn),
-  :global(.dp__button.dp__overlay_action),
-  :global([data-dp-toggle-time]) {
-    display: none !important;
-  }
-}
-
-:global(.date-dropdown-enter-active),
-:global(.date-dropdown-leave-active) {
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
-}
-
-:global(.date-dropdown-enter-from),
-:global(.date-dropdown-leave-to) {
-  opacity: 0;
-  transform: translateY(-0.5rem);
-}
-
-:global(.date-dropdown-enter-to),
-:global(.date-dropdown-leave-from) {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-:global(.field-error-enter-active),
-:global(.field-error-leave-active) {
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
-}
-
-:global(.field-error-enter-from),
-:global(.field-error-leave-to) {
-  opacity: 0;
-  transform: translateY(0.25rem);
-}
-
-:global(.field-error-enter-to),
-:global(.field-error-leave-from) {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.guestsSelectWrap {
-  position: relative;
-  z-index: 0;
-
-  &.guestsSelectWrapOpen {
-    z-index: 2;
-  }
-}
-
-.guestsSelectTrigger {
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-  border: none;
-  font-family: inherit;
-  appearance: none;
-}
-
-.guestsPlaceholder {
-  color: rgba(255, 255, 255, 0.45);
-}
-
-.guestsSelectIconOpen {
-  transform: translateY(-50%) rotate(180deg);
-  transition: transform 0.25s ease;
-}
-
-.guestsDropdown {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% + 0.25rem);
-  max-height: 20rem;
-  overflow-y: auto;
-  scrollbar-width: 0.125rem;
-  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-  background: rgba(30, 30, 30, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.375rem;
-  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3);
-}
-
-.guestsDropdownInner {
-  padding: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.guestsRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.guestsRowLabel {
-  font-size: 0.9375rem;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.guestsCounter {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.guestsCounterBtn {
-  width: 2rem;
-  height: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  border: none;
-  color: $text-white;
-  font-size: 1.25rem;
-  line-height: 1;
-  cursor: pointer;
-  font-family: inherit;
-  transition: background 0.15s;
-
-  &:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.25);
-  }
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-}
-
-.guestsCounterValue {
-  min-width: 1.5rem;
-  text-align: center;
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.guestsChildRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 0.375rem;
-}
-
-.guestsChildLabel {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.guestsChildSelect {
-  margin-left: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.25rem;
-  color: $text-white;
-  font-size: 0.875rem;
-  font-family: inherit;
-  cursor: pointer;
-}
-
-.guestsChildRemove {
-  width: 1.5rem;
-  height: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1.25rem;
-  line-height: 1;
-  cursor: pointer;
-  border-radius: 0.25rem;
-  transition:
-    color 0.15s,
-    background 0.15s;
-
-  &:hover {
-    color: $text-white;
-    background: rgba(255, 255, 255, 0.1);
-  }
-}
-
-.guestsAddChild {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: none;
-  border-radius: 0.375rem;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.875rem;
-  font-family: inherit;
-  cursor: pointer;
-  text-align: left;
-  transition: background 0.15s;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.12);
-  }
-}
-
-.guestsAddChildChevron {
-  font-size: 0.75rem;
-  opacity: 0.8;
-}
-
-:global(.guests-dropdown-enter-active),
-:global(.guests-dropdown-leave-active) {
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
-}
-
-:global(.guests-dropdown-enter-from),
-:global(.guests-dropdown-leave-to) {
-  opacity: 0;
-  transform: translateY(-0.5rem);
-}
-
-:global(.guests-dropdown-enter-to),
-:global(.guests-dropdown-leave-from) {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.bookButton {
-  padding: 1rem 0;
-  background: #004f68;
-  color: $text-white;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: background 0.2s;
-  width: 46rem;
-  justify-content: center;
-  @include tablet {
-    margin-top: 0.5rem;
-    padding: 0.875rem 1rem;
-  }
-}
-
-.bookButton:hover:not(:disabled) {
-  background: #006080;
-}
-
-.bookButton:disabled {
-  cursor: not-allowed;
-  opacity: 0.9;
-}
-
-.bookButtonSpinner {
-  width: 1.5rem;
-  height: 1.5rem;
-  min-width: 1.5rem;
-  min-height: 1.5rem;
-  flex-shrink: 0;
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  border-top-color: $text-white;
-  border-radius: 50%;
-  box-sizing: border-box;
-  animation: spinnerRotate 0.8s linear infinite;
-}
-
-.bookButtonIcon {
-  width: 1.5rem;
-  height: 1.5rem;
-  min-width: 1.5rem;
-  min-height: 1.5rem;
-  flex-shrink: 0;
-}
-
-.bottomBlocks {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin: 5rem 0 0 0;
-
-  @include tablet {
-    grid-template-columns: 1fr;
-    padding-top: 0;
-    border-top: none;
-    gap: 0;
-  }
-}
-
-.block {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 0 1.5rem;
-  border-right: 1px solid rgba($text-accent, 0.45);
-  &:last-child {
-    border-right: none;
-  }
-  @include tablet {
-    padding: 0;
-    gap: 0;
-    border-right: none;
-    border-top: 1px solid rgba($text-accent, 0.45);
-    transition: border-top-color 0.2s ease;
-  }
-}
-
-.blockExpanded {
-  @include tablet {
-    border-top-color: $text-white;
-
-    .blockTitle {
-      color: $text-white;
-    }
-
-    .blockTitleIcon {
-      transform: none;
-      filter: brightness(0) invert(1);
-    }
-  }
-}
-
-.blockTitle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  font-size: 2rem;
-  font-weight: 300;
-  letter-spacing: -0.04rem;
-  line-height: 1.2;
-  margin: 0;
-  color: $text-tertiary;
-  text-wrap: balance;
-
-  @include laptop {
-    font-size: 1.25rem;
-  }
-  @include tablet {
-    font-size: 1.25rem;
-    padding: 1rem 0;
-    cursor: pointer;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    transition: color 0.2s ease;
-    .blockTitleIcon {
-      flex-shrink: 0;
-      transition:
-        transform 0.2s ease,
-        filter 0.2s ease;
-    }
-  }
-}
-
-.blockContent {
-  @include tablet {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 0.3s ease-out;
-    padding-bottom: 0;
-
-    & > * {
-      min-height: 0;
-      overflow: hidden;
-    }
-  }
-}
-
-.blockExpanded .blockContent {
-  @include tablet {
-    grid-template-rows: 1fr;
-    padding-bottom: 0.75rem;
-  }
-}
-
-.blockTitleDesktopOnly {
-  display: none;
-}
-
-.blockTitleTabletOnly {
-  display: none;
-}
-
-.blockTitleIcon {
-  width: 1.5rem;
-  height: 1.5rem;
-  flex-shrink: 0;
-  transform: none;
-  opacity: 0.85;
-  @include tablet {
-    transform: rotate(-90deg);
-  }
-}
-
-.blockDesc {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.4;
-  color: $text-white;
-  :global(p) {
-    margin: 0 0 0.75em;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  @include tablet {
-    font-size: 0.875rem;
-  }
-}
-
-.blockListInline {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 300;
-  color: $text-white;
-  line-height: 1.6;
-  @include tablet {
-    font-size: 0.875rem;
-  }
-}
-
-.blockListTwoCol {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  font-size: 1rem;
-  font-weight: 300;
-  color: $text-white;
-  line-height: 1.5;
-
-  @include tablet {
-    font-size: 0.875rem;
-    gap: 0.35rem;
-  }
-}
-
-.blockListRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1rem;
-}
-
-.blockListLabel {
-  flex-shrink: 1;
-  text-align: left;
-  color: $text-white;
-}
-
-.blockListValue {
-  flex-shrink: 0;
-  text-align: right;
-  color: $text-white;
-}
-
-.blockList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  font-size: 1rem;
-  color: $text-white;
-  line-height: 1.6;
-
-  li {
-    margin-bottom: 0.25rem;
-  }
-}
-
-.nav-btn-enter-active,
-.nav-btn-leave-active {
-  transition: opacity 0.25s ease;
-}
-
-.nav-btn-enter-from,
-.nav-btn-leave-to {
-  opacity: 0;
-}
-
-.loadingWrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 20rem;
-  padding: 3rem;
-}
-
-.spinner {
-  width: 3rem;
-  height: 3rem;
-  border: 3px solid rgba(255, 255, 255, 0.2);
-  border-top-color: $text-white;
-  border-radius: 50%;
-  animation: spinnerRotate 0.8s linear infinite;
-}
-
 @keyframes spinnerRotate {
   to {
     transform: rotate(360deg);
