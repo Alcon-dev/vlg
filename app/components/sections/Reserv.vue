@@ -4,15 +4,15 @@
     :id="embedded ? undefined : 'reserv'"
     :class="embedded ? $style.embeddedWrap : $style.wrapper"
   >
-    <div v-if="!embedded" :class="$style.titleContainer">
-      <div :class="$style.titleMain">
+    <div v-if="!embedded" :class="$style.header">
+      <div :class="$style.titleRow">
         <h2 :class="$style.titlePrimary">ВЫБЕРИТЕ ВИЛЛУ</h2>
-        <h2 :class="$style.titleSecondary">ИЗ НАШЕЙ КОЛЛЕКЦИИ</h2>
+        <div :class="$style.titleBrand">
+          <p>РЕЗИДЕНЦИЯ</p>
+          <p>ВОЛГА</p>
+        </div>
       </div>
-      <div :class="$style.titleBrand">
-        <span :class="$style.titleBrandLabel">РЕЗИДЕНЦИЯ</span>
-        <span :class="$style.titleBrandName">ВОЛГА</span>
-      </div>
+      <h2 :class="$style.titleSecondary">ИЗ НАШЕЙ КОЛЛЕКЦИИ</h2>
     </div>
     <div :class="$style.reservContainer">
       <div :class="$style.switcher">
@@ -104,26 +104,37 @@
                     />
                   </svg>
                 </button>
+                <button
+                  type="button"
+                  :class="[
+                    $style.carouselNavBtn,
+                    $style.carouselNavBtnPrev,
+                    !canCarouselPrev && $style.carouselNavBtnDisabled,
+                  ]"
+                  aria-label="Предыдущее фото"
+                  :disabled="!canCarouselPrev"
+                  @click="carouselPrev"
+                >
+                  <img
+                    :src="arrowLeftIcon"
+                    alt=""
+                    width="48"
+                    height="48"
+                    decoding="async"
+                  />
+                </button>
                 <Swiper
                   :modules="swiperModules"
-                  :slides-per-view="1.12"
+                  :slides-per-view="carouselSlidesPerView"
                   :centered-slides="true"
-                  :space-between="8"
-                  :breakpoints="{
-                    0: {
-                      slidesPerView: 1,
-                      centeredSlides: false,
-                      spaceBetween: 0,
-                    },
-                    769: {
-                      slidesPerView: 1.12,
-                      centeredSlides: true,
-                      spaceBetween: 8,
-                    },
-                  }"
-                  navigation
+                  :space-between="carouselGap"
+                  :initial-slide="0"
+                  :loop="carouselLoop"
+                  :loop-additional-slides="2"
+                  :breakpoints="carouselBreakpoints"
                   :class="$style.carousel"
                   @swiper="onCarouselSwiper"
+                  @slide-change="onCarouselSlideChange"
                 >
                   <SwiperSlide
                     v-for="(photo, photoIndex) in carouselPhotos"
@@ -142,6 +153,25 @@
                     />
                   </SwiperSlide>
                 </Swiper>
+                <button
+                  type="button"
+                  :class="[
+                    $style.carouselNavBtn,
+                    $style.carouselNavBtnNext,
+                    !canCarouselNext && $style.carouselNavBtnDisabled,
+                  ]"
+                  aria-label="Следующее фото"
+                  :disabled="!canCarouselNext"
+                  @click="carouselNext"
+                >
+                  <img
+                    :src="arrowRightIcon"
+                    alt=""
+                    width="48"
+                    height="48"
+                    decoding="async"
+                  />
+                </button>
                 <div
                   v-if="carouselPhotos.length > 0"
                   :class="$style.carouselPagination"
@@ -799,6 +829,10 @@ export default {
       swiperModules: [Navigation],
       carouselSwiper: null,
       carouselActiveIndex: 1,
+      canCarouselPrev: false,
+      canCarouselNext: false,
+      carouselGap: 16,
+      carouselSlidesPerView: 1.35,
       photoGalleryOpen: false,
       fullscreenPhotoIndex: null,
       fullscreenScale: 1,
@@ -892,6 +926,25 @@ export default {
       const photos = this.currentApartment?.photos;
       if (!Array.isArray(photos)) return [];
       return photos.slice(0, 25);
+    },
+    carouselLoop() {
+      return this.carouselPhotos.length > 1;
+    },
+    carouselBreakpoints() {
+      return {
+        0: {
+          slidesPerView: 1,
+          centeredSlides: false,
+          spaceBetween: this.carouselGap,
+          loop: this.carouselLoop,
+        },
+        769: {
+          slidesPerView: this.carouselSlidesPerView,
+          centeredSlides: true,
+          spaceBetween: this.carouselGap,
+          loop: this.carouselLoop,
+        },
+      };
     },
     carouselPaginationActiveDot() {
       const len = this.carouselPhotos.length;
@@ -1145,6 +1198,7 @@ export default {
     }
     this._resizeHandler = () => {
       this.isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+      this.syncCarouselGap();
       this.$nextTick(() => this.updateNearestDatesScrollState());
     };
     this._resizeHandler();
@@ -1169,20 +1223,63 @@ export default {
   methods: {
     onCarouselSwiper(swiper) {
       this.carouselSwiper = swiper;
+      this.syncCarouselGap();
       if (swiper) {
-        this.carouselActiveIndex =
-          (swiper.realIndex ?? swiper.activeIndex ?? 0) + 1;
+        this.carouselActiveIndex = (swiper.realIndex ?? 0) + 1;
+        this.updateCarouselNavState(swiper);
         swiper.on("realIndexChange", (s) => {
           this.carouselActiveIndex = (s.realIndex ?? s.activeIndex ?? 0) + 1;
+          this.updateCarouselNavState(s);
         });
       }
+    },
+    syncCarouselGap() {
+      if (typeof window === "undefined" || typeof document === "undefined")
+        return;
+      const rem =
+        parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      this.carouselGap = rem;
+      const swiper = this.carouselSwiper;
+      if (!swiper?.params) return;
+      swiper.params.spaceBetween = rem;
+      if (swiper.params.breakpoints?.[769]) {
+        swiper.params.breakpoints[769].spaceBetween = rem;
+      }
+      if (swiper.params.breakpoints?.[0]) {
+        swiper.params.breakpoints[0].spaceBetween = rem;
+      }
+      swiper.update?.();
+    },
+    onCarouselSlideChange(swiper) {
+      this.updateCarouselNavState(swiper);
+    },
+    updateCarouselNavState(swiper = this.carouselSwiper) {
+      if (!swiper || this.carouselPhotos.length <= 1) {
+        this.canCarouselPrev = false;
+        this.canCarouselNext = false;
+        return;
+      }
+      this.canCarouselPrev = true;
+      this.canCarouselNext = true;
+    },
+    carouselPrev() {
+      if (!this.canCarouselPrev) return;
+      this.carouselSwiper?.slidePrev?.();
+    },
+    carouselNext() {
+      if (!this.canCarouselNext) return;
+      this.carouselSwiper?.slideNext?.();
     },
     goToCarouselDot(dotIndex) {
       if (!this.carouselSwiper || !this.carouselPhotos.length) return;
       const len = this.carouselPhotos.length;
-      if (dotIndex === 0) this.carouselSwiper.slideTo(0);
-      else if (dotIndex === 1) this.carouselSwiper.slideTo(Math.floor(len / 2));
-      else this.carouselSwiper.slideTo(len - 1);
+      const target =
+        dotIndex === 0 ? 0 : dotIndex === 1 ? Math.floor(len / 2) : len - 1;
+      if (this.carouselLoop && this.carouselSwiper.slideToLoop) {
+        this.carouselSwiper.slideToLoop(target);
+      } else {
+        this.carouselSwiper.slideTo(target);
+      }
     },
     openPhotoGallery() {
       this.photoGalleryOpen = true;
@@ -1638,31 +1735,26 @@ export default {
   }
 }
 
-.titleContainer {
-  max-width: 110rem;
-  margin: 0 auto;
+.header {
+  display: flex;
+  flex-direction: column;
   width: 100%;
+  max-width: 105rem;
+  margin: 0 auto;
+}
+
+.titleRow {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 2rem;
-  @include tablet {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
-  }
-}
-
-.titleMain {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+  width: 100%;
+  gap: 1.5rem;
 }
 
 .titlePrimary {
   margin: 0;
+  font-weight: 400;
   font-size: 6.25rem;
-  font-weight: 300;
   letter-spacing: -0.04em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.55);
@@ -1677,17 +1769,20 @@ export default {
 
 .titleSecondary {
   margin: 0;
+  font-weight: 400;
   font-size: 6.25rem;
-  font-weight: 300;
   letter-spacing: -0.04em;
   text-transform: uppercase;
   color: $text-accent;
+  align-self: flex-end;
   line-height: 1;
   @include laptop {
     font-size: 3.75rem;
   }
   @include tablet {
     font-size: 1.5rem;
+    align-self: center;
+    text-align: center;
   }
 }
 
@@ -1696,34 +1791,18 @@ export default {
   flex-direction: column;
   align-items: flex-end;
   flex-shrink: 0;
-  padding-top: 0.5rem;
-  @include tablet {
-    align-items: flex-start;
-    padding-top: 0;
-  }
-}
-
-.titleBrandLabel {
-  font-size: 0.875rem;
+  font-size: 1.5rem;
   font-weight: 300;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: -0.04em;
   line-height: 1.2;
-}
-
-.titleBrandName {
-  font-size: 2rem;
-  font-weight: 400;
-  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: $text-accent;
-  line-height: 1.2;
+  color: $text-tertiary;
+  text-align: right;
   @include tablet {
-    font-size: 1.25rem;
+    font-size: 0.75rem;
+    padding-top: 0.125rem;
   }
 }
-
 .embeddedWrap {
   background-color: $bg-footer;
   color: $text-white;
@@ -1747,7 +1826,7 @@ export default {
 }
 
 .reservContainer {
-  max-width: 110rem;
+  max-width: 105rem;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -1784,7 +1863,7 @@ export default {
 
 .switcher {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: flex-end;
   flex-wrap: wrap;
   gap: 4rem;
@@ -1827,8 +1906,8 @@ export default {
 
 .switcherTab {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-end;
+  gap: 1rem;
   text-align: left;
   padding: 0;
   font-size: 3rem;
@@ -1910,30 +1989,78 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 0;
-  align-items: center;
+  align-items: stretch;
+  width: 100%;
 }
 
 .carouselWrap {
   position: relative;
   border-radius: 0;
-  display: flex;
+  display: block;
   overflow: hidden;
   background: $bg-footer;
-  height: 100%;
   min-height: 28rem;
   user-select: none;
-  width: 100%;
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
 
   @include tablet {
-    display: flex;
     width: 100%;
+    max-width: 100%;
     margin-left: 0;
     margin-right: 0;
-    border-radius: 1rem;
+    border-radius: 0;
     min-height: auto;
   }
+}
+
+.carouselNavBtn {
+  position: absolute;
+  top: 50%;
+  z-index: 12;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: opacity 0.2s;
+
+  img {
+    width: 3rem;
+    height: 3rem;
+    display: block;
+    object-fit: contain;
+  }
+
+  &:hover:not(:disabled) {
+    opacity: 0.75;
+  }
+
+  &.carouselNavBtnDisabled,
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  @include tablet {
+    display: none;
+  }
+}
+
+.carouselNavBtnPrev {
+  left: 1.5rem;
+}
+
+.carouselNavBtnNext {
+  right: 1.5rem;
 }
 
 .carouselPriceOverlay {
@@ -2246,76 +2373,57 @@ export default {
 }
 
 .carousel {
-  height: 100%;
+  width: 100%;
+  height: 46rem;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
+  border-radius: 0;
 
   :global(.swiper-wrapper) {
-    flex: 1 1 0;
-    min-height: 0;
     height: 100% !important;
   }
 
   :global(.swiper-slide) {
+    position: relative;
     height: 100% !important;
     min-height: 0;
     overflow: hidden;
     display: flex;
     align-items: stretch;
+    border-radius: 0;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      opacity: 1;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    &:global(.swiper-slide-active)::after {
+      opacity: 0;
+    }
   }
 
-  height: 46rem;
-  border-radius: 1.5rem;
-
-  @include tablet {
-    height: 32.25rem;
+  :global(.swiper-button-prev),
+  :global(.swiper-button-next) {
+    display: none !important;
   }
+
   @include tablet {
     height: 11.25rem;
     margin: 0;
-    border-radius: 1.5rem;
-  }
-  :global(.swiper-button-prev),
-  :global(.swiper-button-next) {
-    top: auto;
-    bottom: 2.5rem;
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 50%;
-    background-color: $bg-transparent-16;
-    backdrop-filter: blur(2.5rem);
-    transition: all 0.2s ease;
-    background-image: url("../../assets/img/sections/reserv/swiper-arrow.svg");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 1.5rem;
-    z-index: 1000;
-    svg {
-      display: none;
+    border-radius: 0;
+
+    :global(.swiper-slide) {
+      border-radius: 0;
+
+      &::after {
+        display: none;
+      }
     }
-
-    &::before,
-    &::after {
-      display: none;
-    }
-
-    top: 55%;
-    bottom: auto;
-
-    @include tablet {
-      display: none;
-    }
-  }
-
-  :global(.swiper-button-prev) {
-    left: 2.5rem;
-    transform: translateY(-50%) scaleX(-1);
-  }
-
-  :global(.swiper-button-next) {
-    right: 2.5rem;
-    transform: translateY(-50%);
   }
 }
 
@@ -2354,6 +2462,7 @@ export default {
   height: 100%;
   min-height: 0;
   max-height: 100%;
+  object-fit: cover;
   object-position: center;
   display: block;
 }
@@ -2370,15 +2479,11 @@ export default {
   flex-direction: column;
   order: -1;
   width: 100%;
-  margin-right: calc(-50vw + 50%);
   padding: 1.5rem 0;
   box-sizing: border-box;
   background: $bg-footer;
 
   @include tablet {
-    width: 100%;
-    margin-left: 0;
-    margin-right: 0;
     padding: 1.5rem 0 1rem 0;
   }
 }
@@ -2683,6 +2788,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  width: 100%;
   min-height: 5.5rem;
 }
 
@@ -3400,8 +3506,7 @@ export default {
 .bottomBlocks {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  padding: 2.5rem 0 0 0;
-  border-top: 1px solid rgba($text-accent, 0.45);
+  margin: 5rem 0 0 0;
 
   @include tablet {
     grid-template-columns: 1fr;
@@ -3415,20 +3520,10 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 2rem 1.25rem 0;
+  padding: 0 1.5rem;
   border-right: 1px solid rgba($text-accent, 0.45);
-  &:first-child {
-    padding-left: 0;
-    @include tablet {
-      padding: 0;
-    }
-  }
   &:last-child {
-    padding-right: 0;
     border-right: none;
-    @include tablet {
-      padding: 0;
-    }
   }
   @include tablet {
     padding: 0;
@@ -3448,7 +3543,7 @@ export default {
     }
 
     .blockTitleIcon {
-      transform: rotate(90deg);
+      transform: none;
       filter: brightness(0) invert(1);
     }
   }
@@ -3459,13 +3554,14 @@ export default {
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  font-size: 1.5rem;
-  font-weight: 400;
-  margin: 0;
-  color: $text-accent;
-  text-wrap: balance;
-  letter-spacing: -0.02em;
+  font-size: 2rem;
+  font-weight: 300;
+  letter-spacing: -0.04rem;
   line-height: 1.2;
+  margin: 0;
+  color: $text-tertiary;
+  text-wrap: balance;
+
   @include laptop {
     font-size: 1.25rem;
   }
@@ -3515,23 +3611,22 @@ export default {
 }
 
 .blockTitleIcon {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
   flex-shrink: 0;
-  transform: rotate(-90deg);
+  transform: none;
   opacity: 0.85;
   @include tablet {
-    transform: none;
+    transform: rotate(-90deg);
   }
 }
 
 .blockDesc {
   margin: 0;
   font-size: 1rem;
-  font-weight: 300;
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.5;
-
+  font-weight: 400;
+  line-height: 1.4;
+  color: $text-white;
   :global(p) {
     margin: 0 0 0.75em;
 
@@ -3549,7 +3644,7 @@ export default {
   margin: 0;
   font-size: 1rem;
   font-weight: 300;
-  color: rgba(255, 255, 255, 0.85);
+  color: $text-white;
   line-height: 1.6;
   @include tablet {
     font-size: 0.875rem;
@@ -3562,7 +3657,7 @@ export default {
   gap: 0.5rem;
   font-size: 1rem;
   font-weight: 300;
-  color: rgba(255, 255, 255, 0.85);
+  color: $text-white;
   line-height: 1.5;
 
   @include tablet {
@@ -3581,7 +3676,7 @@ export default {
 .blockListLabel {
   flex-shrink: 1;
   text-align: left;
-  color: rgba(255, 255, 255, 0.65);
+  color: $text-white;
 }
 
 .blockListValue {

@@ -74,7 +74,7 @@ export default defineNuxtConfig({
     homeReserveApiUrl: "https://realtycalendar.ru/v2/widget",
     homeReserveApiKey: "HE3NXyOLk4",
     yandexMapsApiKey: "",
-    apartmentIds: [323833, 333838],
+    apartmentIds: [323833, 333838, 338841],
   },
 
   alias: {
