@@ -10,21 +10,20 @@
         @click.self="close"
       >
         <div :class="$style.panel">
-          <button
-            type="button"
-            :class="$style.closeBtn"
-            aria-label="Закрыть"
-            @click="close"
-          >
-            <span :class="$style.closeLine" />
-            <span :class="$style.closeLine" />
-          </button>
-
           <div :class="$style.header">
-            <div :class="$style.headerTitles">
+            <div :class="$style.headerTop">
               <h1 :class="$style.title">ЗАБРОНИРОВАТЬ ВИЛЛУ</h1>
-              <h2 :class="$style.subtitle">ОТКРОЙТЕ НОВЫЙ ФОРМАТ ОТДЫХА</h2>
+              <button
+                type="button"
+                :class="$style.closeBtn"
+                aria-label="Закрыть"
+                @click="close"
+              >
+                <span :class="$style.closeLine" />
+                <span :class="$style.closeLine" />
+              </button>
             </div>
+            <h2 :class="$style.subtitle">ОТКРОЙТЕ НОВЫЙ ФОРМАТ ОТДЫХА</h2>
             <div :class="$style.villaMeta">
               <span :class="$style.villaLabel">Вилла</span>
               <p :class="$style.villaName">{{ villaTitle }}</p>
@@ -32,31 +31,41 @@
           </div>
 
           <div v-if="galleryPhotos.length" :class="$style.gallery">
-            <div :class="$style.galleryMain">
-              <img
-                :src="galleryPhotos[0].url"
-                :alt="villaTitle"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-            <div :class="$style.galleryGrid">
-              <div
-                v-for="(photo, index) in galleryThumbs"
-                :key="index"
-                :class="$style.galleryThumb"
-              >
+            <button
+              type="button"
+              :class="$style.galleryPrev"
+              aria-label="Предыдущее фото"
+              @click.prevent
+            >
+              <span :class="$style.galleryPrevArrow" aria-hidden="true" />
+            </button>
+            <div :class="$style.galleryInner">
+              <div :class="$style.galleryMain">
                 <img
-                  :src="photo.url"
-                  :alt="`${villaTitle} — фото ${index + 2}`"
+                  :src="galleryPhotos[0].url"
+                  :alt="villaTitle"
                   loading="lazy"
                   decoding="async"
                 />
+              </div>
+              <div :class="$style.galleryGrid">
                 <div
-                  v-if="index === galleryThumbs.length - 1"
-                  :class="$style.galleryAllOverlay"
+                  v-for="(photo, index) in galleryThumbs"
+                  :key="index"
+                  :class="$style.galleryThumb"
                 >
-                  <span>Все фото</span>
+                  <img
+                    :src="photo.url"
+                    :alt="`${villaTitle} — фото ${index + 2}`"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <div
+                    v-if="index === galleryThumbs.length - 1"
+                    :class="$style.galleryAllOverlay"
+                  >
+                    <span>Все фото</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -70,8 +79,8 @@
           >
             <div :class="$style.formGrid">
               <div :class="$style.formLeft">
-                <div :class="$style.fieldRow">
-                  <div :class="[$style.fieldBox, $style.fieldBoxAccent]">
+                <div :class="[$style.fieldRow, $style.fieldRowAccent]">
+                  <div :class="$style.fieldCell">
                     <span :class="$style.fieldLabel">Дата заезда</span>
                     <div :class="$style.fieldValue">
                       <img
@@ -83,7 +92,7 @@
                       <span>{{ checkInFormatted || "—" }}</span>
                     </div>
                   </div>
-                  <div :class="[$style.fieldBox, $style.fieldBoxAccent]">
+                  <div :class="$style.fieldCell">
                     <span :class="$style.fieldLabel">Дата выезда</span>
                     <div :class="$style.fieldValue">
                       <img
@@ -97,8 +106,21 @@
                   </div>
                 </div>
 
-                <div :class="$style.fieldRow">
-                  <div :class="$style.fieldBox">
+                <div
+                  :class="[
+                    $style.fieldRow,
+                    {
+                      [$style.fieldRowHasError]:
+                        firstNameHasError || phoneHasError,
+                    },
+                  ]"
+                >
+                  <div
+                    :class="[
+                      $style.fieldCell,
+                      { [$style.fieldCellError]: firstNameHasError },
+                    ]"
+                  >
                     <span :class="$style.fieldLabel">Имя</span>
                     <input
                       v-model="firstName"
@@ -109,32 +131,31 @@
                       @input="onFirstNameInput"
                     />
                   </div>
-                  <div :class="$style.fieldBox">
+                  <div
+                    :class="[
+                      $style.fieldCell,
+                      { [$style.fieldCellError]: phoneHasError },
+                    ]"
+                  >
                     <span :class="$style.fieldLabel">Телефон</span>
                     <input
-                      v-model="phone"
+                      :value="phone"
                       type="tel"
+                      inputmode="tel"
+                      maxlength="18"
                       :class="$style.fieldInput"
                       placeholder="+7 (XXX) XXX-XX-XX"
                       autocomplete="tel"
+                      @focus="onPhoneFocus"
+                      @keydown="onPhoneKeydown"
                       @input="onPhoneInput"
                       @blur="validatePhoneField"
                     />
                   </div>
                 </div>
-                <div :class="$style.errorsRow">
-                  <p v-if="firstNameErrorText" :class="$style.fieldError">
-                    {{ firstNameErrorText }}
-                  </p>
-                  <p v-else />
-                  <p v-if="phoneErrorText" :class="$style.fieldError">
-                    {{ phoneErrorText }}
-                  </p>
-                  <p v-else />
-                </div>
 
                 <div :class="$style.fieldRow">
-                  <div :class="$style.fieldBox">
+                  <div :class="$style.fieldCell">
                     <span :class="$style.fieldLabel">Кол-во взрослых</span>
                     <div :class="$style.stepper">
                       <button
@@ -160,7 +181,7 @@
                       </button>
                     </div>
                   </div>
-                  <div :class="$style.fieldBox">
+                  <div :class="$style.fieldCell">
                     <span :class="$style.fieldLabel">Детей</span>
                     <div :class="$style.stepper">
                       <button
@@ -198,10 +219,13 @@
                   rows="6"
                 />
               </div>
-            </div>
 
-            <div :class="$style.footer">
-              <div :class="$style.consentBlock">
+              <div
+                :class="[
+                  $style.consentBlock,
+                  { [$style.consentBlockError]: consentHasError },
+                ]"
+              >
                 <label :class="$style.consentLabel">
                   <input
                     v-model="consent"
@@ -229,18 +253,13 @@
                     >.
                   </span>
                 </label>
-                <p v-if="consentErrorText" :class="$style.fieldError">
-                  {{ consentErrorText }}
-                </p>
               </div>
 
               <div :class="$style.cta">
                 <div :class="$style.ctaPrice">
-                  <span
-                    v-if="basePriceFormatted"
-                    :class="$style.ctaPriceOld"
-                    >{{ basePriceFormatted }}</span
-                  >
+                  <span v-if="basePriceFormatted" :class="$style.ctaPriceOld">{{
+                    basePriceFormatted
+                  }}</span>
                   <span :class="$style.ctaPriceCurrent">{{
                     priceFormatted || "—"
                   }}</span>
@@ -255,9 +274,7 @@
                     :class="$style.ctaBtnSpinner"
                     aria-hidden="true"
                   />
-                  <span>{{
-                    submitting ? "Отправка…" : "Забронировать"
-                  }}</span>
+                  <span>{{ submitting ? "Отправка…" : "Забронировать" }}</span>
                 </button>
               </div>
             </div>
@@ -286,12 +303,38 @@ function isValidPersonName(value) {
   return /^[\p{L}]+(?:[\s\-'’]+[\p{L}]+)*$/u.test(t);
 }
 
-function sanitizePhoneInput(value) {
-  return (value || "").replace(/[^\d+()\s\-]/g, "");
-}
-
 function digitsOnly(value) {
   return (value || "").replace(/\D/g, "");
+}
+
+function formatRuPhone(value) {
+  let d = digitsOnly(value);
+  if (!d) return "";
+  if (d[0] === "8") d = `7${d.slice(1)}`;
+  if (d[0] !== "7") d = `7${d}`;
+  d = d.slice(0, 11);
+  const rest = d.slice(1);
+  if (!rest.length) return "+7 ";
+  let out = "+7";
+  out += ` (${rest.slice(0, 3)}`;
+  if (rest.length >= 3) out += ")";
+  if (rest.length > 3) out += ` ${rest.slice(3, 6)}`;
+  if (rest.length > 6) out += `-${rest.slice(6, 8)}`;
+  if (rest.length > 8) out += `-${rest.slice(8, 10)}`;
+  return out;
+}
+
+function caretPosAfterDigits(formatted, digitCount) {
+  if (!formatted) return 0;
+  if (digitCount <= 0) return Math.min(3, formatted.length);
+  let seen = 0;
+  for (let i = 0; i < formatted.length; i++) {
+    if (/\d/.test(formatted[i])) {
+      seen += 1;
+      if (seen === digitCount) return i + 1;
+    }
+  }
+  return formatted.length;
 }
 
 function isValidRuPhoneDigits(d) {
@@ -406,16 +449,16 @@ export default {
         !this.formData?.checkOutDate
       );
     },
-    firstNameErrorText() {
-      return (
-        this.clientErrors.first_name || this.apiErrorLine("first_name") || ""
+    firstNameHasError() {
+      return !!(
+        this.clientErrors.first_name || this.apiErrorLine("first_name")
       );
     },
-    phoneErrorText() {
-      return this.clientErrors.phone || this.apiErrorLine("phone") || "";
+    phoneHasError() {
+      return !!(this.clientErrors.phone || this.apiErrorLine("phone"));
     },
-    consentErrorText() {
-      return this.clientErrors.consent || "";
+    consentHasError() {
+      return !!this.clientErrors.consent;
     },
   },
   watch: {
@@ -424,7 +467,7 @@ export default {
         const prefill = this.$store.state.bookingModalPrefill;
         this.firstName = sanitizePersonName(prefill?.name ?? "");
         this.lastName = "";
-        this.phone = sanitizePhoneInput(prefill?.phone ?? "");
+        this.phone = formatRuPhone(prefill?.phone ?? "");
         this.wishes = "";
         this.consent = false;
         this.adults = Math.max(1, this.formData?.guests?.adults ?? 1);
@@ -497,16 +540,108 @@ export default {
       this.firstName = sanitizePersonName(e.target.value);
       this.clearFieldError("first_name");
     },
+    onPhoneFocus(e) {
+      const d = digitsOnly(this.phone);
+      if (!d || d === "7") {
+        this.phone = "+7 ";
+        this.$nextTick(() => {
+          const el = e.target;
+          const pos = el.value.length;
+          el.setSelectionRange(pos, pos);
+        });
+        return;
+      }
+      this.phone = formatRuPhone(this.phone);
+    },
+    setPhoneValue(el, formatted, digitCount) {
+      this.phone = formatted;
+      this.$nextTick(() => {
+        if (!el) return;
+        const pos = caretPosAfterDigits(formatted, digitCount);
+        el.setSelectionRange(pos, pos);
+      });
+    },
+    onPhoneKeydown(e) {
+      const el = e.target;
+      const start = el.selectionStart ?? 0;
+      const end = el.selectionEnd ?? 0;
+      const allowKeys = [
+        "Backspace",
+        "Delete",
+        "Tab",
+        "Escape",
+        "Enter",
+        "ArrowLeft",
+        "ArrowRight",
+        "ArrowUp",
+        "ArrowDown",
+        "Home",
+        "End",
+      ];
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (allowKeys.includes(e.key)) {
+        // handled below for Backspace/Delete
+      } else if (e.key.length === 1 && !/^\d$/.test(e.key)) {
+        e.preventDefault();
+        return;
+      }
+
+      if (start !== end) return;
+
+      if (e.key === "Backspace") {
+        const val = el.value;
+        if (start <= 3) {
+          e.preventDefault();
+          return;
+        }
+        if (/\D/.test(val[start - 1] || "")) {
+          e.preventDefault();
+          const count = digitsOnly(val.slice(0, start)).length;
+          if (count <= 1) {
+            this.setPhoneValue(el, "+7 ", 1);
+            return;
+          }
+          const digits = digitsOnly(val);
+          const next = digits.slice(0, count - 1) + digits.slice(count);
+          this.setPhoneValue(el, formatRuPhone(next), count - 1);
+          this.clearFieldError("phone");
+        }
+        return;
+      }
+
+      if (e.key === "Delete") {
+        const val = el.value;
+        if (start < val.length && /\D/.test(val[start] || "")) {
+          e.preventDefault();
+          let i = start;
+          while (i < val.length && /\D/.test(val[i])) i += 1;
+          if (i >= val.length) return;
+          const count = digitsOnly(val.slice(0, i + 1)).length;
+          if (count <= 1) return;
+          const digits = digitsOnly(val);
+          const next = digits.slice(0, count - 1) + digits.slice(count);
+          this.setPhoneValue(el, formatRuPhone(next), count - 1);
+          this.clearFieldError("phone");
+        }
+      }
+    },
     onPhoneInput(e) {
-      this.phone = sanitizePhoneInput(e.target.value);
+      const el = e.target;
+      const cursor = el.selectionStart ?? el.value.length;
+      const digitCount = digitsOnly(el.value.slice(0, cursor)).length;
+      let formatted = formatRuPhone(el.value);
+      if (!formatted) formatted = "+7 ";
+      this.setPhoneValue(el, formatted, Math.max(digitCount, 1));
       this.clearFieldError("phone");
     },
     validatePhoneField() {
       const d = digitsOnly(this.phone);
-      if (!d) {
+      if (!d || d === "7") {
+        this.phone = "";
         this.clearFieldError("phone");
         return;
       }
+      this.phone = formatRuPhone(this.phone);
       if (!isValidRuPhoneDigits(d)) {
         this.clientErrors.phone =
           "Введите номер в формате 9XXXXXXXXX или +7/8 9XXXXXXXXX";
@@ -544,7 +679,7 @@ export default {
           "Только буквы, без цифр и символов (минимум 2 символа)";
         invalid = true;
       }
-      if (!phoneDigits) {
+      if (!phoneDigits || phoneDigits === "7") {
         this.clientErrors.phone = "Введите телефон";
         invalid = true;
       } else if (!isValidRuPhoneDigits(phoneDigits)) {
@@ -615,51 +750,60 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   overflow: auto;
   box-sizing: border-box;
+  @include tablet {
+    padding: 0;
+    align-items: stretch;
+    justify-content: stretch;
+    overflow: hidden;
+    background: $bg-brown;
+    backdrop-filter: none;
+  }
 }
-
 .panel {
   position: relative;
   width: 100%;
   max-width: 58rem;
   margin: auto;
   padding: 2.5rem;
-  background: #1f1f1f;
+  background: $bg-brown;
   border-radius: 1.5rem;
-  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.45);
   color: $text-white;
   box-sizing: border-box;
   @include tablet {
-    padding: 1.5rem 1rem 1.25rem;
-    border-radius: 1rem;
+    max-width: none;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 1rem;
+    border-radius: 0;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
-
 .closeBtn {
-  position: absolute;
-  top: 1.25rem;
-  right: 1.25rem;
-  width: 2.5rem;
-  height: 2.5rem;
+  position: relative;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 0.25rem;
   background: transparent;
   color: $text-white;
   cursor: pointer;
-  z-index: 2;
 }
-
 .closeLine {
   position: absolute;
-  width: 1.1rem;
-  height: 1px;
+  width: 1.125rem;
+  height: 1.5px;
   background: currentColor;
   &:first-child {
     transform: rotate(45deg);
@@ -668,126 +812,172 @@ export default {
     transform: rotate(-45deg);
   }
 }
-
 .header {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.15rem;
   margin-bottom: 1.5rem;
-  padding-right: 2.5rem;
+  @include tablet {
+    margin-bottom: 1.25rem;
+  }
 }
-
-.headerTitles {
+.headerTop {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
-
 .title {
   margin: 0;
-  font-size: 2.5rem;
+  font-size: 2.75rem;
   font-weight: 400;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
   text-transform: uppercase;
   line-height: 1;
+  color: $text-white;
   @include laptop {
-    font-size: 2rem;
+    font-size: 2.25rem;
   }
   @include tablet {
     font-size: 1.35rem;
   }
 }
-
 .subtitle {
-  margin: 0.15rem 0 0;
-  font-size: 2.5rem;
+  margin: 0;
+  align-self: flex-end;
+  text-align: right;
+  font-size: 2.75rem;
   font-weight: 300;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
   text-transform: uppercase;
   color: $text-accent;
   line-height: 1;
   @include laptop {
-    font-size: 2rem;
+    font-size: 2.25rem;
   }
   @include tablet {
     font-size: 1.35rem;
   }
 }
-
 .villaMeta {
   display: flex;
   align-items: baseline;
   gap: 0.75rem;
+  margin-top: 1.35rem;
+  @include tablet {
+    margin-top: 0.85rem;
+  }
 }
-
 .villaLabel {
   font-size: 1rem;
   font-weight: 300;
-  color: rgba(255, 255, 255, 0.8);
+  line-height: 1;
+  color: $text-white;
+  @include tablet {
+    font-size: 0.75rem;
+  }
 }
-
 .villaName {
   margin: 0;
-  font-size: 3rem;
+  font-size: 3.25rem;
   font-weight: 600;
   line-height: 1;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
+  color: $text-white;
   @include laptop {
-    font-size: 2.25rem;
+    font-size: 2.5rem;
   }
   @include tablet {
     font-size: 1.75rem;
   }
 }
-
 .gallery {
-  display: grid;
-  grid-template-columns: 1.35fr 1fr;
-  gap: 0.5rem;
+  position: relative;
   margin-bottom: 1.5rem;
+  @include tablet {
+    margin-bottom: 1.25rem;
+  }
+}
+.galleryInner {
+  display: grid;
+  grid-template-columns: 1.45fr 1fr;
+  gap: 0;
+  align-items: stretch;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: #111;
   @include tablet {
     grid-template-columns: 1fr;
   }
 }
-
-.galleryMain {
-  border-radius: 0.75rem;
-  overflow: hidden;
-  min-height: 14rem;
-  background: #111;
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    min-height: 14rem;
-  }
-}
-
-.galleryGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 0.5rem;
+.galleryPrev {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  z-index: 2;
+  transform: translateY(-50%);
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
   @include tablet {
     display: none;
   }
 }
-
-.galleryThumb {
-  position: relative;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  min-height: 6.5rem;
+.galleryPrevArrow {
+  display: block;
+  width: 0.65rem;
+  height: 0.65rem;
+  border-left: 2px solid $text-white;
+  border-bottom: 2px solid $text-white;
+  transform: rotate(45deg);
+  margin-left: 0.2rem;
+}
+.galleryMain {
+  min-height: 16.5rem;
+  height: 100%;
   background: #111;
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
-    min-height: 6.5rem;
+    min-height: 16.5rem;
+  }
+  @include tablet {
+    min-height: 11rem;
+    img {
+      min-height: 11rem;
+    }
   }
 }
-
+.galleryGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 0;
+  min-height: 16.5rem;
+  @include tablet {
+    display: none;
+  }
+}
+.galleryThumb {
+  position: relative;
+  min-height: 0;
+  background: #111;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
 .galleryAllOverlay {
   position: absolute;
   inset: 0;
@@ -798,65 +988,130 @@ export default {
   font-size: 1rem;
   font-weight: 400;
   color: $text-white;
+  letter-spacing: -0.02em;
 }
-
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
-
 .formGrid {
   display: grid;
-  grid-template-columns: 1.35fr 1fr;
-  gap: 0.75rem;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1.5rem;
   align-items: stretch;
   @include tablet {
     grid-template-columns: 1fr;
   }
 }
-
 .formLeft {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   min-width: 0;
 }
-
 .fieldRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 0.5rem;
+  background: transparent;
+  box-sizing: border-box;
   @include tablet {
     grid-template-columns: 1fr;
   }
 }
-
+.fieldRowAccent {
+  border-color: $text-accent;
+  .fieldLabel {
+    color: $text-accent;
+  }
+  .fieldCell + .fieldCell {
+    border-left-color: $text-accent;
+    @include tablet {
+      border-left: none;
+      border-top-color: $text-accent;
+    }
+  }
+}
+.fieldCell {
+  position: relative;
+  min-width: 0;
+  padding: 0.9rem 1rem 0.75rem;
+  box-sizing: border-box;
+  & + & {
+    border-left: 1px solid rgba(255, 255, 255, 0.28);
+    @include tablet {
+      border-left: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.28);
+    }
+  }
+}
+.fieldCellError {
+  z-index: 1;
+  .fieldLabel {
+    color: $main-red;
+    background: $bg-brown;
+    z-index: 2;
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: 0;
+    border: 1px solid $main-red;
+    pointer-events: none;
+    box-sizing: border-box;
+  }
+  &:first-child::after {
+    border-radius: 0.5rem 0 0 0.5rem;
+    @include tablet {
+      border-radius: 0.5rem 0.5rem 0 0;
+    }
+  }
+  &:last-child::after {
+    border-radius: 0 0.5rem 0.5rem 0;
+    @include tablet {
+      border-radius: 0 0 0.5rem 0.5rem;
+    }
+  }
+}
+.fieldRowHasError {
+  .fieldCell + .fieldCell.fieldCellError {
+    border-left-color: $main-red;
+    @include tablet {
+      border-top-color: $main-red;
+    }
+  }
+  .fieldCellError + .fieldCell {
+    border-left-color: $main-red;
+    @include tablet {
+      border-top-color: $main-red;
+    }
+  }
+}
 .fieldBox {
   position: relative;
   min-width: 0;
   border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 0.65rem;
-  padding: 0.85rem 1rem 0.7rem;
+  border-radius: 0.5rem;
+  padding: 0.9rem 1rem 0.75rem;
   background: transparent;
+  box-sizing: border-box;
 }
-
-.fieldBoxAccent {
-  border-color: $text-accent;
-}
-
 .fieldLabel {
   position: absolute;
   top: 0;
   left: 0.85rem;
+  z-index: 2;
   transform: translateY(-50%);
-  padding: 0 0.3rem;
-  background: #1f1f1f;
+  padding: 0 0.35rem;
+  background: $bg-brown;
   font-size: 0.75rem;
   line-height: 1;
-  color: $text-accent;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.55);
 }
-
 .fieldValue {
   display: flex;
   align-items: center;
@@ -866,13 +1121,12 @@ export default {
   font-weight: 400;
   color: $text-white;
 }
-
 .fieldIcon {
   width: 1rem;
   height: 1rem;
-  opacity: 0.85;
+  flex-shrink: 0;
+  opacity: 0.9;
 }
-
 .fieldInput {
   width: 100%;
   min-height: 1.75rem;
@@ -887,7 +1141,6 @@ export default {
     color: rgba(255, 255, 255, 0.4);
   }
 }
-
 .stepper {
   display: flex;
   align-items: center;
@@ -895,7 +1148,6 @@ export default {
   gap: 0.5rem;
   min-height: 1.75rem;
 }
-
 .stepperBtn {
   width: 1.75rem;
   height: 1.75rem;
@@ -905,22 +1157,21 @@ export default {
   border: none;
   background: transparent;
   color: $text-white;
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   line-height: 1;
   cursor: pointer;
+  padding: 0;
   &:disabled {
     opacity: 0.35;
     cursor: default;
   }
 }
-
 .stepperValue {
   flex: 1;
   text-align: center;
   font-size: 1rem;
   color: $text-white;
 }
-
 .commentBox {
   display: flex;
   flex-direction: column;
@@ -929,7 +1180,6 @@ export default {
     min-height: 8rem;
   }
 }
-
 .commentInput {
   flex: 1;
   width: 100%;
@@ -946,67 +1196,43 @@ export default {
     color: rgba(255, 255, 255, 0.4);
   }
 }
-
-.errorsRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-  margin-top: -0.35rem;
-  @include tablet {
-    grid-template-columns: 1fr;
-  }
-}
-
-.fieldError {
-  margin: 0;
-  font-size: 0.75rem;
-  color: $main-red;
-  line-height: 1.3;
-}
-
-.footer {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1.5rem;
-  @include tablet {
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
-
 .consentBlock {
-  flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+  align-self: end;
+  @include tablet {
+    order: 1;
+  }
 }
-
+.consentBlockError {
+  .consentCheckbox {
+    border-color: $main-red;
+  }
+}
 .consentInput {
   position: absolute;
   opacity: 0;
   pointer-events: none;
 }
-
 .consentLabel {
   display: flex;
   align-items: flex-start;
   gap: 0.65rem;
   cursor: pointer;
 }
-
 .consentCheckbox {
   position: relative;
-  width: 1.1rem;
-  height: 1.1rem;
+  width: 1.5rem;
+  height: 1.5rem;
   margin-top: 0.1rem;
   flex-shrink: 0;
   border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 0.2rem;
   background: transparent;
+  box-sizing: border-box;
 }
-
 .consentCheckmark {
   position: absolute;
   inset: 0;
@@ -1014,7 +1240,7 @@ export default {
   &::before {
     content: "";
     position: absolute;
-    left: 0.28rem;
+    left: 0.3rem;
     top: 0.08rem;
     width: 0.28rem;
     height: 0.55rem;
@@ -1023,74 +1249,68 @@ export default {
     transform: rotate(45deg);
   }
 }
-
 .consentInput:checked + .consentCheckbox {
-  background: #2f6fed;
-  border-color: #2f6fed;
+  background: #004f68;
+  border-color: #004f68;
   .consentCheckmark {
     display: block;
   }
 }
-
 .consentText {
   font-size: 0.75rem;
-  line-height: 1.35;
-  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.45);
 }
-
 .consentLink {
   color: inherit;
   text-decoration: underline;
   text-underline-offset: 0.12em;
 }
-
 .cta {
   display: flex;
-  flex-shrink: 0;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
   border: 1px solid $text-accent;
-  border-radius: 0.65rem;
+  border-radius: 0.5rem;
   overflow: hidden;
-  min-width: 18rem;
+  align-self: start;
   @include tablet {
-    width: 100%;
-    min-width: 0;
+    order: 2;
   }
 }
-
 .ctaPrice {
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 0.15rem;
-  padding: 0.75rem 1.1rem;
-  background: #171717;
-  min-width: 8rem;
+  padding: 0.75rem 1.25rem;
+  min-width: 8.5rem;
 }
-
 .ctaPriceOld {
   font-size: 0.875rem;
-  color: $text-accent;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.45);
   text-decoration: line-through;
   line-height: 1.2;
 }
-
 .ctaPriceCurrent {
   font-size: 1.25rem;
   font-weight: 600;
   color: $text-white;
   line-height: 1.2;
 }
-
 .ctaBtn {
   flex: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 3.5rem;
-  padding: 0.75rem 1.5rem;
+  min-height: 3.75rem;
+  min-width: 10rem;
+  padding: 0.75rem 1.75rem;
   border: none;
-  background: #6b635c;
+  background: #555555;
   color: $text-white;
   font-size: 1rem;
   font-weight: 500;
@@ -1098,14 +1318,13 @@ export default {
   cursor: pointer;
   transition: background 0.2s;
   &:hover:not(:disabled) {
-    background: #7a7169;
+    background: #636363;
   }
   &:disabled {
     opacity: 0.55;
     cursor: default;
   }
 }
-
 .ctaBtnSpinner {
   width: 1rem;
   height: 1rem;
@@ -1114,20 +1333,24 @@ export default {
   border-radius: 50%;
   animation: bookingSpin 0.7s linear infinite;
 }
-
 @keyframes bookingSpin {
   to {
     transform: rotate(360deg);
   }
 }
-
 :global(.booking-modal-enter-active),
 :global(.booking-modal-leave-active) {
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease;
+  @include tablet {
+    transition: transform 0.35s ease;
+  }
 }
-
 :global(.booking-modal-enter-from),
 :global(.booking-modal-leave-to) {
   opacity: 0;
+  @include tablet {
+    opacity: 1;
+    transform: translateY(100%);
+  }
 }
 </style>
