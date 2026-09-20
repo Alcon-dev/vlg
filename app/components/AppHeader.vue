@@ -9,10 +9,7 @@
             :data-faq-index="item.faqIndex"
             @click="onMenuAnchorClick"
           >
-            {{ item.titleShort != null ? item.titleShort : item.title }}
-            <span v-if="item.titleLong" :class="$style.hideOnTablet">{{
-              item.titleLong
-            }}</span>
+            {{ item.title }}
           </a>
         </li>
       </ul>
@@ -50,7 +47,7 @@
         :class="$style.bookingButton"
         @click="openBookingModal"
       >
-        Забронировать
+        Выбрать виллу
       </button>
     </div>
 
@@ -106,7 +103,7 @@
               menuOpen = false;
             "
           >
-            Забронировать
+            Выбрать виллу
           </button>
         </nav>
       </div>
@@ -134,15 +131,13 @@ export default {
       phoneLink: "tel:+79171274080",
       menu: [
         { title: "Виллы", href: "#reserv" },
-        { title: "Услуги", href: "#services" },
-        { title: "Расположение", href: "#location" },
+        { title: "Сервис", href: "#services" },
         {
-          title: "Правила проживания",
-          titleShort: "Правила",
-          titleLong: " проживания",
+          title: "Правила",
           href: "#faq",
           faqIndex: 0,
         },
+        { title: "Контакты", href: "#location" },
       ],
       socialLinks: [
         { link: "https://vk.com/volga_doma", icon: "vk" },
@@ -197,348 +192,335 @@ export default {
 header {
   position: relative;
   z-index: 1;
-  // display: grid;
-  // grid-template-columns: 1fr auto 1fr;
   display: flex;
   justify-content: space-between;
-  padding: 1.5rem;
-  max-width: 110rem;
+  align-items: center;
+  padding: 1.5rem 0;
+  max-width: 105rem;
   margin: 0 auto;
-  align-items: center;
-}
-
-.menu {
-  display: flex;
-  align-items: center;
-}
-
-.mobileCall {
-  display: none;
-}
-
-.burgerButton {
-  display: none;
-}
-
-.logo {
-  width: 11.875rem;
-  height: auto;
-  position: absolute;
-  left: 50%;
-  top: calc(50% + 0.813rem);
-  transform: translate(-50%, -50%);
-  width: 11.875rem;
-}
-
-.menuList,
-.socialLinks {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.socialLinks {
-  justify-content: end;
-}
-
-.menuItem {
-  font-weight: 600;
-  padding: 0;
-  border-radius: 6.25rem;
-  background-color: $bg-transparent-16;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-  @include tablet {
-    padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+  .menu {
+    display: flex;
+    align-items: center;
+    flex: 1 1 0;
+    min-width: 0;
+    .menuList {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      .menuItem {
+        padding: 0;
+        border-radius: 6.25rem;
+        border: 1px solid $bg-transparent-16;
+        background: transparent;
+        box-sizing: border-box;
+        transition:
+          background 0.2s ease,
+          border-color 0.2s ease;
+        &:hover {
+          background: rgba(255, 255, 255, 0.08);
+          border-color: rgba(255, 255, 255, 0.35);
+        }
+        .menuLink {
+          display: block;
+          padding: 0.875rem 1.25rem;
+          color: $text-white;
+          text-decoration: none;
+          border-radius: 6.25rem;
+          font-size: 1rem;
+          font-weight: 600;
+          line-height: 1.2;
+          white-space: nowrap;
+          @include laptop {
+            padding: 0.625rem 1rem;
+            font-size: 0.875rem;
+          }
+          &:hover {
+            cursor: pointer;
+          }
+        }
+      }
+    }
   }
-  &:hover {
-    background-color: $bg-transparent-40;
-  }
-}
-
-.menuLink {
-  display: block;
-  padding: 0.875rem 1.25rem;
-  color: inherit;
-  text-decoration: none;
-  border-radius: 6.25rem;
-  transition: background 0.3s ease;
-  @include tablet {
-    padding: 0.875rem 1rem;
-  }
-  &:hover {
-    cursor: pointer;
-  }
-}
-
-.socialLink {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
-  background-color: $bg-transparent-16;
-  backdrop-filter: blur(10px);
-  transition: background-color 0.2s;
-  -webkit-backdrop-filter: blur(10px);
-  &:hover {
-    transition: background-color 0.2s;
-    background-color: $bg-transparent-40;
-  }
-
-  :global(img) {
-    width: 1.25rem;
-    height: 1.25rem;
-    object-fit: contain;
-  }
-}
-
-.bookingButton {
-  font-weight: 600;
-  padding: 0.875rem 1.25rem;
-  border-radius: 6.25rem;
-  background-color: $bg-transparent-16;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-  border: none;
-  color: $text-white;
-  margin: 0 0 0 0.5rem;
-  font-size: 1rem;
-  &:hover {
-    cursor: pointer;
-    background-color: $bg-transparent-40;
-  }
-}
-
-.hideOnTablet {
-  @include tablet {
-    display: none;
-  }
-}
-
-@include tablet {
-  header {
-    grid-template-columns: auto 1fr auto;
-    padding: 1rem 1rem 1.25rem;
-    gap: 0.5rem;
-  }
-
-  .menu,
-  .socialLinks {
-    display: none;
-  }
-
   .mobileCall {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 3rem;
-    height: 3rem;
-    border-radius: 50%;
-    background-color: $bg-transparent-16;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    transition: background-color 0.2s;
-    color: $text-white;
-
-    &:hover {
-      background-color: $bg-transparent-40;
-    }
-
-    :global(img) {
-      width: 1.25rem;
-      height: 1.25rem;
-      object-fit: contain;
-      filter: brightness(0) invert(1);
-    }
+    display: none;
   }
-
   .burgerButton {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 0.4rem;
-    width: 3rem;
-    height: 3rem;
-    border-radius: 50%;
-    border: none;
-    background-color: $bg-transparent-16;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    cursor: pointer;
-    transition: background-color 0.2s;
-
-    &:hover {
-      background-color: $bg-transparent-40;
-    }
+    display: none;
   }
-
-  .burgerLine {
-    display: block;
-    width: 1.25rem;
-    height: 2px;
-    background: $text-white;
-    border-radius: 1px;
-    transition:
-      transform 0.3s ease,
-      opacity 0.3s ease;
-  }
-
-  .menuOpen .burgerLine:nth-child(1) {
-    transform: translateY(0.42rem) rotate(45deg);
-  }
-  .menuOpen .burgerLine:nth-child(2) {
-    opacity: 0;
-  }
-  .menuOpen .burgerLine:nth-child(3) {
-    transform: translateY(-0.42rem) rotate(-45deg);
-  }
-
   .logo {
-    width: 8rem;
-    justify-self: center;
-  }
-}
-
-.mobileMenuOverlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  background: $bg-overlay;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
-
-@include tablet {
-  .mobileMenuOverlay {
-    display: block;
-  }
-
-  .mobileMenu {
+    width: 8.625rem;
+    height: auto;
     position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: stretch;
-    background: $bg-footer;
-    padding: 5rem 1.5rem 2rem;
-    display: flex;
-    flex-direction: column;
-    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
-  }
-
-  .mobileMenuClose {
-    position: absolute;
+    left: 50%;
     top: 1.5rem;
-    right: 1rem;
-    width: 2.875rem;
-    height: 2.875rem;
-    padding: 0;
-    border: none;
-    border-radius: 50%;
-    background: $bg-transparent-16;
-    cursor: pointer;
+    transform: translateX(-50%);
+    flex-shrink: 0;
+  }
+  .socialLinks {
     display: flex;
     align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s;
-    z-index: 1;
-
-    &:hover {
-      background: $bg-transparent-40;
-    }
-  }
-
-  .closeLine {
-    position: absolute;
-    width: 1.125rem;
-    height: 2px;
-    background: $text-white;
-    border-radius: 1px;
-
-    &:nth-child(1) {
-      transform: rotate(45deg);
-    }
-    &:nth-child(2) {
-      transform: rotate(-45deg);
-    }
-  }
-
-  .mobileMenuList {
-    list-style: none;
+    gap: 0.5rem;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .mobileMenuItem a {
-    display: block;
-    padding: 0.875rem 1rem;
-    color: $text-white;
-    font-weight: 600;
-    text-decoration: none;
-    border-radius: 0.5rem;
-    transition: background-color 0.2s;
-
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+    list-style: none;
+    flex: 1 1 0;
+    justify-content: flex-end;
+    min-width: 0;
+    .socialLink {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0;
+      background: transparent;
+      transition: opacity 0.2s ease;
+      &:hover {
+        opacity: 0.7;
+      }
+      :global(img) {
+        width: 1.25rem;
+        height: 1.25rem;
+        object-fit: contain;
+        filter: brightness(0) invert(1);
+      }
+    }
+    .bookingButton {
+      margin-left: 0.5rem;
+      padding: 0.875rem 1.25rem;
+      border-radius: 6.25rem;
+      border: 1px solid $bg-transparent-16;
+      background: transparent;
+      box-sizing: border-box;
+      color: $text-white;
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.2;
+      white-space: nowrap;
+      cursor: pointer;
+      transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+      @include laptop {
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+      }
+      &:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.35);
+      }
     }
   }
-
-  .mobileMenuSocial {
-    margin-top: auto;
-    padding-top: 1.5rem;
-    display: flex;
-    justify-content: space-evenly;
+  .hideOnTablet {
+    @include tablet {
+      display: none;
+    }
+  }
+  .mobileMenuOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: $bg-overlay;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  @include tablet {
+    padding: 1rem 0 1.25rem;
     gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-
-  .mobileSocialLink {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    border-radius: 50%;
-    background-color: $bg-transparent-16;
-    color: $text-white;
-    transition: background-color 0.2s;
-
-    &:hover {
-      background-color: $bg-transparent-40;
+    .menu,
+    .socialLinks {
+      display: none;
     }
-
-    :global(img) {
-      width: 1.125rem;
-      height: 1.125rem;
-      object-fit: contain;
-      filter: brightness(0) invert(1);
+    .mobileCall {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      border: 1px solid $bg-transparent-16;
+      background: transparent;
+      box-sizing: border-box;
+      transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+      color: $text-white;
+      &:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.35);
+      }
+      :global(img) {
+        width: 1.25rem;
+        height: 1.25rem;
+        object-fit: contain;
+        filter: brightness(0) invert(1);
+      }
     }
-  }
-
-  .mobileBookingButton {
-    margin-top: 1rem;
-    width: 100%;
-    padding: 0.875rem 1.25rem;
-    border-radius: 6.25rem;
-    border: none;
-    background-color: $bg-transparent-16;
-    color: $text-white;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.2s;
-
-    &:hover {
-      background-color: $bg-transparent-40;
+    .burgerButton {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 0.4rem;
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      border: 1px solid $bg-transparent-16;
+      background: transparent;
+      box-sizing: border-box;
+      cursor: pointer;
+      transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+      &:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.35);
+      }
+      .burgerLine {
+        display: block;
+        width: 1.25rem;
+        height: 2px;
+        background: $text-white;
+        border-radius: 1px;
+        transition:
+          transform 0.3s ease,
+          opacity 0.3s ease;
+      }
+    }
+    &.menuOpen {
+      .burgerLine:nth-child(1) {
+        transform: translateY(0.42rem) rotate(45deg);
+      }
+      .burgerLine:nth-child(2) {
+        opacity: 0;
+      }
+      .burgerLine:nth-child(3) {
+        transform: translateY(-0.42rem) rotate(-45deg);
+      }
+    }
+    .logo {
+      width: 8rem;
+      top: 1rem;
+    }
+    .mobileMenuOverlay {
+      display: block;
+      .mobileMenu {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: stretch;
+        background: $bg-footer;
+        padding: 5rem 1.5rem 2rem;
+        display: flex;
+        flex-direction: column;
+        box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
+        .mobileMenuClose {
+          position: absolute;
+          top: 1.5rem;
+          right: 1rem;
+          width: 2.875rem;
+          height: 2.875rem;
+          padding: 0;
+          border: none;
+          border-radius: 50%;
+          background: $bg-transparent-16;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background-color 0.2s;
+          z-index: 1;
+          &:hover {
+            background: $bg-transparent-40;
+          }
+          .closeLine {
+            position: absolute;
+            width: 1.125rem;
+            height: 2px;
+            background: $text-white;
+            border-radius: 1px;
+            &:nth-child(1) {
+              transform: rotate(45deg);
+            }
+            &:nth-child(2) {
+              transform: rotate(-45deg);
+            }
+          }
+        }
+        .mobileMenuList {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+          .mobileMenuItem {
+            a {
+              display: block;
+              padding: 0.875rem 1rem;
+              color: $text-white;
+              font-weight: 600;
+              text-decoration: none;
+              border-radius: 0.5rem;
+              transition: background-color 0.2s;
+              &:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+              }
+            }
+          }
+        }
+        .mobileMenuSocial {
+          margin-top: auto;
+          padding-top: 1.5rem;
+          display: flex;
+          justify-content: space-evenly;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+          .mobileSocialLink {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 2.75rem;
+            height: 2.75rem;
+            border-radius: 50%;
+            background-color: $bg-transparent-16;
+            color: $text-white;
+            transition: background-color 0.2s;
+            &:hover {
+              background-color: $bg-transparent-40;
+            }
+            :global(img) {
+              width: 1.125rem;
+              height: 1.125rem;
+              object-fit: contain;
+              filter: brightness(0) invert(1);
+            }
+          }
+        }
+        .mobileBookingButton {
+          margin-top: 1rem;
+          width: 100%;
+          padding: 0.875rem 1.25rem;
+          border-radius: 6.25rem;
+          border: none;
+          background-color: $bg-transparent-16;
+          color: $text-white;
+          font-weight: 600;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: background-color 0.2s;
+          &:hover {
+            background-color: $bg-transparent-40;
+          }
+        }
+      }
     }
   }
 }

@@ -1,19 +1,19 @@
 <template>
-  <section id="main" :class="$style.wrapper">
+  <section
+    id="main"
+    :class="[$style.wrapper, isPlaying && $style.wrapperPlaying]"
+  >
     <div :class="$style.media">
-      <picture v-if="posterWebpUrl">
-        <source :srcset="posterWebpUrl" type="image/webp" />
-        <img
-          :src="posterJpgUrl"
-          :class="[$style.poster, { [$style.posterHidden]: isPlaying }]"
-          alt=""
-          width="1920"
-          height="1080"
-          decoding="async"
-          loading="eager"
-          fetchpriority="high"
-        />
-      </picture>
+      <img
+        :src="heroImage"
+        :class="[$style.poster, { [$style.posterHidden]: isPlaying }]"
+        alt=""
+        width="1920"
+        height="1080"
+        decoding="async"
+        loading="eager"
+        fetchpriority="high"
+      />
       <video
         ref="videoRef"
         :class="$style.video"
@@ -21,61 +21,78 @@
         muted
         playsinline
         preload="none"
-        :poster="posterJpgUrl"
+        :poster="heroImage"
         @pause="isPlaying = false"
         @ended="isPlaying = false"
         @playing="onVideoPlaying"
       >
         <source v-if="videoSrc" :src="videoSrc" type="video/webm" />
       </video>
-      <button
-        type="button"
-        :class="[
-          $style.videoButton,
-          { [$style.videoButtonPlaying]: isPlaying },
-        ]"
-        :aria-label="isPlaying ? 'Пауза' : 'Смотреть видео'"
-        @click="isPlaying ? pauseVideo() : playVideo()"
-      >
-        <span :class="$style.iconFlipContainer">
-          <span
-            :class="[
-              $style.iconWrap,
-              $style.iconPlay,
-              { [$style.iconFlipped]: isPlaying },
-            ]"
-            aria-hidden="true"
-          >
-            <span :class="$style.playIcon" />
-          </span>
-          <span
-            :class="[
-              $style.iconWrap,
-              $style.iconPause,
-              { [$style.iconFlipped]: !isPlaying },
-            ]"
-            aria-hidden="true"
-          >
-            <span :class="$style.pauseIcon" />
-          </span>
-        </span>
-      </button>
     </div>
 
     <AppHeader />
 
-    <div :class="$style.features">
-      <div
-        v-for="item in features"
-        :key="item.text"
-        :class="$style.featureItem"
-      >
-        <AppIcon
-          :name="item.icon"
-          :alt="item.text"
-          :class="$style.featureIcon"
-        />
-        <span :class="$style.featureText">{{ item.text }}</span>
+    <button
+      v-if="isPlaying"
+      type="button"
+      :class="$style.pauseButton"
+      aria-label="Пауза"
+      @click="pauseVideo"
+    >
+      <span :class="$style.pauseIcon" aria-hidden="true" />
+    </button>
+
+    <div v-show="!isPlaying" :class="$style.content">
+      <div :class="$style.heroRow">
+        <div :class="$style.heroCopy">
+          <h1 :class="$style.title">
+            <span :class="$style.titlePrimary">ИСКУССТВО УЕДИНЕНИЯ</span>
+            <span :class="$style.titleSecondary">
+              <span>ФИЛОСОФИЯ</span>
+              <span>ТИШИНЫ</span>
+            </span>
+          </h1>
+          <div :class="$style.descRow">
+            <div :class="$style.desc">
+              <p>
+                Приватная резиденция на берегу Волги — это эксклюзивный формат
+                отдыха в сосновом лесу для тех, кто перерос классические
+                загородные отели. Всего 15 минут от города, и вы попадаете в мир
+                тишины и безупречного сервиса: три премиальных виллы, общий
+                подогреваемый бассейн и вдохновляющий панорамный вид на Волгу и
+                Жигулевские горы.
+              </p>
+              <p>
+                Здесь вам не придется думать о мелочах: персональный консьерж
+                полностью организует ваше пребывание — от изысканного питания до
+                любых сценариев отдыха и развлечений.
+              </p>
+            </div>
+            <button
+              type="button"
+              :class="$style.videoCircle"
+              aria-label="Смотреть видеообзор резиденции"
+              @click="playVideo"
+            >
+              <span :class="$style.videoCircleText">ВИДЕООБЗОР РЕЗИДЕНЦИИ</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div :class="$style.features">
+        <div
+          v-for="item in features"
+          :key="item.text"
+          :class="$style.featureItem"
+        >
+          <AppIcon
+            :name="item.icon"
+            :alt="item.text"
+            :class="$style.featureIcon"
+          />
+          <span :class="$style.featureText">{{ item.text }}</span>
+        </div>
       </div>
     </div>
   </section>
@@ -84,39 +101,28 @@
 <script>
 import AppHeader from "@app/components/AppHeader.vue";
 import mainVideo from "@app/assets/video/main.webm";
+import heroImage from "@app/assets/img/sections/main-block/hero.webp";
 
 export default {
   name: "MainBlock",
   components: {
     AppHeader,
   },
-  setup() {
-    const { app } = useRuntimeConfig();
-    const baseURL = app?.baseURL || "/";
-    const publicBaseURL = baseURL.endsWith("/") ? baseURL : `${baseURL}/`;
-    return { publicBaseURL };
-  },
   data() {
     return {
-      // Lazy-load video only on user interaction to cut initial payload/TTFB
+      heroImage,
       videoSrc: null,
       isPlaying: false,
       features: [
-        { icon: "mainBlockMapPin", text: "Уникальное расположение" },
-        { icon: "mainBlockUsers", text: "Размещение до 30 гостей" },
-        { icon: "mainBlockFlag", text: "Подогреваемый бассейн 12м." },
-        { icon: "mainBlockEye", text: "Панорамный\u00A0вид\nна\u00A0горы\u00A0и\u00A0волгу" },
+        { icon: "mainBlockMapPin", text: "Уникальное\nрасположение" },
+        { icon: "mainBlockUsers", text: "Размещение до\n30 гостей" },
+        { icon: "mainBlockFlag", text: "Подогреваемый\nбассейн 12м." },
+        {
+          icon: "mainBlockEye",
+          text: "Панорамный вид\nна горы и Волгу",
+        },
       ],
     };
-  },
-  computed: {
-    posterWebpUrl() {
-      return `${this.publicBaseURL}main-poster.webp`;
-    },
-    posterJpgUrl() {
-      // Fallback for browsers/video-poster that may not support WebP
-      return `${this.publicBaseURL}main-poster.webp`;
-    },
   },
   methods: {
     async playVideo() {
@@ -147,218 +153,345 @@ export default {
   color: $text-white;
   min-height: 100vh;
   overflow: hidden;
-}
-
-.media {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: #000;
-}
-
-.poster {
-  position: absolute;
-  inset: 0;
-  // Keep preview above the <video> element, because the video has no source
-  // until user interaction and otherwise paints its own (black) background.
-  z-index: 2;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 1;
-  // Use filter instead of opacity so layers behind never show through.
-  filter: brightness(0.85);
-  transition: opacity 0.25s ease;
-  pointer-events: none;
-}
-
-.posterHidden {
-  opacity: 0;
-  visibility: hidden;
-}
-
-.video {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  // Don’t paint a black rectangle above the poster while the video source is not loaded.
-  background: transparent;
-  opacity: 1;
-  // Match poster look without allowing bleed-through.
-  filter: brightness(0.85);
-}
-
-.videoButton {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 3;
-  width: 10rem;
-  height: 10rem;
-  border-radius: 50%;
-  border: none;
-  background: $bg-transparent-16;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  cursor: pointer;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    background 0.2s,
-    backdrop-filter 0.2s;
-
-  &:hover {
-    background: $bg-transparent-40;
-  }
-
-  &.videoButtonPlaying {
-    background: transparent;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-
-    &:hover {
-      background: $bg-transparent-16;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+  flex-direction: column;
+  &.wrapperPlaying {
+    :global(header) {
+      position: relative;
+      z-index: 4;
     }
   }
-}
-
-.iconFlipContainer {
-  position: relative;
-  width: 3rem;
-  height: 3rem;
-  perspective: 120px;
-  perspective-origin: center;
-  transform-style: preserve-3d;
-}
-
-.iconWrap {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.iconPlay {
-  transform: rotateY(0deg);
-
-  &.iconFlipped {
-    transform: rotateY(-180deg);
+  .media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: #000;
+    .poster {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 1;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+      &.posterHidden {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+    .video {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: transparent;
+    }
   }
-}
-
-.iconPause {
-  transform: rotateY(180deg);
-
-  &:not(.iconFlipped) {
-    transform: rotateY(0deg);
+  .pauseButton {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    width: 10rem;
+    height: 10rem;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    background: $bg-transparent-16;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.2s ease;
+    &:hover {
+      background: $bg-transparent-40;
+    }
+    @include laptop {
+      width: 8rem;
+      height: 8rem;
+    }
+    @include tablet {
+      width: 6rem;
+      height: 6rem;
+    }
   }
-}
-
-.playIcon {
-  width: 0;
-  height: 0;
-  margin-left: 1.75rem;
-  border-style: solid;
-  border-width: 1.5rem 1.5rem 1.5rem 2.5rem;
-  border-color: transparent transparent transparent $text-white;
-}
-
-.pauseIcon {
-  width: 2rem;
-  height: 3rem;
-  display: flex;
-  gap: 0.5rem;
-  align-items: stretch;
-
-  &::before,
-  &::after {
-    content: "";
-    width: 0.75rem;
+  .pauseIcon {
+    width: 2rem;
     height: 3rem;
-    background: $text-white;
-    border-radius: 2px;
-  }
-}
-
-.features {
-  max-width: 110rem;
-  margin: 0 auto;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  justify-content: center;
-  flex-wrap: wrap;
-  padding: 1.5rem 1rem;
-  @include tablet {
-    grid-template-columns: repeat(2, 1fr);
-    padding: 0.75rem 0.5rem 1rem;
-    gap: 0.25rem;
-  }
-}
-
-.featureItem {
-  display: flex;
-  align-items: center;
-  width: auto;
-  gap: 1.5rem;
-  text-align: center;
-  padding: 1.5rem;
-  @include tablet {
-    padding: 1rem 1.25rem;
-    gap: 1rem;
-  }
-  @include tablet {
-    padding: 0.5rem 0.375rem;
+    display: flex;
     gap: 0.5rem;
+    align-items: stretch;
+    &::before,
+    &::after {
+      content: "";
+      width: 0.75rem;
+      height: 3rem;
+      background: $text-white;
+      border-radius: 2px;
+    }
+    @include laptop {
+      width: 1.5rem;
+      height: 2.25rem;
+      gap: 0.375rem;
+      &::before,
+      &::after {
+        width: 0.55rem;
+        height: 2.25rem;
+      }
+    }
+    @include tablet {
+      width: 1.125rem;
+      height: 1.75rem;
+      gap: 0.3rem;
+      &::before,
+      &::after {
+        width: 0.4rem;
+        height: 1.75rem;
+      }
+    }
   }
-}
-
-.featureIcon {
-  width: 3rem;
-  height: 3rem;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
-  @include tablet {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-  @include tablet {
-    width: 1.5rem;
-    height: 1.5rem;
-    flex-shrink: 0;
-  }
-}
-
-.featureText {
-  font-size: 1.5rem;
-  line-height: 1.3;
-  font-weight: 600;
-  text-align: left;
-  white-space: pre-line;
-  max-width: 14rem;
-  @include tablet {
-    font-size: 1rem;
-    max-width: 10rem;
-  }
-  @include tablet {
-    font-size: 0.6875rem;
-    line-height: 1.25;
-    max-width: none;
-    font-weight: 300;
+  .content {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8rem;
+    width: 100%;
+    max-width: 105rem;
+    margin: 0 auto;
+    padding: 5rem 0 2.5rem;
+    box-sizing: border-box;
+    @include laptop {
+      padding: 2rem 0;
+    }
+    @include tablet {
+      padding: 1.5rem 0 1rem;
+      gap: 1.5rem;
+    }
+    .heroRow {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      .heroCopy {
+        display: flex;
+        flex-direction: column;
+        gap: 5rem;
+        width: 100%;
+        min-width: 0;
+        @include laptop {
+          gap: 1.5rem;
+        }
+        @include tablet {
+          gap: 1rem;
+        }
+        .title {
+          display: flex;
+          flex-direction: column;
+          margin: 0;
+          font-weight: 400;
+          text-transform: uppercase;
+          line-height: 1;
+          .titlePrimary {
+            display: block;
+            font-size: 4.5rem;
+            letter-spacing: -0.04em;
+            color: $text-white;
+            @include laptop {
+              font-size: 3rem;
+            }
+            @include tablet {
+              font-size: 1.75rem;
+            }
+          }
+          .titleSecondary {
+            display: flex;
+            justify-content: space-between;
+            gap: 1.5rem;
+            width: 100%;
+            font-size: 4.5rem;
+            letter-spacing: -0.04em;
+            color: $text-accent;
+            @include laptop {
+              font-size: 3rem;
+            }
+            @include tablet {
+              font-size: 1.5rem;
+              gap: 1rem;
+            }
+          }
+        }
+        .descRow {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 2rem;
+          width: 100%;
+          @include tablet {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1.25rem;
+          }
+          .desc {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 30rem;
+            min-width: 0;
+            p {
+              margin: 0;
+              font-size: 1.125rem;
+              font-weight: 600;
+              line-height: 1.2;
+              color: $text-white;
+              @include laptop {
+                font-size: 0.875rem;
+              }
+              @include tablet {
+                font-size: 0.8125rem;
+              }
+            }
+          }
+          .videoCircle {
+            flex-shrink: 0;
+            width: 15rem;
+            height: 15rem;
+            border-radius: 50%;
+            border: 2px solid $bg-white;
+            background: transparent;
+            color: $text-white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            box-sizing: border-box;
+            transition:
+              background 0.2s ease,
+              border-color 0.2s ease;
+            &:hover {
+              background: rgba(255, 255, 255, 0.08);
+              border-color: $text-white;
+            }
+            @include laptop {
+              width: 11rem;
+              height: 11rem;
+              padding: 1.25rem;
+            }
+            @include tablet {
+              width: 8.5rem;
+              height: 8.5rem;
+              padding: 1rem;
+              align-self: center;
+            }
+            .videoCircleText {
+              font-size: 1.125rem;
+              font-weight: 600;
+              paragraph-spacing: 0.5rem;
+              line-height: 1.2;
+              text-align: center;
+              text-transform: uppercase;
+              @include laptop {
+                font-size: 0.75rem;
+                max-width: 6rem;
+              }
+              @include tablet {
+                font-size: 0.625rem;
+                max-width: 5rem;
+              }
+            }
+          }
+        }
+      }
+    }
+    .features {
+      max-width: 57rem;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      align-items: stretch;
+      gap: 3rem;
+      padding: 1.5rem;
+      border-radius: 1.5rem;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-sizing: border-box;
+      @include tablet {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0;
+        border-radius: 1rem;
+      }
+      .featureItem {
+        position: relative;
+        flex: 1 1 0;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 1rem;
+        text-align: center;
+        &:not(:last-child)::after {
+          content: "";
+          position: absolute;
+          top: 50%;
+          right: -1.5rem;
+          transform: translate(50%, -50%);
+          width: 1px;
+          height: 4.5rem;
+          background: $text-accent;
+        }
+        @include tablet {
+          gap: 0.5rem;
+          padding: 0.75rem 0.5rem;
+          &:not(:last-child)::after {
+            display: none;
+          }
+          &:nth-child(odd) {
+            border-right: 1px solid $text-accent;
+          }
+          &:nth-child(-n + 2) {
+            border-bottom: 1px solid $text-accent;
+          }
+        }
+        .featureIcon {
+          width: 3rem;
+          height: 3rem;
+          object-fit: contain;
+          flex-shrink: 0;
+          @include tablet {
+            width: 1.75rem;
+            height: 1.75rem;
+          }
+        }
+        .featureText {
+          margin: 0;
+          font-size: 1rem;
+          line-height: 1.25;
+          font-weight: 400;
+          text-align: center;
+          color: $text-white;
+          white-space: pre-line;
+          @include tablet {
+            font-size: 0.75rem;
+            font-weight: 300;
+          }
+        }
+      }
+    }
   }
 }
 </style>
