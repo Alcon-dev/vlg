@@ -97,15 +97,15 @@ export default {
 .wrapper {
   display: flex;
   flex-direction: column;
-  padding: 7.5rem 2rem;
+  padding: 7.5rem 0;
   gap: 5rem;
   color: $text-primary;
   @include laptop {
-    padding: 5rem 2rem;
+    padding: 5rem 0;
     gap: 3rem;
   }
   @include tablet {
-    padding: 2.5rem 1rem;
+    padding: 2.5rem 0;
     gap: 1.5rem;
   }
   .header {

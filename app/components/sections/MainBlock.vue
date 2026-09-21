@@ -365,15 +365,14 @@ export default {
     justify-content: space-between;
     gap: 8rem;
     width: 100%;
-    max-width: min(105rem, 1680px);
-    margin: 0 auto;
-    padding: 5rem 2.5rem 2.5rem;
+    @include content-width;
+    padding: 5rem 0 2.5rem;
     box-sizing: border-box;
     @include laptop {
-      padding: 2rem;
+      padding: 2rem 0;
     }
     @include tablet {
-      padding: 0.75rem 1rem 1.25rem;
+      padding: 0.75rem 0 1.25rem;
       gap: 1.25rem;
       justify-content: flex-start;
     }

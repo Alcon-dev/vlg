@@ -65,8 +65,6 @@ export default {
 
 <style lang="scss" module>
 .wrapper {
-  max-width: min(105rem, 1680px);
-  width: 100%;
-  margin: 0 auto;
+  @include content-width;
 }
 </style>

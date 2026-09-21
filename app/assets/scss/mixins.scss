@@ -2,6 +2,16 @@ $desktop: 1920px;
 $laptop: 1280px;
 $tablet: 768px;
 
+$content-max: 1680px;
+$content-gutter: 20px;
+
+@mixin content-width {
+  width: min(#{$content-max}, calc(100% - #{2 * $content-gutter}));
+  max-width: $content-max;
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+
 @mixin desktop {
   @media (max-width: $desktop) {
     @content;

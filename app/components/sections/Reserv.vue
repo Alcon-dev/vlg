@@ -1677,7 +1677,7 @@ export default {
 .wrapper {
   display: flex;
   flex-direction: column;
-  padding: 7.5rem 2.5rem;
+  padding: 7.5rem 0;
   background-color: $bg-brown;
   color: $text-white;
   gap: 5rem;
@@ -1685,15 +1685,13 @@ export default {
     gap: 3.5rem;
   }
   @include tablet {
-    padding: 2.5rem 1rem;
+    padding: 2.5rem 0;
     gap: 1.5rem;
   }
   .header {
     display: flex;
     flex-direction: column;
-    width: 100%;
-    max-width: min(105rem, 1680px);
-    margin: 0 auto;
+    @include content-width;
     .titleRow {
       display: flex;
       justify-content: space-between;
@@ -1775,15 +1773,12 @@ export default {
   }
 }
 .reservContainer {
-  max-width: min(105rem, 1680px);
-  margin: 0 auto;
+  @include content-width;
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
-  width: stretch;
   @include tablet {
     gap: 1.5rem;
-    width: stretch;
   }
   .switcher {
     display: flex;

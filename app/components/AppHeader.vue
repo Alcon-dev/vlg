@@ -195,13 +195,10 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 2.5rem;
-  max-width: min(105rem, 1680px);
-  margin: 0 auto;
-  width: 100%;
-  box-sizing: border-box;
+  padding: 1.5rem 0;
+  @include content-width;
   @include laptop {
-    padding: 1.5rem 2rem;
+    padding: 1.5rem 0;
   }
   .menu {
     display: flex;
@@ -334,7 +331,7 @@ header {
     -webkit-backdrop-filter: blur(4px);
   }
   @include tablet {
-    padding: 1rem 1rem 1.25rem;
+    padding: 1rem 0 1.25rem;
     gap: 0.5rem;
     .menu,
     .socialLinks {
