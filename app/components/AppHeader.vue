@@ -227,13 +227,13 @@ header {
         }
         .menuLink {
           display: block;
-          padding: 0.875rem 1.5rem; // 0.875*2 + 1.25 = 3rem (48px)
+          padding: 0.906rem 1.5rem;
           color: $text-white;
           text-decoration: none;
           border-radius: 6.25rem;
           font-size: 1rem;
           font-weight: 600;
-          line-height: 1.25;
+          line-height: 1.2;
           white-space: nowrap;
           &:hover {
             cursor: pointer;

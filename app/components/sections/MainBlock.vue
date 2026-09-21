@@ -407,11 +407,11 @@ export default {
           line-height: 1;
           .titlePrimary {
             display: block;
-            font-size: 4.5rem;
+            font-size: 6.25rem;
             letter-spacing: -0.04em;
             color: $text-white;
             @include laptop {
-              font-size: 3rem;
+              font-size: 5rem;
             }
             @include tablet {
               width: 100%;
@@ -425,11 +425,11 @@ export default {
             justify-content: space-between;
             gap: 1.5rem;
             width: 100%;
-            font-size: 4.5rem;
+            font-size: 6.25rem;
             letter-spacing: -0.04em;
             color: $text-accent;
             @include laptop {
-              font-size: 3rem;
+              font-size: 5rem;
             }
             @include tablet {
               font-size: 1.5rem;
