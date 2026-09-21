@@ -67,7 +67,7 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 7.5rem 0;
-  gap: 5rem;
+  gap: 7.5rem;
   color: $text-primary;
   @include laptop {
     padding: 5rem 0;

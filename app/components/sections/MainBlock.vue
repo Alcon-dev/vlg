@@ -366,13 +366,12 @@ export default {
     gap: 8rem;
     width: 100%;
     @include content-width;
-    padding: 5rem 0 2.5rem;
-    box-sizing: border-box;
+    padding-block: 5rem 2.5rem;
     @include laptop {
-      padding: 2rem 0;
+      padding-block: 2.5rem;
     }
     @include tablet {
-      padding: 0.75rem 0 1.25rem;
+      padding-block: 0.75rem 1.25rem;
       gap: 1.25rem;
       justify-content: flex-start;
     }

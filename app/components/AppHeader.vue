@@ -195,10 +195,10 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 0;
+  padding-block: 1.5rem;
   @include content-width;
   @include laptop {
-    padding: 1.5rem 0;
+    padding-block: 1.5rem;
   }
   .menu {
     display: flex;
@@ -227,18 +227,14 @@ header {
         }
         .menuLink {
           display: block;
-          padding: 0.875rem 1.25rem;
+          padding: 0.875rem 1.5rem; // 0.875*2 + 1.25 = 3rem (48px)
           color: $text-white;
           text-decoration: none;
           border-radius: 6.25rem;
           font-size: 1rem;
           font-weight: 600;
-          line-height: 1.2;
+          line-height: 1.25;
           white-space: nowrap;
-          @include laptop {
-            padding: 0.625rem 1rem;
-            font-size: 0.875rem;
-          }
           &:hover {
             cursor: pointer;
           }
@@ -292,7 +288,7 @@ header {
     }
     .bookingButton {
       margin-left: 0.5rem;
-      padding: 0.875rem 1.25rem;
+      padding: 0.875rem 1.5rem;
       border-radius: 6.25rem;
       border: 1px solid $bg-transparent-16;
       background: transparent;
@@ -306,10 +302,6 @@ header {
       transition:
         background 0.2s ease,
         border-color 0.2s ease;
-      @include laptop {
-        padding: 0.625rem 1rem;
-        font-size: 0.875rem;
-      }
       &:hover {
         background: rgba(255, 255, 255, 0.08);
         border-color: rgba(255, 255, 255, 0.35);
@@ -331,7 +323,7 @@ header {
     -webkit-backdrop-filter: blur(4px);
   }
   @include tablet {
-    padding: 1rem 0 1.25rem;
+    padding-block: 1rem 1.25rem;
     gap: 0.5rem;
     .menu,
     .socialLinks {

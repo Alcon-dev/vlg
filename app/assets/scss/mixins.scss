@@ -2,16 +2,6 @@ $desktop: 1920px;
 $laptop: 1280px;
 $tablet: 768px;
 
-$content-max: 1680px;
-$content-gutter: 20px;
-
-@mixin content-width {
-  width: min(#{$content-max}, calc(100% - #{2 * $content-gutter}));
-  max-width: $content-max;
-  margin-inline: auto;
-  box-sizing: border-box;
-}
-
 @mixin desktop {
   @media (max-width: $desktop) {
     @content;
@@ -27,5 +17,15 @@ $content-gutter: 20px;
 @mixin tablet {
   @media (max-width: $tablet) {
     @content;
+  }
+}
+
+// Контент до 1680px, по бокам всегда зазор от края экрана
+@mixin content-width {
+  width: min(1680px, calc(100% - 5rem)); // 2.5rem = 40px с каждой стороны
+  margin-inline: auto;
+
+  @include tablet {
+    width: min(1680px, calc(100% - 2rem)); // 1rem с каждой стороны
   }
 }

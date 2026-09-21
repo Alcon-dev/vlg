@@ -1677,11 +1677,13 @@ export default {
 .wrapper {
   display: flex;
   flex-direction: column;
+  width: 100%;
   padding: 7.5rem 0;
   background-color: $bg-brown;
   color: $text-white;
   gap: 5rem;
   @include laptop {
+    padding: 5rem 0;
     gap: 3.5rem;
   }
   @include tablet {

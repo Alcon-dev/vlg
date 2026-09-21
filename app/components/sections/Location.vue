@@ -1918,15 +1918,16 @@ export default {
 .wrapper {
   display: flex;
   flex-direction: column;
-  padding: 5rem 0;
+  padding: 7.5rem 0;
   gap: 5rem;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  @include tablet {
-    gap: 1rem;
+  @include laptop {
+    padding: 5rem 0;
   }
   @include tablet {
+    padding: 2.5rem 0;
     gap: 1.5rem;
   }
 

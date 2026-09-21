@@ -232,15 +232,16 @@ export default {
 @use "@app/assets/scss/mixins.scss" as *;
 
 .footer {
+  width: 100%;
   background: $bg-footer;
   color: $text-white;
 }
 
 .topSection {
   @include content-width;
-  padding: 3.5rem 0 2.5rem;
+  padding-block: 3.5rem 2.5rem;
   @include tablet {
-    padding: 2.5rem 0 2rem;
+    padding-block: 2.5rem 2rem;
   }
 }
 
@@ -439,14 +440,14 @@ export default {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1.25rem 0 2rem;
+  padding-block: 1.25rem 2rem;
   font-size: 0.75rem;
   font-weight: 300;
   color: rgba(255, 255, 255, 0.55);
   @include tablet {
     flex-direction: column;
     gap: 0.5rem;
-    padding: 1rem 0 1.5rem;
+    padding-block: 1rem 1.5rem;
     text-align: center;
   }
 }
