@@ -41,9 +41,7 @@ export const store = createStore({
         data && typeof data === "object"
           ? {
               firstName: data.firstName ?? "",
-              lastName: data.lastName ?? "",
               phone: data.phone ?? "",
-              email: data.email ?? "",
               wish: data.wish ?? "",
             }
           : null;

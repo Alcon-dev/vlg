@@ -381,7 +381,6 @@ export default {
     return {
       calendarIconUrl,
       firstName: "",
-      lastName: "",
       phone: "",
       wishes: "",
       consent: false,
@@ -485,7 +484,6 @@ export default {
     resetForm() {
       const prefill = this.$store.state.bookingModalPrefill;
       this.firstName = onlyLettersName(prefill?.name ?? "");
-      this.lastName = "";
       this.phone = formatPhone(prefill?.phone ?? "");
       this.wishes = "";
       this.consent = false;
@@ -661,7 +659,7 @@ export default {
         begin_date: this.formData.checkInDate,
         end_date: this.formData.checkOutDate,
         first_name: this.firstName.trim(),
-        last_name: (this.lastName || "").trim() || this.firstName.trim(),
+        last_name: this.firstName.trim(),
         guests: {
           adults: this.adults,
           children: Array.from({ length: this.childrenCount }, () => ({
@@ -1058,6 +1056,7 @@ export default {
             display: flex;
             align-items: center;
             gap: 0.65rem;
+            min-width: 0;
             min-height: 1.75rem;
             font-size: 1rem;
             font-weight: 400;
@@ -1068,9 +1067,16 @@ export default {
               flex-shrink: 0;
               opacity: 0.9;
             }
+            span {
+              min-width: 0;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
           }
           .fieldInput {
             width: 100%;
+            min-width: 0;
             min-height: 1.75rem;
             padding: 0;
             border: none;
@@ -1079,8 +1085,14 @@ export default {
             font-size: 1rem;
             font-family: inherit;
             outline: none;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             &::placeholder {
               color: rgba(255, 255, 255, 0.4);
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
             }
           }
           .stepper {

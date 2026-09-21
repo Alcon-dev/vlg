@@ -13,7 +13,7 @@
           <div :class="$style.header">
             <div :class="$style.headerTitles">
               <h1 :class="$style.title">ВЫБЕРИТЕ ВИЛЛУ</h1>
-              <h2 :class="$style.subtitle">ДАТЫ БРОНИРОВАНИЯ</h2>
+              <h2 :class="$style.subtitle">ОТКРОЙТЕ НОВЫЙ ФОРМАТ ОТДЫХА</h2>
             </div>
             <button
               type="button"
@@ -27,13 +27,13 @@
           </div>
 
           <div :class="$style.filtersBar">
-            <div :class="$style.filterGroup">
-              <div
-                :class="[
-                  $style.filterInputBox,
-                  checkInDate && $style.filterInputBoxFilled,
-                ]"
-              >
+            <div
+              :class="[
+                $style.fieldGroup,
+                (checkInDate || checkOutDate) && $style.fieldGroupAccent,
+              ]"
+            >
+              <div :class="$style.fieldCell">
                 <span :class="$style.filterLabel">Дата заезда</span>
                 <div
                   ref="checkInWrapRef"
@@ -48,12 +48,14 @@
                     @click.stop.prevent="
                       checkInOpen = !checkInOpen;
                       checkOutOpen = false;
+                      guestsOpen = false;
                     "
                   >
-                    <AppIcon
-                      name="reservCalendar"
+                    <img
+                      :src="calendarIconUrl"
                       alt=""
                       :class="$style.filterIcon"
+                      aria-hidden="true"
                     />
                     <span>{{ checkInFormatted || "Выберите дату" }}</span>
                   </button>
@@ -81,14 +83,7 @@
                   </Transition>
                 </div>
               </div>
-            </div>
-            <div :class="$style.filterGroup">
-              <div
-                :class="[
-                  $style.filterInputBox,
-                  checkOutDate && $style.filterInputBoxFilled,
-                ]"
-              >
+              <div :class="$style.fieldCell">
                 <span :class="$style.filterLabel">Дата выезда</span>
                 <div
                   ref="checkOutWrapRef"
@@ -104,12 +99,14 @@
                     @click.stop.prevent="
                       checkOutOpen = !checkOutOpen;
                       checkInOpen = false;
+                      guestsOpen = false;
                     "
                   >
-                    <AppIcon
-                      name="reservCalendar"
+                    <img
+                      :src="calendarIconUrl"
                       alt=""
                       :class="$style.filterIcon"
+                      aria-hidden="true"
                     />
                     <span>{{ checkOutFormatted || "Выберите дату" }}</span>
                   </button>
@@ -138,112 +135,119 @@
                 </div>
               </div>
             </div>
-            <div ref="guestsWrapRef" :class="$style.filterGroup">
-              <div
-                :class="[
-                  $style.filterInputBox,
-                  totalGuests > 0 && $style.filterInputBoxFilled,
-                  guestsOpen && $style.filterInputBoxOpen,
-                ]"
-              >
-                <span :class="$style.filterLabel">Кол-во гостей</span>
-                <button
-                  type="button"
-                  :class="$style.filterInput"
-                  @click="guestsOpen = !guestsOpen"
-                >
-                  <AppIcon
-                    name="aboutUsers"
-                    alt=""
-                    :class="$style.filterIcon"
-                  />
-                  <span :class="totalGuests ? '' : $style.guestsPlaceholder">
-                    {{
-                      totalGuests
-                        ? `${totalGuests} ${guestsLabel(totalGuests)}`
-                        : "Выберите гостей"
-                    }}
-                  </span>
-                </button>
-                <Transition name="dropdown">
-                  <div
-                    v-show="guestsOpen"
-                    :class="$style.guestsDropdown"
-                    @mousedown="onGuestsDropdownMousedown"
+
+            <div
+              ref="guestsWrapRef"
+              :class="[$style.fieldGroup, guestsOpen && $style.fieldGroupOpen]"
+            >
+              <div :class="$style.fieldCell">
+                <span :class="$style.filterLabel">Кол-во взрослых</span>
+                <div :class="$style.counterInner">
+                  <button
+                    type="button"
+                    :class="$style.counterBtn"
+                    :disabled="guestSelection.adults <= 1"
+                    aria-label="Меньше взрослых"
+                    @click="setAdults(guestSelection.adults - 1)"
                   >
-                    <div :class="$style.guestsDropdownInner">
-                      <div :class="$style.guestsRow">
-                        <span :class="$style.guestsRowLabel">Взрослые</span>
-                        <div :class="$style.guestsCounter">
-                          <button
-                            type="button"
-                            :class="$style.guestsCounterBtn"
-                            :disabled="guestSelection.adults <= 1"
-                            aria-label="Меньше"
-                            @click="setAdults(guestSelection.adults - 1)"
-                          >
-                            −
-                          </button>
-                          <span :class="$style.guestsCounterValue">{{
-                            guestSelection.adults
-                          }}</span>
-                          <button
-                            type="button"
-                            :class="$style.guestsCounterBtn"
-                            :disabled="!canAddAdult"
-                            aria-label="Больше"
-                            @click="setAdults(guestSelection.adults + 1)"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                      <div
-                        v-for="(child, index) in guestSelection.children"
-                        :key="index"
-                        :class="$style.guestsChildRow"
-                      >
-                        <span :class="$style.guestsChildLabel">
-                          Ребенок:
-                          <select
-                            :value="child.age"
-                            :class="$style.guestsChildSelect"
-                            @change="setChildAge(index, $event.target.value)"
-                          >
-                            <option v-for="a in childAges" :key="a" :value="a">
-                              {{ a }} лет
-                            </option>
-                          </select>
-                        </span>
-                        <button
-                          type="button"
-                          :class="$style.guestsChildRemove"
-                          aria-label="Удалить"
-                          @click="removeChild(index)"
+                    −
+                  </button>
+                  <span :class="$style.counterValue">{{ adultsDisplay }}</span>
+                  <button
+                    type="button"
+                    :class="$style.counterBtn"
+                    :disabled="!canAddAdult"
+                    aria-label="Больше взрослых"
+                    @click="setAdults(guestSelection.adults + 1)"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <div :class="$style.fieldCell">
+                <span :class="$style.filterLabel">Детей</span>
+                <div :class="$style.counterInner">
+                  <button
+                    type="button"
+                    :class="$style.counterBtn"
+                    :disabled="!guestSelection.children.length"
+                    aria-label="Меньше детей"
+                    @click="
+                      removeChild(guestSelection.children.length - 1);
+                      if (!guestSelection.children.length) guestsOpen = false;
+                    "
+                  >
+                    −
+                  </button>
+                  <button
+                    type="button"
+                    :class="$style.counterValueBtn"
+                    aria-label="Возраст детей"
+                    @click="
+                      guestsOpen = guestSelection.children.length
+                        ? !guestsOpen
+                        : false
+                    "
+                  >
+                    {{ guestSelection.children.length }}
+                  </button>
+                  <button
+                    type="button"
+                    :class="$style.counterBtn"
+                    :disabled="!canAddChild"
+                    aria-label="Больше детей"
+                    @click="
+                      addChild();
+                      guestsOpen = true;
+                    "
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <Transition name="dropdown">
+                <div
+                  v-show="guestsOpen && guestSelection.children.length"
+                  :class="$style.guestsDropdown"
+                  @mousedown="onGuestsDropdownMousedown"
+                >
+                  <div :class="$style.guestsDropdownInner">
+                    <div
+                      v-for="(child, index) in guestSelection.children"
+                      :key="index"
+                      :class="$style.guestsChildRow"
+                    >
+                      <span :class="$style.guestsChildLabel">
+                        Ребенок:
+                        <select
+                          :value="child.age"
+                          :class="$style.guestsChildSelect"
+                          @change="setChildAge(index, $event.target.value)"
                         >
-                          ×
-                        </button>
-                      </div>
+                          <option v-for="a in childAges" :key="a" :value="a">
+                            {{ a }} лет
+                          </option>
+                        </select>
+                      </span>
                       <button
-                        v-if="canAddChild"
                         type="button"
-                        :class="$style.guestsAddChild"
-                        @click="addChild"
+                        :class="$style.guestsChildRemove"
+                        aria-label="Удалить"
+                        @click="removeChild(index)"
                       >
-                        Добавить ребенка
-                        <span :class="$style.guestsAddChildChevron">▼</span>
+                        ×
                       </button>
                     </div>
-                    <button
-                      type="button"
-                      :class="$style.guestsClose"
-                      @click="guestsOpen = false"
-                    >
-                      Готово
-                    </button>
                   </div>
-                </Transition>
-              </div>
+                  <button
+                    type="button"
+                    :class="$style.guestsClose"
+                    @click="guestsOpen = false"
+                  >
+                    Готово
+                  </button>
+                </div>
+              </Transition>
             </div>
           </div>
 
@@ -333,21 +337,24 @@
                         ).slice(1, 5)"
                         :key="pi"
                         :class="$style.villaThumb"
+                        @click="
+                          openPhotoGallery(
+                            item.apartment,
+                            lightboxIndexForPreviewSlot(
+                              item.apartment.photos,
+                              pi + 1
+                            )
+                          )
+                        "
                       >
                         <img
                           :src="photo.url"
                           :alt="`${item.apartment.title} — фото ${pi + 2}`"
                           loading="lazy"
-                          @click="
-                            openPhotoGallery(
-                              item.apartment,
-                              lightboxIndexForPreviewSlot(
-                                item.apartment.photos,
-                                pi + 1
-                              )
-                            )
-                          "
                         />
+                        <div v-if="pi === 3" :class="$style.villaAllOverlay">
+                          <span>Все фото</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -530,7 +537,7 @@
 import { defineAsyncComponent } from "vue";
 import { ru } from "date-fns/locale";
 import axios from "axios";
-import AppIcon from "@app/components/AppIcon.vue";
+import calendarIconUrl from "@app/assets/img/modals/calendar.svg";
 
 const BOOKING_CONFIRM_URL =
   "https://realtycalendar.ru/v2/widget/NVGNpGgXO7/confirm";
@@ -546,7 +553,7 @@ const CHILD_AGES = Array.from({ length: 18 }, (_, i) => String(i));
 
 export default {
   name: "BookingModal",
-  components: { AppIcon, VueDatePicker },
+  components: { VueDatePicker },
   props: {
     open: {
       type: Boolean,
@@ -557,6 +564,7 @@ export default {
   data() {
     return {
       ruLocale: ru,
+      calendarIconUrl,
       checkInDate: null,
       checkOutDate: null,
       checkInOpen: false,
@@ -624,6 +632,17 @@ export default {
     totalGuests() {
       const g = this.guestSelection;
       return (g?.adults ?? 0) + (g?.children?.length ?? 0);
+    },
+    adultsDisplay() {
+      const n = this.guestSelection.adults ?? 0;
+      const last = n % 10;
+      const last2 = n % 100;
+      let word = "гостей";
+      if (!(last2 >= 11 && last2 <= 19)) {
+        if (last === 1) word = "гость";
+        else if (last >= 2 && last <= 4) word = "гостя";
+      }
+      return `${n} ${word}`;
     },
     beginDateStr() {
       return this.toDateStr(this.checkInDate);
@@ -813,14 +832,6 @@ export default {
     onCheckOutSelect() {
       this.checkOutOpen = false;
     },
-    guestsLabel(n) {
-      const last = n % 10;
-      const last2 = n % 100;
-      if (last2 >= 11 && last2 <= 19) return "гостей";
-      if (last === 1) return "гость";
-      if (last >= 2 && last <= 4) return "гостя";
-      return "гостей";
-    },
     setAdults(n) {
       const min = 1;
       const max = this.maxGuests - this.guestSelection.children.length;
@@ -906,20 +917,18 @@ export default {
       if (fromLocation && locationData) {
         const phoneRaw = (locationData.phone || "").replace(/\D/g, "");
         if (!phoneRaw) return;
+        const firstName = (locationData.firstName || "").trim();
         const body = {
           apartment_id: String(item.apartment.id),
           begin_date: this.toDateStr(this.checkInDate),
           end_date: this.toDateStr(this.checkOutDate),
-          first_name: (locationData.firstName || "").trim(),
-          last_name: (locationData.lastName || "").trim(),
+          first_name: firstName,
+          last_name: firstName,
           guests,
           phone: phoneRaw,
           redirect_url: BOOKING_REDIRECT_URL,
           widget_type: "widget_page",
         };
-        if ((locationData.email || "").trim()) {
-          body.email = locationData.email.trim();
-        }
         if ((locationData.wish || "").trim()) {
           body.wish = locationData.wish.trim();
         }
@@ -1006,9 +1015,10 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(4px);
   overflow-y: auto;
+  padding: 1.5rem;
 
   @include tablet {
     padding: 0;
@@ -1020,17 +1030,17 @@ export default {
 .panel {
   position: relative;
   width: 100%;
-  max-width: 50rem;
-  max-height: 80vh;
+  max-width: 56rem;
+  max-height: 90vh;
   height: max-content;
   margin: 0 auto;
-  background: $text-primary;
+  background: $bg-brown;
   overflow: visible;
   display: flex;
   flex-direction: column;
-  border-radius: 1.25rem;
-  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.32);
-  padding: 2.5rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.4);
+  padding: 2rem 2.5rem 2.5rem;
 
   @include tablet {
     width: 100vw;
@@ -1058,72 +1068,75 @@ export default {
   justify-content: space-between;
   flex-shrink: 0;
   gap: 1rem;
-  margin: 0 0 2.5rem 0;
-  padding-bottom: 0.5rem;
-  background: $text-primary;
+  margin: 0 0 1.75rem;
+  padding-bottom: 0.25rem;
+  background: $bg-brown;
 
   @include tablet {
     position: static;
     top: auto;
     z-index: auto;
     padding-bottom: 0;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
   }
 }
 
 .headerTitles {
   display: flex;
   flex-direction: column;
-  gap: 0.08rem;
+  gap: 0.15rem;
+  min-width: 0;
 }
 
 .title {
   margin: 0;
-  font-size: 2rem;
-  font-weight: 300;
+  font-size: 1.75rem;
+  font-weight: 400;
   color: $text-white;
-  line-height: 0.96;
-  letter-spacing: -0.05em;
-  @include tablet {
-    font-size: 1.5rem;
-  }
-}
-
-.subtitle {
-  margin: 0;
-  font-size: 2rem;
-  font-weight: 300;
-  color: #685137;
-  line-height: 0.96;
-  letter-spacing: -0.05em;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
   @include tablet {
     font-size: 1.375rem;
   }
 }
 
+.subtitle {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 400;
+  color: $text-accent;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  @include tablet {
+    font-size: 1.125rem;
+  }
+}
+
 .closeBtn {
   position: relative;
-  width: 3rem;
-  height: 3rem;
+  width: 2.5rem;
+  height: 2.5rem;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  background: rgba(255, 255, 255, 0.12);
+  background: transparent;
   border: none;
-  border-radius: 50%;
+  border-radius: 0.375rem;
   cursor: pointer;
   transition: background 0.2s;
   &:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
   }
 }
 
 .closeLine {
   position: absolute;
-  width: 1.25rem;
-  height: 2px;
+  width: 1.125rem;
+  height: 1.5px;
   background: $text-white;
   border-radius: 1px;
   &:first-child {
@@ -1135,48 +1148,72 @@ export default {
 }
 
 .filtersBar {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: nowrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
   padding: 0;
   overflow: visible;
   flex-shrink: 0;
-  margin: 0 0 2.5rem 0;
+  margin: 0 0 2rem;
 
   @include tablet {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     margin-bottom: 1.5rem;
   }
 }
 
-.filterGroup {
+.fieldGroup {
   position: relative;
-  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 0.625rem;
+  background: transparent;
+  transition: border-color 0.2s;
 
-.filterInputBox {
-  position: relative;
-  border: 1px solid $text-tertiary;
-  border-radius: 0.4375rem;
-  background: rgba(255, 255, 255, 0.02);
-  transition:
-    border-color 0.2s,
-    background 0.2s;
-
-  &.filterInputBoxFilled {
-    border-color: #685137;
+  &.fieldGroupAccent {
+    border-color: $text-accent;
 
     .filterLabel {
-      color: #685137;
+      color: $text-accent;
     }
+
+    .filterIcon {
+      opacity: 1;
+      filter: none;
+    }
+
+    .fieldCell:not(:first-child) {
+      border-left-color: rgba(132, 99, 61, 0.45);
+      @include tablet {
+        border-top-color: rgba(132, 99, 61, 0.45);
+      }
+    }
+  }
+
+  &.fieldGroupOpen {
+    .filterLabel {
+      z-index: 1001;
+    }
+  }
+
+  @include tablet {
+    grid-template-columns: 1fr;
   }
 }
 
-.filterInputBoxOpen {
-  /* Класс для подъёма z-index подписи при открытом выпадающем списке гостей */
+.fieldCell {
+  position: relative;
+  min-width: 0;
+
+  &:not(:first-child) {
+    border-left: 1px solid rgba(255, 255, 255, 0.22);
+    @include tablet {
+      border-left: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.22);
+    }
+  }
 }
 
 .filterLabel {
@@ -1184,20 +1221,21 @@ export default {
   top: 0;
   left: 0.75rem;
   transform: translateY(-50%);
-  padding: 0 0.35rem;
+  padding: 0 0.4rem;
   font-size: 0.75rem;
   font-weight: 400;
   z-index: 10;
   line-height: 1;
-  color: $text-tertiary;
-  background: $text-primary;
+  color: rgba(255, 255, 255, 0.55);
+  background: $bg-brown;
   pointer-events: none;
   transition: color 0.2s;
+  white-space: nowrap;
 }
 
-/* Только подпись того поля, у которого открыт календарь/гости — поверх выпадающего списка */
-.filterInputBox:has(.dateInputWrapOpen) .filterLabel,
-.filterInputBoxOpen .filterLabel {
+.fieldGroup:has(.dateInputWrapOpen)
+  .fieldCell:has(.dateInputWrapOpen)
+  > .filterLabel {
   z-index: 1001;
 }
 
@@ -1206,15 +1244,15 @@ export default {
   z-index: 2;
   display: flex;
   align-items: center;
-  gap: 0.4375rem;
-  min-height: 2.75rem;
-  padding: 0.75rem;
-  background: #2c2c2c;
+  gap: 0.5rem;
+  min-height: 3.125rem;
+  padding: 0.75rem 0.875rem;
+  background: transparent;
   border: none;
-  border-radius: 0.4375rem;
+  border-radius: 0.625rem;
   color: $text-white;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   font-family: inherit;
   cursor: pointer;
   text-align: left;
@@ -1222,15 +1260,72 @@ export default {
   transition: background 0.2s;
   &:disabled {
     cursor: not-allowed;
+    opacity: 0.45;
   }
 }
 
 .filterIcon {
   flex-shrink: 0;
-  opacity: 1;
-  filter: brightness(0) invert(1);
+  width: 1rem;
+  height: 1rem;
+  opacity: 0.9;
+  display: block;
+}
+
+.counterInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  min-height: 3.125rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.counterBtn {
   width: 1.5rem;
   height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    background 0.15s;
+  &:hover:not(:disabled) {
+    color: $text-white;
+    background: rgba(255, 255, 255, 0.08);
+  }
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}
+
+.counterValue,
+.counterValueBtn {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: $text-white;
+  font-family: inherit;
+  line-height: 1.2;
+}
+
+.counterValueBtn {
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
 .dateInputWrap {
@@ -1289,68 +1384,14 @@ export default {
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0.5rem;
   box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.4);
-  max-height: 20rem;
+  max-height: 16rem;
   overflow-y: auto;
-}
-
-.guestsPlaceholder {
-  color: rgba(255, 255, 255, 0.5);
 }
 
 .guestsDropdownInner {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-}
-
-.guestsRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  color: $text-white;
-  font-size: 0.9375rem;
-}
-
-.guestsRowLabel {
-  font-size: 0.9375rem;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.guestsCounter {
-  display: flex;
-  align-items: center;
   gap: 0.5rem;
-  color: $text-white;
-}
-
-.guestsCounterValue {
-  min-width: 1.5rem;
-  text-align: center;
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.guestsCounterBtn {
-  width: 2rem;
-  height: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  border: none;
-  color: $text-white;
-  font-size: 1.25rem;
-  cursor: pointer;
-  transition: background 0.15s;
-  &:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.25);
-  }
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
 }
 
 .guestsChildRow {
@@ -1401,31 +1442,6 @@ export default {
     color: $text-white;
     background: rgba(255, 255, 255, 0.1);
   }
-}
-
-.guestsAddChild {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: none;
-  border-radius: 0.375rem;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.875rem;
-  font-family: inherit;
-  cursor: pointer;
-  text-align: left;
-  transition: background 0.15s;
-  &:hover {
-    background: rgba(255, 255, 255, 0.12);
-  }
-}
-
-.guestsAddChildChevron {
-  font-size: 0.75rem;
-  opacity: 0.8;
 }
 
 .guestsClose {
@@ -1508,11 +1524,11 @@ export default {
 .villaList {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 .villaCard {
-  padding-bottom: 0.25rem;
+  padding-bottom: 0;
 }
 
 .villaCardHeader {
@@ -1520,7 +1536,7 @@ export default {
   flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: 1rem;
   margin-bottom: 0.75rem;
   @include tablet {
     flex-wrap: wrap;
@@ -1530,28 +1546,27 @@ export default {
 
 .villaCardTitleRow {
   display: flex;
-  align-items: flex-end;
-  gap: 0.625rem;
+  align-items: baseline;
+  gap: 0.5rem;
   min-width: 0;
 }
 
 .villaLabel {
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.55);
   font-weight: 400;
   line-height: 1.1;
-  transform: translateY(-0.18rem);
 }
 
 .villaName {
   margin: 0;
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: 600;
   color: $text-white;
   line-height: 1;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.04em;
   @include tablet {
-    font-size: 1.875rem;
+    font-size: 1.75rem;
   }
 }
 
@@ -1560,20 +1575,22 @@ export default {
   align-items: stretch;
   gap: 0;
   flex-shrink: 0;
+  border-radius: 0.5rem;
+  overflow: hidden;
 }
 
 .villaPriceBox {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 5.5rem;
-  padding: 0 0.95rem;
+  min-width: 6.25rem;
+  padding: 0 1rem;
   border: none;
-  border-radius: 0.4375rem 0 0 0.4375rem;
-  background: $bg-transparent-16;
-  color: $text-white;
+  background: $bg-white;
+  color: $bg-brown;
   font-size: 1rem;
   font-weight: 600;
+  line-height: 1;
 }
 
 .bookBtn {
@@ -1581,18 +1598,23 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-width: 8.75rem;
-  padding: 0.75rem 1.1rem;
+  min-width: 9.5rem;
+  min-height: 2.875rem;
+  padding: 0.75rem 1.25rem;
   background: #004f68;
   color: $text-white;
   border: none;
-  border-radius: 0 0.4375rem 0.4375rem 0;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 500;
+  font-family: inherit;
   cursor: pointer;
   transition: background 0.2s;
-  &:hover {
+  &:hover:not(:disabled) {
     background: #006080;
+  }
+  &:disabled {
+    opacity: 0.65;
+    cursor: default;
   }
 }
 
@@ -1616,10 +1638,11 @@ export default {
 }
 
 .villaDesc {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.18;
-  margin: 0 0 0.75rem 0;
+  font-size: 0.9375rem;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.35;
+  margin: 0 0 1rem;
+  max-width: 42rem;
   :global(p) {
     margin: 0;
     &:last-child {
@@ -1630,25 +1653,23 @@ export default {
 
 .villaGallery {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1.45fr 1fr;
   gap: 0;
-  border-radius: 1.5rem;
+  border-radius: 1rem;
   overflow: hidden;
-  min-height: 18rem;
+  min-height: 17rem;
+  background: #111;
   @include tablet {
     grid-template-columns: 1fr;
-    grid-template-rows: auto;
+    min-height: 0;
   }
 }
 
 .villaMainImg {
-  grid-column: 1;
-  grid-row: 1 / -1;
-  background: rgba(0, 0, 0, 0.3);
+  background: #111;
   overflow: hidden;
+  min-height: 17rem;
   @include tablet {
-    grid-row: auto;
     min-height: 12rem;
   }
   img {
@@ -1657,35 +1678,50 @@ export default {
     object-fit: cover;
     display: block;
     cursor: pointer;
+    min-height: 17rem;
+    @include tablet {
+      min-height: 12rem;
+    }
   }
 }
 
 .villaThumbs {
-  grid-column: 2;
-  grid-row: 1 / -1;
-  min-height: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   gap: 0;
+  min-height: 0;
   @include tablet {
-    grid-column: 1;
-    grid-row: auto;
-    grid-template-columns: repeat(2, 1fr);
+    display: none;
   }
 }
 
 .villaThumb {
   position: relative;
-  background: rgba(0, 0, 0, 0.3);
+  background: #111;
   overflow: hidden;
+  min-height: 0;
+  cursor: pointer;
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
-    cursor: pointer;
   }
+}
+
+.villaAllOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  font-size: 1rem;
+  font-weight: 400;
+  color: $text-white;
+  letter-spacing: -0.02em;
+  pointer-events: none;
 }
 
 .photoGalleryOverlay {
