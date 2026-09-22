@@ -486,7 +486,7 @@ export default {
               }
               .date {
                 font-size: 0.75rem;
-                font-weight: 300;
+                font-weight: 700;
                 line-height: 1.2;
                 color: $text-secondary;
                 flex-shrink: 0;
@@ -498,7 +498,7 @@ export default {
           flex: 1;
           min-height: 0;
           margin: 0;
-          font-size: 1rem;
+          font-size: 0.875rem;
           line-height: 1.2;
           color: $text-primary;
           display: -webkit-box;
@@ -507,7 +507,6 @@ export default {
           overflow: hidden;
           text-overflow: ellipsis;
           @include tablet {
-            font-size: 0.875rem;
             -webkit-line-clamp: 4;
           }
         }
@@ -515,7 +514,7 @@ export default {
           margin-top: auto;
           display: flex;
           align-items: center;
-          gap: 0.625rem;
+          gap: 0.25rem;
           width: fit-content;
           margin-left: auto;
           font-size: 0.75rem;

@@ -2130,7 +2130,6 @@ export default {
           .upcomingDatesNavWrap {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
             width: 100%;
             min-height: 0;
             @include tablet {
@@ -2225,7 +2224,7 @@ export default {
                   $date-card-ease: cubic-bezier(0.4, 0, 0.2, 1);
                   position: relative;
                   flex: 0 0 auto;
-                  width: max-content;
+                  width: 100%;
                   max-width: 10rem;
                   height: auto;
                   padding: 1rem;
@@ -2258,12 +2257,10 @@ export default {
                     border-color: transparent;
                     cursor: not-allowed;
                     pointer-events: none;
-                    .dateCardBusy {
-                      color: rgba(255, 255, 255, 0.9);
-                    }
+                    .dateCardBusy,
                     .dateCardDays,
                     .dateCardMonth {
-                      color: rgba(255, 255, 255, 0.55);
+                      color: $text-tertiary;
                     }
                     @include tablet {
                       background: #3d3d3d;
@@ -2322,7 +2319,7 @@ export default {
                       font-weight: 600;
                       letter-spacing: 0.04em;
                       text-transform: uppercase;
-                      color: $text-white;
+                      color: $text-tertiary;
                       line-height: 1.2;
                       text-align: right;
                       @include tablet {
