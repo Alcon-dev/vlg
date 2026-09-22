@@ -86,16 +86,20 @@
               </a>
             </div>
             <p :class="$style.socialDisclaimer">
-              *Meta признана экстремистской организацией, ее деятельность
-              запрещена на территории РФ. Instagram принадлежит компании Meta.
+              *Instagram — социальная сеть, принадлежащая компании Meta
+              Platforms Inc., деятельность которой признана экстремистской и
+              запрещена на территории Российской Федерации.
             </p>
           </div>
         </div>
 
-        <div :class="$style.column">
+        <div :class="[$style.column, $style.columnEnd]">
           <h3 :class="$style.columnTitle">Контакты</h3>
           <ul :class="$style.columnList">
-            <li>Тольятти, СНТ Волгарь, 18/3 р-н Центральный</li>
+            <li>
+              Тольятти, СНТ Волгарь, 18/3 р-н<br />
+              Центральный
+            </li>
             <li>
               <a :class="$style.contactLink" href="tel:+79171274080"
                 >8 (917) 127-40-80</a
@@ -109,7 +113,7 @@
           </ul>
         </div>
 
-        <div :class="$style.column">
+        <div :class="[$style.column, $style.columnEnd]">
           <h3 :class="$style.columnTitle">Правила проживания</h3>
           <ul :class="$style.columnList">
             <li>
@@ -126,32 +130,37 @@
             </li>
           </ul>
         </div>
-      </div>
-    </div>
 
-    <div :class="$style.bottomSection">
-      <span :class="$style.bottomItem">ООО "Резиденция ВОЛГА"</span>
-      <span :class="$style.bottomItem">© 2026 Все права защищены</span>
-      <a
-        :class="$style.bottomLink"
-        href="#faq"
-        @click.prevent="scrollToFaqRules"
-      >
-        Правила проживания
-      </a>
-      <NuxtLink :class="$style.bottomLink" to="#">
-        Политика конфиденциальности
-      </NuxtLink>
-      <span :class="$style.bottomDev">
-        Сайт разработан
+        <span :class="[$style.bottomItem, $style.bottomRow]">
+          ООО "Резиденция ВОЛГА"
+        </span>
+        <span :class="[$style.bottomItem, $style.bottomRow]">
+          © 2026 Все права защищены
+        </span>
         <a
-          :class="$style.devLink"
-          href="https://atlantsoftware.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          >Atlantsoftware.com</a
+          :class="[$style.bottomLink, $style.bottomCenter, $style.bottomRow]"
+          href="#faq"
+          @click.prevent="scrollToFaqRules"
         >
-      </span>
+          Правила проживания
+        </a>
+        <NuxtLink
+          :class="[$style.bottomLink, $style.bottomEnd, $style.bottomRow]"
+          to="#"
+        >
+          Политика конфиденциальности
+        </NuxtLink>
+        <span :class="[$style.bottomDev, $style.bottomEnd, $style.bottomRow]">
+          Сайт разработан
+          <a
+            :class="$style.devLink"
+            href="https://atlantsoftware.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Atlantsoftware.com</a
+          >
+        </span>
+      </div>
     </div>
   </footer>
 </template>
@@ -235,263 +244,239 @@ export default {
   width: 100%;
   background: $bg-footer;
   color: $text-white;
-}
-
-.topSection {
-  @include content-width;
-  padding-block: 3.5rem 2.5rem;
-  @include tablet {
-    padding-block: 2.5rem 2rem;
-  }
-}
-
-.mobileNav {
-  display: none;
-  @include tablet {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.75rem 1.25rem;
-    margin-bottom: 2.5rem;
-  }
-}
-
-.mobileNavLink {
-  color: $text-white;
-  text-decoration: none;
-  font-size: 0.9375rem;
-  font-weight: 400;
-  transition: opacity 0.2s;
-  &:hover {
-    opacity: 0.85;
-  }
-}
-
-.columns {
-  display: grid;
-  grid-template-columns: 1fr 1.15fr auto 1fr 1.1fr;
-  gap: 2rem 1.75rem;
-  align-items: start;
-  @include tablet {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-  }
-}
-
-.column {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  min-width: 0;
-  @include tablet {
-    display: none;
-  }
-}
-
-.columnTitle {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.2;
-  color: $text-white;
-}
-
-.columnList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.625rem;
-  font-size: 0.875rem;
-  font-weight: 300;
-  line-height: 1.35;
-  color: rgba(255, 255, 255, 0.72);
-}
-
-.columnLink {
-  color: rgba(255, 255, 255, 0.72);
-  text-decoration: none;
-  transition: color 0.2s;
-
-  &:hover {
-    color: $text-white;
-  }
-}
-
-.columnLogo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.75rem;
-  padding: 0 1.5rem;
-  @include tablet {
-    gap: 1.5rem;
-    padding: 0;
-  }
-}
-
-.logo {
-  width: 11.5rem;
-  height: auto;
-  @include tablet {
-    width: 10rem;
-  }
-}
-
-.mobileBookBtn {
-  display: none;
-  @include tablet {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem 2rem;
-    background: rgba(255, 255, 255, 0.16);
-    color: $text-white;
-    font-size: 1rem;
-    font-weight: 500;
-    text-decoration: none;
-    line-height: 1.2;
-    border-radius: 2rem;
-    transition: background 0.2s;
-    &:hover {
-      background: rgba(255, 255, 255, 0.2);
+  .topSection {
+    @include content-width;
+    padding-block: 3.5rem 2rem;
+    @include tablet {
+      padding-block: 2.5rem 1.5rem;
     }
-  }
-}
-
-.mobileContactRow {
-  display: none;
-  @include tablet {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem 1.5rem;
-    flex-wrap: wrap;
-    font-size: 0.875rem;
-
-    .contactLink {
-      color: $text-white;
-      text-decoration: none;
+    .mobileNav {
+      display: none;
+      @include tablet {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.75rem 1.25rem;
+        margin-bottom: 2.5rem;
+      }
+      .mobileNavLink {
+        color: $text-white;
+        text-decoration: none;
+        font-size: 0.9375rem;
+        font-weight: 400;
+        transition: opacity 0.2s;
+        &:hover {
+          opacity: 0.85;
+        }
+      }
     }
-  }
-}
-
-.socialBlock {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  max-width: 16rem;
-}
-
-.socialLinks {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.75rem;
-}
-
-.socialLink {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
-  opacity: 0.9;
-  transition: opacity 0.2s;
-
-  &:hover {
-    opacity: 1;
-  }
-
-  :global(img) {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-}
-
-.socialDisclaimer {
-  margin: 0;
-  font-size: 0.625rem;
-  font-weight: 300;
-  line-height: 1.35;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.45);
-}
-
-.contactLink {
-  color: inherit;
-  text-decoration: none;
-  transition: opacity 0.2s;
-
-  &:hover {
-    opacity: 0.8;
-  }
-}
-
-.bottomSection {
-  @include content-width;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-block: 1.25rem 2rem;
-  font-size: 0.75rem;
-  font-weight: 300;
-  color: rgba(255, 255, 255, 0.55);
-  @include tablet {
-    flex-direction: column;
-    gap: 0.5rem;
-    padding-block: 1rem 1.5rem;
-    text-align: center;
-  }
-}
-
-.bottomDev {
-  display: inline;
-  text-align: right;
-  white-space: nowrap;
-  @include tablet {
-    font-size: 0.625rem;
-    text-align: center;
-    white-space: normal;
-  }
-}
-
-.bottomItem {
-  white-space: nowrap;
-  @include tablet {
-    font-size: 0.625rem;
-  }
-}
-
-.bottomLink {
-  color: inherit;
-  text-decoration: none;
-  transition: opacity 0.2s;
-  text-align: center;
-  white-space: nowrap;
-  &:hover {
-    opacity: 0.9;
-  }
-  @include tablet {
-    font-size: 0.625rem;
-  }
-}
-
-.devLink {
-  color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
-  transition: opacity 0.2s;
-
-  &:hover {
-    opacity: 0.9;
+    .columns {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr auto 1fr 1.1fr;
+      column-gap: 1.75rem;
+      row-gap: 2.5rem;
+      align-items: start;
+      @include tablet {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .column {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.25rem;
+        min-width: 0;
+        width: 100%;
+        text-align: left;
+        @include tablet {
+          display: none;
+        }
+        &.columnEnd {
+          align-items: flex-end;
+          text-align: right;
+        }
+        .columnTitle {
+          margin: 0;
+          font-size: 1rem;
+          font-weight: 600;
+          line-height: 1.2;
+          color: $text-white;
+        }
+        .columnList {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.625rem;
+          font-size: 0.875rem;
+          font-weight: 300;
+          line-height: 1.35;
+          color: rgba(255, 255, 255, 0.72);
+          .columnLink {
+            color: rgba(255, 255, 255, 0.72);
+            text-decoration: none;
+            transition: color 0.2s;
+            &:hover {
+              color: $text-white;
+            }
+          }
+          .contactLink {
+            color: inherit;
+            text-decoration: none;
+            transition: opacity 0.2s;
+            &:hover {
+              opacity: 0.8;
+            }
+          }
+        }
+      }
+      .columnLogo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2.5rem;
+        padding: 0 1.5rem;
+        @include tablet {
+          gap: 1.5rem;
+          padding: 0;
+          margin-bottom: 1rem;
+        }
+        .logo {
+          width: 11.5rem;
+          height: auto;
+          @include tablet {
+            width: 10rem;
+          }
+        }
+        .mobileBookBtn {
+          display: none;
+          @include tablet {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.16);
+            color: $text-white;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            line-height: 1.2;
+            border-radius: 2rem;
+            transition: background 0.2s;
+            &:hover {
+              background: rgba(255, 255, 255, 0.2);
+            }
+          }
+        }
+        .mobileContactRow {
+          display: none;
+          @include tablet {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem 1.5rem;
+            flex-wrap: wrap;
+            font-size: 0.875rem;
+            .contactLink {
+              color: $text-white;
+              text-decoration: none;
+            }
+          }
+        }
+        .socialBlock {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 1rem;
+          max-width: 19.8rem;
+          .socialLinks {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3.5rem;
+            .socialLink {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              width: 1.5rem;
+              height: 1.5rem;
+              opacity: 0.9;
+              transition: opacity 0.2s;
+              &:hover {
+                opacity: 1;
+              }
+              :global(img) {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+              }
+            }
+          }
+          .socialDisclaimer {
+            margin: 0;
+            font-size: 0.75rem;
+            font-weight: 400;
+            line-height: 1.4;
+            text-align: center;
+            color: $text-tertiary;
+          }
+        }
+      }
+      .bottomRow {
+        align-self: center;
+        font-size: 0.75rem;
+        font-weight: 300;
+        color: $text-tertiary;
+        @include tablet {
+          font-size: 0.625rem;
+          text-align: center;
+          justify-self: auto;
+        }
+        &.bottomItem {
+          white-space: nowrap;
+        }
+        &.bottomLink {
+          color: $text-tertiary;
+          text-decoration: none;
+          transition: opacity 0.2s;
+          white-space: nowrap;
+          &:hover {
+            opacity: 0.9;
+          }
+        }
+        &.bottomCenter {
+          justify-self: center;
+          text-align: center;
+        }
+        &.bottomEnd {
+          justify-self: end;
+          text-align: right;
+          @include tablet {
+            text-align: center;
+          }
+        }
+        &.bottomDev {
+          display: inline;
+          white-space: nowrap;
+          @include tablet {
+            white-space: normal;
+          }
+          .devLink {
+            color: inherit;
+            text-decoration: underline;
+            text-underline-offset: 0.15em;
+            transition: opacity 0.2s;
+            &:hover {
+              opacity: 0.9;
+            }
+          }
+        }
+      }
+    }
   }
 }
 </style>
