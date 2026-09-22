@@ -1201,7 +1201,7 @@ export default {
               background: #004f68;
               border-color: #004f68;
               .consentCheckmark {
-                display: block;
+                display: flex;
               }
             }
           }
@@ -1219,13 +1219,13 @@ export default {
               position: absolute;
               inset: 0;
               display: none;
+              align-items: center;
+              justify-content: center;
               &::before {
                 content: "";
-                position: absolute;
-                left: 0.3rem;
-                top: 0.08rem;
                 width: 0.28rem;
                 height: 0.55rem;
+                margin-top: -0.1rem;
                 border: solid $text-white;
                 border-width: 0 2px 2px 0;
                 transform: rotate(45deg);

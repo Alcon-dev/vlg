@@ -1,47 +1,29 @@
 <template>
   <section id="location" ref="sectionRef" :class="$style.wrapper">
-    <div :class="$style.titleContainer">
-      <div :class="$style.titleLine1">
-        <p :class="$style.title">Резиденция<br />ВОЛГА</p>
-        <h2 :class="$style.titleH2">УНИКАЛЬНОЕ</h2>
-        <div :class="$style.titleLine1Right">
-          <p :class="$style.phone">+7 (927) 767-56-00</p>
-          <div :class="$style.titleLine1Desc">
-            <p :class="$style.descLine">
-              Уединенное место с панорамными видами
-            </p>
-            <p :class="$style.descLine">
-              на волгу и горы в окружении уникальных объектов
-            </p>
-          </div>
+    <div :class="$style.header">
+      <div :class="$style.headerRow">
+        <h2 :class="$style.titlePrimary">НАШИ КОНТАКТЫ</h2>
+        <div :class="$style.headerMeta">
+          <p>Самарская область, г. Тольятти,</p>
+          <p>СНТ Волгарь, 18/3 р-н Центральный</p>
         </div>
       </div>
-      <div :class="$style.titleLine2">
-        <h2 :class="$style.titleH2">РАСПОЛОЖЕНИЕ</h2>
-        <p :class="$style.titleDescMobile">
-          Уединенное место с панорамными видами на волгу и горы в окружении
-          достопримечательностей и уникальных объектов.
-        </p>
-        <p :class="$style.address">
-          Самарская обл., Тольятти,<br />СНТ Волгарь, 18/3 р-н Центральный
-        </p>
-      </div>
-      <div :class="$style.titleLine3">
-        <span :class="$style.contactItem"
-          >Самарская обл., Тольятти, СНТ Волгарь, 18/3 р-н Центральный</span
-        >
-        <a
-          :class="$style.contactItem"
-          href="tel:+79171274080"
-          aria-label="Позвонить"
-          >8 (917) 127-40-80</a
-        >
-        <a
-          :class="$style.contactItem"
-          href="mailto:volga-dom163@mail.ru"
-          aria-label="Написать на почту"
-          >volga-dom163@mail.ru</a
-        >
+      <div :class="$style.headerRow">
+        <div :class="$style.headerContacts">
+          <a
+            :class="$style.contactItem"
+            href="tel:+79171556888"
+            aria-label="Позвонить"
+            >+7 917 155-68-88</a
+          >
+          <a
+            :class="$style.contactItem"
+            href="mailto:volga-dom163@mail.ru"
+            aria-label="Написать на почту"
+            >volga-dom163@mail.ru</a
+          >
+        </div>
+        <h2 :class="$style.titleSecondary">ГЕОГРАФИЯ УЕДИНЕНИЯ</h2>
       </div>
     </div>
     <div :class="$style.mapAndFormWrap">
@@ -1938,239 +1920,123 @@ export default {
   }
 }
 
-.titleContainer {
-  width: 100%;
-  flex-shrink: 0;
-}
-
-.titleLine1 {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  width: 100%;
-  margin: 0 0 1rem 0;
-
-  @include tablet {
-    .title {
-      display: none;
-    }
-    .titleLine1Right .phone {
-      display: none;
-    }
-  }
-  @include tablet {
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-    margin: 0;
-
-    .title,
-    .titleLine1Right .phone {
-      display: none;
-    }
-    .titleLine1Desc {
-      display: block;
-      margin-top: 0.5rem;
-      max-width: 100%;
-      width: 100%;
-      text-align: center;
-      .descLine {
-        display: none;
-        margin: 0;
-      }
-    }
-    .titleH2 {
-      font-size: 1.875rem;
-      font-weight: 300;
-      width: 100%;
-      text-align: left;
-      line-height: 0.95;
-    }
-  }
-}
-
-.titleLine1Right {
+.header {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  max-width: 26rem;
-  min-width: 0;
-
-  .phone {
-    display: none;
-  }
-
-  .titleLine1Desc {
-    display: block;
-
-    @include tablet {
-      display: block;
-    }
-  }
-
-  @include tablet {
-    align-items: center;
-    max-width: none;
-    width: 100%;
-  }
-}
-
-.titleLine1Desc {
-  text-align: right;
-  max-width: 100%;
-  min-width: 0;
-
-  .descLine {
-    white-space: normal;
-    overflow-wrap: anywhere;
-    margin: 0 0 0.25rem;
-    font-size: 1rem;
-    font-weight: 300;
-    line-height: 1.2;
-    color: $text-primary;
-    letter-spacing: -4%;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-}
-
-.titleLine2 {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
+  gap: 0.25rem;
   width: 100%;
-
-  .titleH2 {
-    text-align: right;
-    order: 2;
-  }
-
-  .address {
-    margin: 0;
-    text-align: left;
-    order: 1;
-
-    :global(br) {
-      display: none;
-    }
-  }
-
+  flex-shrink: 0;
   @include tablet {
-    h2 {
-      line-height: 1;
-    }
-    justify-content: flex-end;
-    .address {
-      display: none;
-    }
+    gap: 0;
   }
-  @include tablet {
-    flex-direction: column;
-    align-items: center;
-    margin-top: 0;
 
-    .titleH2 {
-      font-size: 1.875rem;
-      font-weight: 300;
-      text-align: right;
-      width: 100%;
-      line-height: 0.95;
-      order: 1;
-    }
-    .titleDescMobile {
-      display: block;
-      order: 2;
-      margin: 0.35rem 0 0 0;
-      font-size: 0.625rem;
-      font-weight: 300;
-      line-height: 1.2;
-      text-align: center;
-      color: $text-primary;
-      max-width: 22rem;
-    }
-    .address {
-      display: block;
-      margin: 0.75rem 0 0 0;
-      font-size: 1rem;
-      font-weight: 600;
-      line-height: 1.35;
-      text-align: center;
-      width: 100%;
-      order: 3;
-
-      :global(br) {
-        display: inline;
-      }
-    }
-  }
-}
-
-.titleLine3 {
-  display: none;
-
-  @include tablet {
+  .headerRow {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    gap: 2.5rem;
     width: 100%;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin: 5rem 0 0 0;
-  }
-  @include tablet {
-    display: none;
-  }
-}
+    &:last-child {
+      align-items: flex-end;
+    }
+    @include tablet {
+      display: contents;
+    }
 
-.contactItem {
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.2;
-  color: $text-primary;
-  text-decoration: none;
-}
+    .titlePrimary {
+      margin: 0;
+      font-weight: 400;
+      font-size: 6.25rem;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      color: $text-primary;
+      line-height: 1;
+      @include laptop {
+        font-size: 3.75rem;
+      }
+      @include tablet {
+        order: 1;
+        font-size: 1.5rem;
+      }
+    }
 
-a.contactItem:hover {
-  text-decoration: underline;
-}
+    .headerMeta {
+      flex-shrink: 0;
+      margin: 0;
+      text-align: right;
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: -0.04em;
+      color: $text-primary;
+      p {
+        margin: 0;
+      }
+      @include laptop {
+        font-size: 0.875rem;
+      }
+      @include tablet {
+        order: 4;
+        width: 100%;
+        text-align: left;
+        margin-top: 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        letter-spacing: -0.02em;
+      }
+    }
 
-.titleH2 {
-  margin: 0;
-}
+    .headerContacts {
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: -0.04em;
+      @include laptop {
+        font-size: 0.875rem;
+      }
+      @include tablet {
+        order: 3;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        margin-top: 2.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+      }
 
-.title {
-  font-size: 1rem;
-  line-height: 1.2;
-  font-weight: 300;
-}
+      .contactItem {
+        font-size: inherit;
+        font-weight: inherit;
+        color: $text-primary;
+        text-decoration: none;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
 
-.phone {
-  font-size: 2rem;
-  line-height: 1.2;
-  font-weight: 500;
-}
-
-.address {
-  font-size: 1.5rem;
-  line-height: 1.2;
-  text-align: right;
-  @include tablet {
-    text-align: center;
-  }
-}
-
-.titleDescMobile {
-  display: none;
-
-  @include tablet {
-    display: block;
-    font-size: 0.625rem;
-    font-weight: 300;
-    line-height: 1.4;
-    color: $text-secondary;
-    text-align: center;
+    .titleSecondary {
+      margin: 0;
+      font-weight: 400;
+      font-size: 6.25rem;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      color: $text-accent;
+      line-height: 1;
+      text-align: right;
+      @include laptop {
+        font-size: 3.75rem;
+      }
+      @include tablet {
+        order: 2;
+        width: 100%;
+        margin-top: 0.15rem;
+        font-size: 1.5rem;
+      }
+    }
   }
 }
 
@@ -2480,7 +2346,7 @@ a.contactItem:hover {
     .consentLabel {
       display: flex;
       align-items: flex-start;
-      gap: 0.65rem;
+      gap: 1rem;
       cursor: pointer;
       .consentInput {
         position: absolute;
@@ -2490,7 +2356,7 @@ a.contactItem:hover {
           background: #004f68;
           border-color: #004f68;
           .consentCheckmark {
-            display: block;
+            display: flex;
           }
         }
       }
@@ -2508,13 +2374,13 @@ a.contactItem:hover {
           position: absolute;
           inset: 0;
           display: none;
+          align-items: center;
+          justify-content: center;
           &::before {
             content: "";
-            position: absolute;
-            left: 0.3rem;
-            top: 0.08rem;
             width: 0.28rem;
             height: 0.55rem;
+            margin-top: -0.1rem;
             border: solid $text-white;
             border-width: 0 2px 2px 0;
             transform: rotate(45deg);
@@ -2522,9 +2388,10 @@ a.contactItem:hover {
         }
       }
       .consentText {
-        font-size: 0.75rem;
-        line-height: 1.4;
-        color: rgba(255, 255, 255, 0.45);
+        font-size: 0.625rem;
+        font-weight: 300;
+        line-height: 1.2;
+        color: $text-tertiary;
         .consentLink {
           color: inherit;
           text-decoration: underline;
@@ -2542,13 +2409,14 @@ a.contactItem:hover {
   gap: 0.5rem;
   width: 100%;
   min-height: 3rem;
-  padding: 0.9rem 1rem;
+  padding: 1.125rem 1rem;
   border: none;
   border-radius: 0.45rem;
   background: #004f68;
   color: $text-white;
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 600;
+  paragraph-spacing: 0.08em;
   font-family: inherit;
   cursor: pointer;
   transition: background 0.2s;
@@ -2562,8 +2430,8 @@ a.contactItem:hover {
 }
 
 .bookingFormUnifiedSubmitIcon {
-  width: 1rem;
-  height: 1rem;
+  width: 1.5rem;
+  height: 1.5rem;
   object-fit: contain;
   filter: brightness(0) invert(1);
 }
