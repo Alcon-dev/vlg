@@ -64,8 +64,8 @@
             Забронировать
           </NuxtLink>
           <div :class="$style.mobileContactRow">
-            <a :class="$style.contactLink" href="tel:+79171274080"
-              >8 (917) 127-40-80</a
+            <a :class="$style.contactLink" href="tel:+79171556888"
+              >+7 917 155-68-88</a
             >
             <a :class="$style.contactLink" href="mailto:volga-dom163@mail.ru"
               >volga-dom163@mail.ru</a
@@ -76,7 +76,10 @@
               <a
                 v-for="item in socialLinks"
                 :key="item.link"
-                :class="$style.socialLink"
+                :class="[
+                  $style.socialLink,
+                  item.mobileOnly && $style.socialLinkMobile,
+                ]"
                 :href="item.link"
                 :aria-label="item.label"
                 :target="item.external ? '_blank' : undefined"
@@ -101,8 +104,8 @@
               Центральный
             </li>
             <li>
-              <a :class="$style.contactLink" href="tel:+79171274080"
-                >8 (917) 127-40-80</a
+              <a :class="$style.contactLink" href="tel:+79171556888"
+                >+7 917 155-68-88</a
               >
             </li>
             <li>
@@ -131,35 +134,39 @@
           </ul>
         </div>
 
-        <span :class="[$style.bottomItem, $style.bottomRow]">
-          ООО "Резиденция ВОЛГА"
-        </span>
-        <span :class="[$style.bottomItem, $style.bottomRow]">
-          © 2026 Все права защищены
-        </span>
-        <a
-          :class="[$style.bottomLink, $style.bottomCenter, $style.bottomRow]"
-          href="#faq"
-          @click.prevent="scrollToFaqRules"
-        >
-          Правила проживания
-        </a>
-        <NuxtLink
-          :class="[$style.bottomLink, $style.bottomEnd, $style.bottomRow]"
-          to="#"
-        >
-          Политика конфиденциальности
-        </NuxtLink>
-        <span :class="[$style.bottomDev, $style.bottomEnd, $style.bottomRow]">
-          Сайт разработан
-          <a
-            :class="$style.devLink"
-            href="https://atlantsoftware.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Atlantsoftware.com</a
+        <div :class="$style.bottomSection">
+          <span :class="[$style.bottomItem, $style.bottomRow]">
+            ООО "Резиденция ВОЛГА"
+          </span>
+          <span
+            :class="[$style.bottomItem, $style.bottomEnd, $style.bottomRow]"
           >
-        </span>
+            © 2026 Все права защищены
+          </span>
+          <a
+            :class="[$style.bottomLink, $style.bottomCenter, $style.bottomRow]"
+            href="#faq"
+            @click.prevent="scrollToFaqRules"
+          >
+            Правила проживания
+          </a>
+          <NuxtLink
+            :class="[$style.bottomLink, $style.bottomEnd, $style.bottomRow]"
+            to="#"
+          >
+            Политика конфиденциальности
+          </NuxtLink>
+          <span :class="[$style.bottomDev, $style.bottomEnd, $style.bottomRow]">
+            <span :class="$style.bottomDevLabel">Сайт разработан:</span>
+            <a
+              :class="$style.devLink"
+              href="https://atlantsoftware.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Atlantsoftware.com</a
+            >
+          </span>
+        </div>
       </div>
     </div>
   </footer>
@@ -194,6 +201,13 @@ export default {
           icon: "max",
           label: "Max",
           external: true,
+        },
+        {
+          link: "tel:+79171556888",
+          icon: "phone",
+          label: "Телефон",
+          external: false,
+          mobileOnly: true,
         },
       ],
     };
@@ -254,17 +268,18 @@ export default {
       display: none;
       @include tablet {
         display: flex;
-        justify-content: center;
+        justify-content: space-between;
         align-items: center;
-        flex-wrap: wrap;
-        gap: 0.75rem 1.25rem;
+        width: 100%;
         margin-bottom: 2.5rem;
       }
       .mobileNavLink {
         color: $text-white;
         text-decoration: none;
-        font-size: 0.9375rem;
-        font-weight: 400;
+        font-size: 0.875rem;
+        font-weight: 600;
+        line-height: 1.2;
+        paragraph-spacing: 0.08em;
         transition: opacity 0.2s;
         &:hover {
           opacity: 0.85;
@@ -281,7 +296,7 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0;
       }
       .column {
         display: flex;
@@ -341,9 +356,9 @@ export default {
         gap: 2.5rem;
         padding: 0 1.5rem;
         @include tablet {
+          width: 100%;
           gap: 1.5rem;
           padding: 0;
-          margin-bottom: 1rem;
         }
         .logo {
           width: 11.5rem;
@@ -358,7 +373,7 @@ export default {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 1rem 2rem;
+            padding: 0.625rem 2rem;
             background: rgba(255, 255, 255, 0.16);
             color: $text-white;
             font-size: 1rem;
@@ -376,11 +391,14 @@ export default {
           display: none;
           @include tablet {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 1rem 1.5rem;
-            flex-wrap: wrap;
-            font-size: 0.875rem;
+            gap: 0.75rem;
+            font-size: 1rem;
+            font-weight: 300;
+            line-height: 1.2;
+            letter-spacing: -0.04em;
             .contactLink {
               color: $text-white;
               text-decoration: none;
@@ -393,11 +411,23 @@ export default {
           align-items: center;
           gap: 1rem;
           max-width: 19.8rem;
+          @include tablet {
+            margin-top: 1rem;
+            width: 100%;
+            max-width: none;
+            gap: 1rem;
+          }
           .socialLinks {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 3.5rem;
+            @include tablet {
+              width: 100%;
+              justify-content: space-between;
+              gap: 0;
+              padding-inline: 0.5rem;
+            }
             .socialLink {
               display: flex;
               align-items: center;
@@ -414,6 +444,12 @@ export default {
                 height: 100%;
                 object-fit: contain;
               }
+              &.socialLinkMobile {
+                display: none;
+                @include tablet {
+                  display: flex;
+                }
+              }
             }
           }
           .socialDisclaimer {
@@ -423,55 +459,94 @@ export default {
             line-height: 1.4;
             text-align: center;
             color: $text-tertiary;
+            @include tablet {
+              font-size: 0.625rem;
+              line-height: 1.4;
+              paragraph-spacing: 0.04em;
+              max-width: 22rem;
+            }
           }
         }
       }
-      .bottomRow {
-        align-self: center;
-        font-size: 0.75rem;
-        font-weight: 300;
-        color: $text-tertiary;
+      .bottomSection {
+        display: contents;
         @include tablet {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          column-gap: 1rem;
+          row-gap: 0.35rem;
+          width: 100%;
+          margin-top: 2rem;
           font-size: 0.625rem;
-          text-align: center;
-          justify-self: auto;
-        }
-        &.bottomItem {
-          white-space: nowrap;
-        }
-        &.bottomLink {
+          font-weight: 300;
           color: $text-tertiary;
-          text-decoration: none;
-          transition: opacity 0.2s;
-          white-space: nowrap;
-          &:hover {
-            opacity: 0.9;
-          }
         }
-        &.bottomCenter {
-          justify-self: center;
-          text-align: center;
-        }
-        &.bottomEnd {
-          justify-self: end;
-          text-align: right;
+        .bottomRow {
+          align-self: center;
+          font-size: 0.75rem;
+          font-weight: 300;
+          color: $text-tertiary;
           @include tablet {
-            text-align: center;
+            font-size: inherit;
+            line-height: 1.35;
+            align-self: start;
           }
-        }
-        &.bottomDev {
-          display: inline;
-          white-space: nowrap;
-          @include tablet {
-            white-space: normal;
+          &.bottomItem {
+            white-space: nowrap;
           }
-          .devLink {
-            color: inherit;
-            text-decoration: underline;
-            text-underline-offset: 0.15em;
+          &.bottomLink {
+            color: $text-tertiary;
+            text-decoration: none;
             transition: opacity 0.2s;
+            white-space: nowrap;
             &:hover {
               opacity: 0.9;
+            }
+          }
+          &.bottomCenter {
+            justify-self: center;
+            text-align: center;
+            @include tablet {
+              justify-self: start;
+              text-align: left;
+            }
+          }
+          &.bottomEnd {
+            justify-self: end;
+            text-align: right;
+            @include tablet {
+              justify-self: stretch;
+              width: 100%;
+              text-align: right;
+            }
+          }
+          &.bottomDev {
+            display: inline;
+            white-space: nowrap;
+            @include tablet {
+              display: contents;
+            }
+            .bottomDevLabel {
+              @include tablet {
+                justify-self: start;
+                text-align: left;
+              }
+            }
+            .devLink {
+              color: inherit;
+              text-decoration: underline;
+              text-underline-offset: 0.15em;
+              margin-left: 0.25em;
+              transition: opacity 0.2s;
+              &:hover {
+                opacity: 0.9;
+              }
+              @include tablet {
+                margin-left: 0;
+                justify-self: stretch;
+                width: 100%;
+                text-align: right;
+              }
             }
           }
         }
