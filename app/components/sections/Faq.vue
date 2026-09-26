@@ -229,7 +229,6 @@ export default {
       }
       @include tablet {
         font-size: 1.5rem;
-        text-align: center;
       }
     }
     .titleSecondary {
@@ -246,8 +245,6 @@ export default {
       }
       @include tablet {
         font-size: 1.5rem;
-        align-self: center;
-        text-align: center;
       }
     }
   }
@@ -347,10 +344,15 @@ export default {
         gap: 1.5rem;
         padding: 2rem 0;
         border: none;
-        background: none;
+        background: transparent;
         cursor: pointer;
         text-align: left;
         color: inherit;
+        -webkit-appearance: none;
+        appearance: none;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+        outline: none;
         @include laptop {
           grid-template-columns: 4rem 1fr auto;
           gap: 1rem;
@@ -358,6 +360,7 @@ export default {
         }
         @include tablet {
           grid-template-columns: 2.25rem 1fr auto;
+          align-items: flex-start;
           gap: 0.75rem;
           padding: 1rem 0;
         }
@@ -387,6 +390,8 @@ export default {
           }
           @include tablet {
             font-size: 1rem;
+            white-space: normal;
+            text-overflow: clip;
           }
         }
         .icon {
@@ -413,6 +418,9 @@ export default {
         .answerClip {
           overflow: hidden;
           min-height: 0;
+          transform: translateZ(0);
+          -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
         }
         .answerInner {
           display: flex;
