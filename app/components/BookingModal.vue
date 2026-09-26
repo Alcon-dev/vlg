@@ -2040,21 +2040,35 @@ export default {
 }
 :global(.photo-gallery-enter-active),
 :global(.photo-gallery-leave-active) {
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease;
+  @include tablet {
+    transition: transform 0.35s ease;
+  }
 }
 :global(.photo-gallery-enter-from),
 :global(.photo-gallery-leave-to) {
   opacity: 0;
+  @include tablet {
+    opacity: 1;
+    transform: translateY(100%);
+  }
 }
 </style>
 <style lang="scss" scoped>
 .booking-modal-enter-active,
 .booking-modal-leave-active {
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease;
+  @include tablet {
+    transition: transform 0.35s ease;
+  }
 }
 .booking-modal-enter-from,
 .booking-modal-leave-to {
   opacity: 0;
+  @include tablet {
+    opacity: 1;
+    transform: translateY(100%);
+  }
 }
 .dropdown-enter-active,
 .dropdown-leave-active {

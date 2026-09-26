@@ -3341,11 +3341,18 @@ export default {
 }
 :global(.photo-gallery-enter-active),
 :global(.photo-gallery-leave-active) {
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease;
+  @include tablet {
+    transition: transform 0.35s ease;
+  }
 }
 :global(.photo-gallery-enter-from),
 :global(.photo-gallery-leave-to) {
   opacity: 0;
+  @include tablet {
+    opacity: 1;
+    transform: translateY(100%);
+  }
 }
 :global(.date-dropdown-enter-active),
 :global(.date-dropdown-leave-active) {
