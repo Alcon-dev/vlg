@@ -439,8 +439,11 @@ export default {
       return `${n} ${word}`;
     },
     priceFormatted() {
-      if (this.formData?.priceFormatted) return this.formData.priceFormatted;
       if (this.formData?.price != null) return formatPrice(this.formData.price);
+      if (this.formData?.priceFormatted) {
+        const text = String(this.formData.priceFormatted);
+        return text.includes("₽") ? text : `${text} ₽`;
+      }
       const fallback = this.apartment?.price?.common?.without_discount;
       return fallback != null ? formatPrice(fallback) : "";
     },

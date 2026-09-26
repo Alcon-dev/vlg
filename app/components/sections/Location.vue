@@ -243,7 +243,7 @@
                               :key="`location-child-age-${index}-${a}`"
                               :value="a"
                             >
-                              {{ a }} лет
+                              {{ locationFormatAgeYears(a) }}
                             </option>
                           </select>
                         </span>
@@ -319,12 +319,12 @@
                       @click="onLocationNearestDateClick(item, index)"
                     >
                       <span :class="$style.locationDateCardPrice">
-                        {{ item.priceText }}
+                        {{ item.priceFormatted }}
                         <span
-                          v-if="item.discountText"
+                          v-if="item.discountPercent"
                           :class="$style.locationDateCardDiscount"
                         >
-                          {{ item.discountText }}
+                          {{ item.discountLabel }}
                         </span>
                       </span>
                       <span :class="$style.locationDateCardDates">
@@ -636,7 +636,7 @@
                             :key="a"
                             :value="a"
                           >
-                            {{ a }} лет
+                            {{ locationFormatAgeYears(a) }}
                           </option>
                         </select>
                       </span>
@@ -1157,7 +1157,7 @@ export default {
           dateLabel,
           price,
           priceFormatted:
-            price != null ? `${this.locationFormatPrice(price)} ₽` : null,
+            price != null ? this.locationFormatPrice(price) : null,
           discountPercent: discountPercent || null,
           discountLabel: discountPercent ? `-${discountPercent}%` : "",
           available:
@@ -1343,7 +1343,7 @@ export default {
     },
     locationFormatPrice(value) {
       if (value == null) return "—";
-      return Number(value).toLocaleString("ru-RU");
+      return `${Number(value).toLocaleString("ru-RU")} ₽`;
     },
     isLocationDateCardSelected(item) {
       if (!this.locationDateRange || !Array.isArray(this.locationDateRange))
@@ -1468,6 +1468,18 @@ export default {
       const max =
         this.locationMaxGuests - this.locationGuestSelection.children.length;
       this.locationGuestSelection.adults = Math.max(min, Math.min(max, n));
+    },
+    locationFormatAgeYears(age) {
+      const n = Number(age);
+      if (!Number.isFinite(n)) return `${age} лет`;
+      const mod10 = n % 10;
+      const mod100 = n % 100;
+      let word = "лет";
+      if (mod10 === 1 && mod100 !== 11) word = "год";
+      else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
+        word = "года";
+      }
+      return `${n} ${word}`;
     },
     locationAddChild() {
       if (!this.locationCanAddChild) return;

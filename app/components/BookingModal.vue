@@ -224,7 +224,7 @@
                           :aria-expanded="childAgeOpenIndex === index"
                           @click.stop="toggleChildAge(index)"
                         >
-                          <span>{{ child.age }} лет</span>
+                          <span>{{ formatAgeYears(child.age) }}</span>
                           <span
                             :class="$style.guestsChildChevron"
                             aria-hidden="true"
@@ -267,7 +267,7 @@
                               ]"
                               @click.stop="selectChildAge(index, a)"
                             >
-                              {{ a }} лет
+                              {{ formatAgeYears(a) }}
                             </button>
                           </li>
                         </ul>
@@ -324,10 +324,10 @@
                           v-if="item.basePrice != null"
                           :class="$style.villaPriceOld"
                         >
-                          {{ formatPrice(item.basePrice) }} ₽
+                          {{ formatPrice(item.basePrice) }}
                         </span>
                         <span :class="$style.villaPriceCurrent">
-                          {{ item.priceFormatted }} ₽
+                          {{ item.priceFormatted }}
                         </span>
                       </span>
                       <button
@@ -885,6 +885,18 @@ export default {
       ];
       return `${d.getDate()} ${months[d.getMonth()]}`;
     },
+    formatAgeYears(age) {
+      const n = Number(age);
+      if (!Number.isFinite(n)) return `${age} лет`;
+      const mod10 = n % 10;
+      const mod100 = n % 100;
+      let word = "лет";
+      if (mod10 === 1 && mod100 !== 11) word = "год";
+      else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
+        word = "года";
+      }
+      return `${n} ${word}`;
+    },
     normalizeDate(date) {
       if (!date) return null;
       const d =
@@ -895,7 +907,7 @@ export default {
     },
     formatPrice(value) {
       if (value == null) return "—";
-      return Number(value).toLocaleString("ru-RU");
+      return `${Number(value).toLocaleString("ru-RU")} ₽`;
     },
     isCheckInDisabled() {
       return false;
@@ -955,12 +967,9 @@ export default {
       this.availabilityLoading = true;
       this.availabilityMap = {};
       try {
-        const guests = {
-          adults: this.guestSelection.adults,
-          children: (this.guestSelection.children || []).map((c) => ({
-            age: c?.age ?? "0",
-          })),
-        };
+        // Цена от гостей не зависит; guests с детьми дают 422
+        // у вилл с меньшим лимитом детей, чем выбран в форме.
+        const guests = { adults: 1, children: [] };
         for (const apt of this.apartments) {
           if (!apt.id) continue;
           if (requestId !== this.availabilityRequestId) return;

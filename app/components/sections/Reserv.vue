@@ -54,7 +54,6 @@
                       currentApartment.price?.common?.without_discount
                     )
                   }}
-                  Р
                 </p>
                 <button
                   type="button"
@@ -173,7 +172,6 @@
                         currentApartment.price?.common?.without_discount
                       )
                     }}
-                    Р
                   </p>
                 </div>
                 <div
@@ -1025,7 +1023,8 @@ export default {
           monthLabel,
           dateLabel,
           price,
-          priceFormatted: price != null ? `${this.formatPrice(price)} ₽` : null,
+          priceFormatted:
+            price != null ? this.formatPrice(price) : null,
           discountPercent: discountPercent || null,
           discountLabel: discountPercent ? `-${discountPercent}%` : "",
           available:
@@ -1321,7 +1320,7 @@ export default {
     },
     formatPrice(value) {
       if (value == null) return "—";
-      return Number(value).toLocaleString("ru-RU");
+      return `${Number(value).toLocaleString("ru-RU")} ₽`;
     },
     formatCalendarDateParts(dateStr) {
       if (!dateStr) return { day: "", month: "" };
