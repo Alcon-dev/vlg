@@ -11,19 +11,19 @@
       >
         <div :class="$style.panel">
           <div :class="$style.header">
-            <div :class="$style.headerTitles">
+            <div :class="$style.headerTop">
               <h1 :class="$style.title">ВЫБЕРИТЕ ВИЛЛУ</h1>
-              <h2 :class="$style.subtitle">ОТКРОЙТЕ НОВЫЙ ФОРМАТ ОТДЫХА</h2>
+              <button
+                type="button"
+                :class="$style.closeBtn"
+                aria-label="Закрыть"
+                @click="$emit('close')"
+              >
+                <span :class="$style.closeLine" />
+                <span :class="$style.closeLine" />
+              </button>
             </div>
-            <button
-              type="button"
-              :class="$style.closeBtn"
-              aria-label="Закрыть"
-              @click="$emit('close')"
-            >
-              <span :class="$style.closeLine" />
-              <span :class="$style.closeLine" />
-            </button>
+            <h2 :class="$style.subtitle">ОТКРОЙТЕ НОВЫЙ ФОРМАТ ОТДЫХА</h2>
           </div>
 
           <div :class="$style.filtersBar">
@@ -57,7 +57,7 @@
                       :class="$style.filterIcon"
                       aria-hidden="true"
                     />
-                    <span>{{ checkInFormatted || "Выберите дату" }}</span>
+                    <span>{{ checkInFormatted || "Дата" }}</span>
                   </button>
                   <Transition name="dropdown">
                     <div
@@ -108,7 +108,7 @@
                       :class="$style.filterIcon"
                       aria-hidden="true"
                     />
-                    <span>{{ checkOutFormatted || "Выберите дату" }}</span>
+                    <span>{{ checkOutFormatted || "Дата" }}</span>
                   </button>
                   <Transition name="dropdown">
                     <div
@@ -1005,725 +1005,645 @@ export default {
 <style lang="scss" module>
 @use "@app/assets/scss/colors.scss" as *;
 @use "@app/assets/scss/mixins.scss" as *;
-
 .overlay {
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(4px);
-  overflow-y: auto;
   padding: 1.5rem;
-
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  overflow: auto;
+  box-sizing: border-box;
   @include tablet {
     padding: 0;
     align-items: stretch;
     justify-content: stretch;
+    overflow: hidden;
+    background: $bg-brown;
+    backdrop-filter: none;
   }
-}
-
-.panel {
-  position: relative;
-  width: 100%;
-  max-width: 56rem;
-  max-height: 90vh;
-  height: max-content;
-  margin: 0 auto;
-  background: $bg-brown;
-  overflow: visible;
-  display: flex;
-  flex-direction: column;
-  border-radius: 1.5rem;
-  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.4);
-  padding: 2rem 2.5rem 2.5rem;
-
-  @include tablet {
-    width: 100vw;
-    height: 100vh;
-    max-width: none;
-    max-height: none;
-    margin: 0;
-    border-radius: 0;
-    box-shadow: none;
-    padding: 1.25rem 1rem 1rem;
-    padding-top: max(1.25rem, env(safe-area-inset-top));
-    padding-left: max(1rem, env(safe-area-inset-left));
-    padding-right: max(1rem, env(safe-area-inset-right));
-    padding-bottom: max(1rem, env(safe-area-inset-bottom));
-    overflow-y: auto;
-  }
-}
-
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  flex-shrink: 0;
-  gap: 1rem;
-  margin: 0 0 1.75rem;
-  padding-bottom: 0.25rem;
-  background: $bg-brown;
-
-  @include tablet {
-    position: static;
-    top: auto;
-    z-index: auto;
-    padding-bottom: 0;
-    margin-bottom: 1.25rem;
-  }
-}
-
-.headerTitles {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  min-width: 0;
-}
-
-.title {
-  margin: 0;
-  font-size: 1.75rem;
-  font-weight: 400;
-  color: $text-white;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
-  @include tablet {
-    font-size: 1.375rem;
-  }
-}
-
-.subtitle {
-  margin: 0;
-  font-size: 1.375rem;
-  font-weight: 400;
-  color: $text-accent;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
-  @include tablet {
-    font-size: 1.125rem;
-  }
-}
-
-.closeBtn {
-  position: relative;
-  width: 2.5rem;
-  height: 2.5rem;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  background: transparent;
-  border: none;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  transition: background 0.2s;
-  &:hover {
-    background: rgba(255, 255, 255, 0.08);
-  }
-}
-
-.closeLine {
-  position: absolute;
-  width: 1.125rem;
-  height: 1.5px;
-  background: $text-white;
-  border-radius: 1px;
-  &:first-child {
-    transform: rotate(45deg);
-  }
-  &:last-child {
-    transform: rotate(-45deg);
-  }
-}
-
-.filtersBar {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-  padding: 0;
-  overflow: visible;
-  flex-shrink: 0;
-  margin: 0 0 2rem;
-
-  @include tablet {
-    grid-template-columns: 1fr;
-    margin-bottom: 1.5rem;
-  }
-}
-
-.fieldGroup {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-width: 0;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 0.625rem;
-  background: transparent;
-  transition: border-color 0.2s;
-
-  &.fieldGroupAccent {
-    border-color: $text-accent;
-
-    .filterLabel {
-      color: $text-accent;
+  .panel {
+    position: relative;
+    width: 100%;
+    max-width: 50rem;
+    max-height: 90vh;
+    height: max-content;
+    margin: auto;
+    padding: 2.5rem;
+    background: $bg-brown;
+    border-radius: 1.5rem;
+    color: $text-white;
+    box-sizing: border-box;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    @include tablet {
+      max-width: none;
+      max-height: none;
+      width: 100%;
+      height: 100%;
+      min-height: 100%;
+      margin: 0;
+      padding: 1rem;
+      border-radius: 0;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
     }
-
-    .filterIcon {
-      opacity: 1;
-      filter: none;
-    }
-
-    .fieldCell:not(:first-child) {
-      border-left-color: rgba(132, 99, 61, 0.45);
+    .header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      margin-bottom: 2.5rem;
+      flex-shrink: 0;
       @include tablet {
-        border-top-color: rgba(132, 99, 61, 0.45);
+        margin-bottom: 1.25rem;
+      }
+      .headerTop {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        .title {
+          margin: 0;
+          font-size: 2rem;
+          font-weight: 400;
+          letter-spacing: -0.04em;
+          text-transform: uppercase;
+          line-height: 1;
+          color: $text-white;
+          @include tablet {
+            font-size: 1.35rem;
+          }
+        }
+        .closeBtn {
+          position: relative;
+          flex-shrink: 0;
+          width: 1.5rem;
+          height: 1.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          border: none;
+          border-radius: 0.25rem;
+          background: transparent;
+          color: $text-white;
+          cursor: pointer;
+          .closeLine {
+            position: absolute;
+            width: 1.125rem;
+            height: 1.5px;
+            background: currentColor;
+            &:first-child {
+              transform: rotate(45deg);
+            }
+            &:last-child {
+              transform: rotate(-45deg);
+            }
+          }
+        }
+      }
+      .subtitle {
+        margin: 0;
+        align-self: flex-end;
+        text-align: right;
+        font-size: 2rem;
+        font-weight: 300;
+        letter-spacing: -0.04em;
+        text-transform: uppercase;
+        color: $text-accent;
+        line-height: 1;
+        @include tablet {
+          font-size: 1.35rem;
+        }
+      }
+    }
+    .filtersBar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      padding: 0;
+      overflow: visible;
+      flex-shrink: 0;
+      margin: 0 0 1.5rem;
+      @include tablet {
+        grid-template-columns: 1fr;
+        margin-bottom: 1.25rem;
+      }
+      .fieldGroup {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-width: 0;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 0.5rem;
+        background: transparent;
+        box-sizing: border-box;
+        transition: border-color 0.2s;
+        @include tablet {
+          grid-template-columns: 1fr;
+        }
+        &.fieldGroupAccent {
+          border-color: $text-accent;
+          .filterLabel {
+            color: $text-accent;
+          }
+          .filterIcon {
+            opacity: 1;
+            filter: none;
+          }
+          .fieldCell:not(:first-child) {
+            border-left-color: $text-accent;
+            @include tablet {
+              border-left: none;
+              border-top-color: $text-accent;
+            }
+          }
+        }
+        &.fieldGroupOpen {
+          .filterLabel {
+            z-index: 1001;
+          }
+        }
+        &:has(.dateInputWrapOpen) {
+          .fieldCell:has(.dateInputWrapOpen) {
+            > .filterLabel {
+              z-index: 1001;
+            }
+          }
+        }
+        .fieldCell {
+          position: relative;
+          min-width: 0;
+          padding: 0.9rem 1rem 0.75rem;
+          box-sizing: border-box;
+          &:not(:first-child) {
+            border-left: 1px solid rgba(255, 255, 255, 0.28);
+            @include tablet {
+              border-left: none;
+              border-top: 1px solid rgba(255, 255, 255, 0.28);
+            }
+          }
+          .filterLabel {
+            position: absolute;
+            top: 0;
+            left: 0.85rem;
+            z-index: 10;
+            transform: translateY(-50%);
+            padding: 0 0.35rem;
+            font-size: 0.75rem;
+            font-weight: 400;
+            line-height: 1;
+            color: rgba(255, 255, 255, 0.55);
+            background: $bg-brown;
+            pointer-events: none;
+            transition: color 0.2s;
+            white-space: nowrap;
+          }
+          .dateInputWrap {
+            position: relative;
+            z-index: 2;
+            overflow: visible;
+            &.dateInputWrapOpen {
+              z-index: 100;
+            }
+            .filterInput {
+              position: relative;
+              z-index: 2;
+              display: flex;
+              align-items: center;
+              gap: 0.65rem;
+              min-width: 0;
+              min-height: 1.75rem;
+              padding: 0;
+              background: transparent;
+              border: none;
+              border-radius: 0;
+              color: $text-white;
+              font-size: 1rem;
+              font-weight: 400;
+              font-family: inherit;
+              cursor: pointer;
+              text-align: left;
+              width: 100%;
+              span {
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+              }
+              &:disabled {
+                cursor: not-allowed;
+                opacity: 0.45;
+              }
+              .filterIcon {
+                flex-shrink: 0;
+                width: 1rem;
+                height: 1rem;
+                opacity: 0.9;
+                display: block;
+              }
+            }
+            .calendarDropdown {
+              position: absolute;
+              left: 0;
+              top: calc(100% + 0.25rem);
+              z-index: 1000;
+              padding: 0.5rem;
+              background: rgba(30, 30, 30, 0.98);
+              border: 1px solid rgba(255, 255, 255, 0.2);
+              border-radius: 0.5rem;
+              box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.4);
+              --dp-disabled-color: rgba(255, 255, 255, 0.08);
+              --dp-disabled-color-text: rgba(255, 255, 255, 0.35);
+              :global(.dp__main) {
+                border: none;
+                background: transparent;
+              }
+              :global(.dp__input_wrap) {
+                display: none;
+              }
+              :global(.dp__cell_inner),
+              :global(.dp__calendar_item) {
+                color: rgba(255, 255, 255, 0.9);
+              }
+              :global(.dp__active_date),
+              :global(.dp__range_start),
+              :global(.dp__range_end),
+              :global(.dp__range_between) {
+                background: rgba(255, 255, 255, 0.2);
+                color: $text-white;
+              }
+              :global(.dp__month_year_select),
+              :global(.dp__arrow_top) {
+                color: $text-white;
+              }
+            }
+          }
+          .counterInner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            min-height: 1.75rem;
+            .counterBtn {
+              width: 1.75rem;
+              height: 1.75rem;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 0;
+              border: none;
+              border-radius: 0;
+              background: transparent;
+              color: $text-white;
+              font-size: 1.35rem;
+              font-weight: 400;
+              line-height: 1;
+              cursor: pointer;
+              transition: opacity 0.15s;
+              &:disabled {
+                opacity: 0.35;
+                cursor: default;
+              }
+            }
+            .counterValue,
+            .counterValueBtn {
+              flex: 1;
+              min-width: 0;
+              text-align: center;
+              font-size: 1rem;
+              font-weight: 400;
+              color: $text-white;
+              font-family: inherit;
+              line-height: 1.2;
+            }
+            .counterValueBtn {
+              padding: 0;
+              border: none;
+              background: transparent;
+              cursor: pointer;
+            }
+          }
+        }
+        .guestsDropdown {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: calc(100% + 0.25rem);
+          z-index: 1000;
+          padding: 0.75rem;
+          background: rgba(30, 30, 30, 0.98);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 0.5rem;
+          box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.4);
+          max-height: 16rem;
+          overflow-y: auto;
+          .guestsDropdownInner {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            .guestsChildRow {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 0.5rem;
+              padding: 0.5rem 0.75rem;
+              background: rgba(255, 255, 255, 0.08);
+              border-radius: 0.375rem;
+              .guestsChildLabel {
+                font-size: 0.875rem;
+                color: rgba(255, 255, 255, 0.9);
+                .guestsChildSelect {
+                  margin-left: 0.25rem;
+                  padding: 0.25rem 0.5rem;
+                  background: rgba(255, 255, 255, 0.1);
+                  border: 1px solid rgba(255, 255, 255, 0.2);
+                  border-radius: 0.25rem;
+                  color: $text-white;
+                  font-size: 0.875rem;
+                  font-family: inherit;
+                  cursor: pointer;
+                }
+              }
+              .guestsChildRemove {
+                width: 1.5rem;
+                height: 1.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+                background: none;
+                border: none;
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 1.25rem;
+                line-height: 1;
+                cursor: pointer;
+                border-radius: 0.25rem;
+                transition:
+                  color 0.15s,
+                  background 0.15s;
+                &:hover {
+                  color: $text-white;
+                  background: rgba(255, 255, 255, 0.1);
+                }
+              }
+            }
+          }
+          .guestsClose {
+            margin-top: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            border-radius: 0.375rem;
+            color: $text-white;
+            font-size: 0.875rem;
+            cursor: pointer;
+            width: 100%;
+            &:hover {
+              background: rgba(255, 255, 255, 0.25);
+            }
+          }
+        }
+      }
+    }
+    .content {
+      flex: 0 1 auto;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+      @include tablet {
+        flex: 0 0 auto;
+        min-height: auto;
+        overflow: visible;
+      }
+      &::-webkit-scrollbar {
+        width: 0.5rem;
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.25);
+        border-radius: 0.25rem;
+      }
+      .hint {
+        color: rgba(255, 255, 255, 0.55);
+        font-size: 0.875rem;
+        font-weight: 300;
+        line-height: 1.4;
+        margin: 0;
+        padding: 0;
+      }
+      .loadingWrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 12rem;
+        padding: 2rem;
+        .spinner {
+          width: 2.5rem;
+          height: 2.5rem;
+          border: 3px solid rgba(255, 255, 255, 0.2);
+          border-top-color: $text-white;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+        }
+      }
+      .empty {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1rem;
+        padding: 2rem 0;
+        text-align: center;
+      }
+      .villaList {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        .villaCard {
+          padding-bottom: 0;
+          .villaCardHeader {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+            @include tablet {
+              flex-wrap: wrap;
+              align-items: flex-start;
+            }
+            .villaCardTitleRow {
+              display: flex;
+              align-items: baseline;
+              gap: 0.5rem;
+              min-width: 0;
+              .villaLabel {
+                font-size: 1rem;
+                color: rgba(255, 255, 255, 0.55);
+                font-weight: 400;
+                line-height: 1.1;
+              }
+              .villaName {
+                margin: 0;
+                font-size: 2.5rem;
+                font-weight: 600;
+                color: $text-white;
+                line-height: 1;
+                letter-spacing: -0.04em;
+                @include tablet {
+                  font-size: 1.75rem;
+                }
+              }
+            }
+            .villaCardActions {
+              display: flex;
+              align-items: stretch;
+              gap: 0;
+              flex-shrink: 0;
+              border-radius: 0.5rem;
+              overflow: hidden;
+              .villaPriceBox {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 6.25rem;
+                padding: 0 1rem;
+                border: none;
+                background: $bg-white;
+                color: $bg-brown;
+                font-size: 1rem;
+                font-weight: 600;
+                line-height: 1;
+              }
+              .bookBtn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+                min-width: 9.5rem;
+                min-height: 2.875rem;
+                padding: 0.75rem 1.25rem;
+                background: #004f68;
+                color: $text-white;
+                border: none;
+                font-size: 1rem;
+                font-weight: 500;
+                font-family: inherit;
+                cursor: pointer;
+                transition: background 0.2s;
+                &:hover:not(:disabled) {
+                  background: #006080;
+                }
+                &:disabled {
+                  opacity: 0.65;
+                  cursor: default;
+                }
+                .bookBtnSpinner {
+                  width: 1.25rem;
+                  height: 1.25rem;
+                  min-width: 1.25rem;
+                  min-height: 1.25rem;
+                  flex-shrink: 0;
+                  border: 2px solid rgba(255, 255, 255, 0.25);
+                  border-top-color: $text-white;
+                  border-radius: 50%;
+                  box-sizing: border-box;
+                  animation: bookBtnSpin 0.8s linear infinite;
+                }
+              }
+            }
+          }
+          .villaDesc {
+            font-size: 0.9375rem;
+            color: rgba(255, 255, 255, 0.78);
+            line-height: 1.35;
+            margin: 0 0 1rem;
+            max-width: 42rem;
+            :global(p) {
+              margin: 0;
+              &:last-child {
+                margin-bottom: 0;
+              }
+            }
+          }
+          .villaGallery {
+            display: grid;
+            grid-template-columns: 1.45fr 1fr;
+            gap: 0;
+            border-radius: 1rem;
+            overflow: hidden;
+            min-height: 17rem;
+            background: #111;
+            @include tablet {
+              grid-template-columns: 1fr;
+              min-height: 0;
+            }
+            .villaMainImg {
+              background: #111;
+              overflow: hidden;
+              min-height: 17rem;
+              @include tablet {
+                min-height: 12rem;
+              }
+              img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+                cursor: pointer;
+                min-height: 17rem;
+                @include tablet {
+                  min-height: 12rem;
+                }
+              }
+            }
+            .villaThumbs {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              grid-template-rows: 1fr 1fr;
+              gap: 0;
+              min-height: 0;
+              @include tablet {
+                display: none;
+              }
+              .villaThumb {
+                position: relative;
+                background: #111;
+                overflow: hidden;
+                min-height: 0;
+                cursor: pointer;
+                img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                  display: block;
+                }
+                .villaAllOverlay {
+                  position: absolute;
+                  inset: 0;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  background: rgba(0, 0, 0, 0.55);
+                  font-size: 1rem;
+                  font-weight: 400;
+                  color: $text-white;
+                  letter-spacing: -0.02em;
+                  pointer-events: none;
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
-
-  &.fieldGroupOpen {
-    .filterLabel {
-      z-index: 1001;
-    }
-  }
-
-  @include tablet {
-    grid-template-columns: 1fr;
-  }
 }
-
-.fieldCell {
-  position: relative;
-  min-width: 0;
-
-  &:not(:first-child) {
-    border-left: 1px solid rgba(255, 255, 255, 0.22);
-    @include tablet {
-      border-left: none;
-      border-top: 1px solid rgba(255, 255, 255, 0.22);
-    }
-  }
-}
-
-.filterLabel {
-  position: absolute;
-  top: 0;
-  left: 0.75rem;
-  transform: translateY(-50%);
-  padding: 0 0.4rem;
-  font-size: 0.75rem;
-  font-weight: 400;
-  z-index: 10;
-  line-height: 1;
-  color: rgba(255, 255, 255, 0.55);
-  background: $bg-brown;
-  pointer-events: none;
-  transition: color 0.2s;
-  white-space: nowrap;
-}
-
-.fieldGroup:has(.dateInputWrapOpen)
-  .fieldCell:has(.dateInputWrapOpen)
-  > .filterLabel {
-  z-index: 1001;
-}
-
-.filterInput {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-height: 3.125rem;
-  padding: 0.75rem 0.875rem;
-  background: transparent;
-  border: none;
-  border-radius: 0.625rem;
-  color: $text-white;
-  font-size: 1rem;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  text-align: left;
-  width: 100%;
-  transition: background 0.2s;
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.45;
-  }
-}
-
-.filterIcon {
-  flex-shrink: 0;
-  width: 1rem;
-  height: 1rem;
-  opacity: 0.9;
-  display: block;
-}
-
-.counterInner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.35rem;
-  min-height: 3.125rem;
-  padding: 0.5rem 0.75rem;
-}
-
-.counterBtn {
-  width: 1.5rem;
-  height: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: none;
-  border-radius: 0.25rem;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1.125rem;
-  font-weight: 400;
-  line-height: 1;
-  cursor: pointer;
-  transition:
-    color 0.15s,
-    background 0.15s;
-  &:hover:not(:disabled) {
-    color: $text-white;
-    background: rgba(255, 255, 255, 0.08);
-  }
-  &:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-  }
-}
-
-.counterValue,
-.counterValueBtn {
-  flex: 1;
-  min-width: 0;
-  text-align: center;
-  font-size: 1rem;
-  font-weight: 600;
-  color: $text-white;
-  font-family: inherit;
-  line-height: 1.2;
-}
-
-.counterValueBtn {
-  padding: 0;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-}
-
-.dateInputWrap {
-  position: relative;
-  z-index: 2;
-  overflow: visible;
-  &.dateInputWrapOpen {
-    z-index: 100;
-  }
-}
-
-.calendarDropdown {
-  position: absolute;
-  left: 0;
-  top: calc(100% + 0.25rem);
-  z-index: 1000;
-  padding: 0.5rem;
-  background: rgba(30, 30, 30, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.5rem;
-  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.4);
-  --dp-disabled-color: rgba(255, 255, 255, 0.08);
-  --dp-disabled-color-text: rgba(255, 255, 255, 0.35);
-  :global(.dp__main) {
-    border: none;
-    background: transparent;
-  }
-  :global(.dp__input_wrap) {
-    display: none;
-  }
-  :global(.dp__cell_inner),
-  :global(.dp__calendar_item) {
-    color: rgba(255, 255, 255, 0.9);
-  }
-  :global(.dp__active_date),
-  :global(.dp__range_start),
-  :global(.dp__range_end),
-  :global(.dp__range_between) {
-    background: rgba(255, 255, 255, 0.2);
-    color: $text-white;
-  }
-  :global(.dp__month_year_select),
-  :global(.dp__arrow_top) {
-    color: $text-white;
-  }
-}
-
-.guestsDropdown {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% + 0.25rem);
-  z-index: 1000;
-  padding: 0.75rem;
-  background: rgba(30, 30, 30, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.5rem;
-  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.4);
-  max-height: 16rem;
-  overflow-y: auto;
-}
-
-.guestsDropdownInner {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.guestsChildRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 0.375rem;
-}
-
-.guestsChildLabel {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.guestsChildSelect {
-  margin-left: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.25rem;
-  color: $text-white;
-  font-size: 0.875rem;
-  font-family: inherit;
-  cursor: pointer;
-}
-
-.guestsChildRemove {
-  width: 1.5rem;
-  height: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1.25rem;
-  line-height: 1;
-  cursor: pointer;
-  border-radius: 0.25rem;
-  transition:
-    color 0.15s,
-    background 0.15s;
-  &:hover {
-    color: $text-white;
-    background: rgba(255, 255, 255, 0.1);
-  }
-}
-
-.guestsClose {
-  margin-top: 0.75rem;
-  padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.15);
-  border: none;
-  border-radius: 0.375rem;
-  color: $text-white;
-  font-size: 0.875rem;
-  cursor: pointer;
-  width: 100%;
-  &:hover {
-    background: rgba(255, 255, 255, 0.25);
-  }
-}
-
-.content {
-  flex: 0 1 auto;
-  min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
-
-  @include tablet {
-    flex: 0 0 auto;
-    min-height: auto;
-    overflow: visible;
-  }
-}
-
-.content::-webkit-scrollbar {
-  width: 0.5rem;
-}
-.content::-webkit-scrollbar-track {
-  background: transparent;
-}
-.content::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.25);
-  border-radius: 0.25rem;
-}
-
-.hint {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 1rem;
-  margin: 0;
-  padding: 2rem 0;
-}
-
-.loadingWrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 12rem;
-  padding: 2rem;
-}
-
-.spinner {
-  width: 2.5rem;
-  height: 2.5rem;
-  border: 3px solid rgba(255, 255, 255, 0.2);
-  border-top-color: $text-white;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.empty {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1rem;
-  padding: 2rem 0;
-  text-align: center;
-}
-
-.villaList {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.villaCard {
-  padding-bottom: 0;
-}
-
-.villaCardHeader {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 0.75rem;
-  @include tablet {
-    flex-wrap: wrap;
-    align-items: flex-start;
-  }
-}
-
-.villaCardTitleRow {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
-  min-width: 0;
-}
-
-.villaLabel {
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.55);
-  font-weight: 400;
-  line-height: 1.1;
-}
-
-.villaName {
-  margin: 0;
-  font-size: 2.5rem;
-  font-weight: 600;
-  color: $text-white;
-  line-height: 1;
-  letter-spacing: -0.04em;
-  @include tablet {
-    font-size: 1.75rem;
-  }
-}
-
-.villaCardActions {
-  display: flex;
-  align-items: stretch;
-  gap: 0;
-  flex-shrink: 0;
-  border-radius: 0.5rem;
-  overflow: hidden;
-}
-
-.villaPriceBox {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 6.25rem;
-  padding: 0 1rem;
-  border: none;
-  background: $bg-white;
-  color: $bg-brown;
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1;
-}
-
-.bookBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  min-width: 9.5rem;
-  min-height: 2.875rem;
-  padding: 0.75rem 1.25rem;
-  background: #004f68;
-  color: $text-white;
-  border: none;
-  font-size: 1rem;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  transition: background 0.2s;
-  &:hover:not(:disabled) {
-    background: #006080;
-  }
-  &:disabled {
-    opacity: 0.65;
-    cursor: default;
-  }
-}
-
-.bookBtnSpinner {
-  width: 1.25rem;
-  height: 1.25rem;
-  min-width: 1.25rem;
-  min-height: 1.25rem;
-  flex-shrink: 0;
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  border-top-color: $text-white;
-  border-radius: 50%;
-  box-sizing: border-box;
-  animation: bookBtnSpin 0.8s linear infinite;
-}
-
-@keyframes bookBtnSpin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.villaDesc {
-  font-size: 0.9375rem;
-  color: rgba(255, 255, 255, 0.78);
-  line-height: 1.35;
-  margin: 0 0 1rem;
-  max-width: 42rem;
-  :global(p) {
-    margin: 0;
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-}
-
-.villaGallery {
-  display: grid;
-  grid-template-columns: 1.45fr 1fr;
-  gap: 0;
-  border-radius: 1rem;
-  overflow: hidden;
-  min-height: 17rem;
-  background: #111;
-  @include tablet {
-    grid-template-columns: 1fr;
-    min-height: 0;
-  }
-}
-
-.villaMainImg {
-  background: #111;
-  overflow: hidden;
-  min-height: 17rem;
-  @include tablet {
-    min-height: 12rem;
-  }
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    cursor: pointer;
-    min-height: 17rem;
-    @include tablet {
-      min-height: 12rem;
-    }
-  }
-}
-
-.villaThumbs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 0;
-  min-height: 0;
-  @include tablet {
-    display: none;
-  }
-}
-
-.villaThumb {
-  position: relative;
-  background: #111;
-  overflow: hidden;
-  min-height: 0;
-  cursor: pointer;
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-}
-
-.villaAllOverlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
-  font-size: 1rem;
-  font-weight: 400;
-  color: $text-white;
-  letter-spacing: -0.02em;
-  pointer-events: none;
-}
-
 .photoGalleryOverlay {
   position: fixed;
   inset: 0;
@@ -1732,179 +1652,172 @@ export default {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-
-.photoGalleryPanel {
-  flex: 1 1 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.photoGalleryHeader {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-  padding-top: max(1rem, env(safe-area-inset-top));
-  background: #000;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.photoGalleryBack {
-  flex-shrink: 0;
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  background: transparent;
-  border: 0;
-  color: $text-white;
-  cursor: pointer;
-  border-radius: 0.5rem;
-  transition:
-    background 0.2s,
-    opacity 0.2s;
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
+  .photoGalleryPanel {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    .photoGalleryHeader {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      padding-top: max(1rem, env(safe-area-inset-top));
+      background: #000;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      .photoGalleryBack {
+        flex-shrink: 0;
+        width: 2.5rem;
+        height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        color: $text-white;
+        cursor: pointer;
+        border-radius: 0.5rem;
+        transition:
+          background 0.2s,
+          opacity 0.2s;
+        &:hover {
+          background: rgba(255, 255, 255, 0.1);
+        }
+      }
+      .photoGalleryTitle {
+        flex: 1;
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: $text-white;
+        text-align: center;
+      }
+      .photoGalleryHeaderSpacer {
+        width: 2.5rem;
+        flex-shrink: 0;
+      }
+    }
+    .photoGalleryGrid {
+      flex: 1 1 0;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 0.5rem;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-auto-rows: minmax(min(40vmin, 12rem), auto);
+      gap: 0.5rem;
+      align-content: start;
+      .photoGalleryItem {
+        position: relative;
+        min-height: min(40vmin, 12rem);
+        overflow: hidden;
+        background: #1a1a1a;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+        display: block;
+        width: 100%;
+        text-align: left;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          pointer-events: none;
+        }
+      }
+    }
+    .photoFullscreenOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10001;
+      background: rgba(0, 0, 0, 0.97);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      box-sizing: border-box;
+      .photoFullscreenClose {
+        position: absolute;
+        top: max(1rem, env(safe-area-inset-top));
+        right: max(1rem, env(safe-area-inset-right));
+        z-index: 2;
+        width: 2.5rem;
+        height: 2.5rem;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.1);
+        border: 0;
+        border-radius: 50%;
+        color: $text-white;
+        cursor: pointer;
+        transition: background 0.2s;
+        &:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+      }
+      .photoFullscreenNav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 2;
+        width: 3rem;
+        height: 3rem;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.15);
+        border: 0;
+        border-radius: 50%;
+        color: $text-white;
+        cursor: pointer;
+        transition: background 0.2s;
+        &:hover {
+          background: rgba(255, 255, 255, 0.25);
+        }
+        &.photoFullscreenPrev {
+          left: 1rem;
+        }
+        &.photoFullscreenNext {
+          right: 1rem;
+        }
+      }
+      .photoFullscreenImgWrap {
+        max-width: 100%;
+        max-height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .photoFullscreenImg {
+          max-width: 100%;
+          max-height: 100%;
+          width: auto;
+          height: auto;
+          object-fit: cover;
+          display: block;
+        }
+      }
+    }
   }
 }
-
-.photoGalleryTitle {
-  flex: 1;
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: $text-white;
-  text-align: center;
-}
-
-.photoGalleryHeaderSpacer {
-  width: 2.5rem;
-  flex-shrink: 0;
-}
-
-.photoGalleryGrid {
-  flex: 1 1 0;
-  min-height: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 0.5rem;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-auto-rows: minmax(min(40vmin, 12rem), auto);
-  gap: 0.5rem;
-  align-content: start;
-}
-
-.photoGalleryItem {
-  position: relative;
-  min-height: min(40vmin, 12rem);
-  overflow: hidden;
-  background: #1a1a1a;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-  display: block;
-  width: 100%;
-  text-align: left;
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    pointer-events: none;
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
-
-.photoFullscreenOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 10001;
-  background: rgba(0, 0, 0, 0.97);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem;
-  box-sizing: border-box;
-}
-
-.photoFullscreenClose {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  z-index: 2;
-  width: 2.5rem;
-  height: 2.5rem;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.1);
-  border: 0;
-  border-radius: 50%;
-  color: $text-white;
-  cursor: pointer;
-  transition: background 0.2s;
-  top: max(1rem, env(safe-area-inset-top));
-  right: max(1rem, env(safe-area-inset-right));
-  &:hover {
-    background: rgba(255, 255, 255, 0.2);
+@keyframes bookBtnSpin {
+  to {
+    transform: rotate(360deg);
   }
 }
-
-.photoFullscreenNav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-  width: 3rem;
-  height: 3rem;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.15);
-  border: 0;
-  border-radius: 50%;
-  color: $text-white;
-  cursor: pointer;
-  transition: background 0.2s;
-  &:hover {
-    background: rgba(255, 255, 255, 0.25);
-  }
-}
-
-.photoFullscreenPrev {
-  left: 1rem;
-}
-
-.photoFullscreenNext {
-  right: 1rem;
-}
-
-.photoFullscreenImgWrap {
-  max-width: 100%;
-  max-height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.photoFullscreenImg {
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
-  object-fit: cover;
-  display: block;
-}
-
 :global(.photo-fullscreen-enter-active),
 :global(.photo-fullscreen-leave-active) {
   transition: opacity 0.2s ease;
@@ -1913,7 +1826,6 @@ export default {
 :global(.photo-fullscreen-leave-to) {
   opacity: 0;
 }
-
 :global(.photo-gallery-enter-active),
 :global(.photo-gallery-leave-active) {
   transition: opacity 0.2s ease;
@@ -1923,7 +1835,6 @@ export default {
   opacity: 0;
 }
 </style>
-
 <style lang="scss" scoped>
 .booking-modal-enter-active,
 .booking-modal-leave-active {
@@ -1933,7 +1844,6 @@ export default {
 .booking-modal-leave-to {
   opacity: 0;
 }
-
 .dropdown-enter-active,
 .dropdown-leave-active {
   transition:
