@@ -320,7 +320,15 @@
                     </div>
                     <div :class="$style.villaCardActions">
                       <span :class="$style.villaPriceBox">
-                        {{ item.priceFormatted }} ₽
+                        <span
+                          v-if="item.basePrice != null"
+                          :class="$style.villaPriceOld"
+                        >
+                          {{ formatPrice(item.basePrice) }} ₽
+                        </span>
+                        <span :class="$style.villaPriceCurrent">
+                          {{ item.priceFormatted }} ₽
+                        </span>
                       </span>
                       <button
                         type="button"
@@ -576,6 +584,7 @@ import { defineAsyncComponent } from "vue";
 import { ru } from "date-fns/locale";
 import axios from "axios";
 import calendarIconUrl from "@app/assets/img/modals/calendar.svg";
+import { calcStayPrice, isStayAvailable } from "@app/utils/bookingPrice.js";
 
 const BOOKING_CONFIRM_URL =
   "https://realtycalendar.ru/v2/widget/HE3NXyOLk4/confirm";
@@ -694,7 +703,14 @@ export default {
           const info = this.availabilityMap[apartment.id];
           if (!info || !info.available) return null;
           const price = info.price != null ? this.formatPrice(info.price) : "—";
-          return { apartment, priceFormatted: price, available: true };
+          return {
+            apartment,
+            priceFormatted: price,
+            price: info.price ?? null,
+            basePrice: info.basePrice ?? null,
+            discountPercent: info.discountPercent ?? 0,
+            available: true,
+          };
         })
         .filter(Boolean);
     },
@@ -939,18 +955,28 @@ export default {
                 guests,
               }
             );
-            const entry = Array.isArray(calendar)
-              ? calendar.find((e) => e.date === this.beginDateStr)
-              : null;
-            const available =
-              entry &&
-              entry.closed_on_arrival !== true &&
-              entry.available !== false;
+            const available = isStayAvailable(
+              calendar,
+              this.beginDateStr,
+              this.endDateStr
+            );
+            const stay = calcStayPrice(
+              calendar,
+              this.beginDateStr,
+              this.endDateStr
+            );
+            const fallback =
+              apt.price?.common?.without_discount != null
+                ? Number(apt.price.common.without_discount)
+                : null;
             this.availabilityMap = {
               ...this.availabilityMap,
               [apt.id]: {
                 available: !!available,
-                price: entry?.price ?? apt.price?.common?.without_discount,
+                price: stay?.total ?? fallback,
+                basePrice: stay?.discountPercent > 0 ? stay.base : null,
+                discountPercent: stay?.discountPercent ?? 0,
+                nights: stay?.nights ?? 0,
               },
             };
           } catch {
@@ -1025,6 +1051,10 @@ export default {
         checkOutDate: this.toDateStr(this.checkOutDate),
         guests,
         apartment: item.apartment,
+        price: item.price ?? null,
+        basePrice: item.basePrice ?? null,
+        priceFormatted: item.priceFormatted ?? null,
+        discountPercent: item.discountPercent ?? 0,
       });
       const aptIndex = this.apartments.findIndex(
         (a) => a.id === item.apartment.id
@@ -1719,6 +1749,7 @@ export default {
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                gap: 0.5rem;
                 width: 100%;
                 min-width: 0;
                 height: 100%;
@@ -1730,6 +1761,16 @@ export default {
                 font-weight: 600;
                 line-height: 1;
                 box-sizing: border-box;
+                .villaPriceOld {
+                  font-size: 0.8125rem;
+                  font-weight: 400;
+                  text-decoration: line-through;
+                  opacity: 0.55;
+                  white-space: nowrap;
+                }
+                .villaPriceCurrent {
+                  white-space: nowrap;
+                }
               }
               .bookBtn {
                 display: flex;

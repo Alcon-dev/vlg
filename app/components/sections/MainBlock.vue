@@ -596,10 +596,10 @@ export default {
             display: none;
           }
           &:nth-child(odd) {
-            border-right: 1px solid rgba($text-accent, 0.5);
+            border-right: 1px solid rgba($text-accent, 0.25);
           }
           &:nth-child(-n + 2) {
-            border-bottom: 1px solid rgba($text-accent, 0.5);
+            border-bottom: 1px solid rgba($text-accent, 0.25);
           }
         }
         .featureIcon {
