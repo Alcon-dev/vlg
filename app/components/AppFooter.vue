@@ -195,7 +195,7 @@ export default {
           external: true,
         },
         {
-          link: "https://www.instagram.com/",
+          link: "https://www.instagram.com/volga_doma/",
           icon: "instagram",
           label: "Instagram",
           external: true,

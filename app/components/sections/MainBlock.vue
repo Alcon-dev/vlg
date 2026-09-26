@@ -347,13 +347,13 @@ export default {
       }
     }
     @include tablet {
-      width: 1.125rem;
-      height: 1.75rem;
-      gap: 0.3rem;
+      width: 0.75rem;
+      height: 1.125rem;
+      gap: 0.2rem;
       &::before,
       &::after {
-        width: 0.4rem;
-        height: 1.75rem;
+        width: 0.275rem;
+        height: 1.125rem;
       }
     }
   }

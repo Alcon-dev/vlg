@@ -142,7 +142,7 @@ export default {
       socialLinks: [
         { link: "https://vk.com/volga_doma", icon: "vk" },
         { link: "https://telegram.me/volga", icon: "telegram" },
-        { link: "https://www.instagram.com/", icon: "instagram" },
+        { link: "https://www.instagram.com/volga_doma/", icon: "instagram" },
         { link: "https://max.com/volga", icon: "max" },
       ],
     };
