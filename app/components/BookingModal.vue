@@ -622,6 +622,7 @@ export default {
       childAges: CHILD_AGES,
       availabilityLoading: false,
       availabilityMap: {},
+      availabilityRequestId: 0,
       locationConfirmSubmitting: false,
       confirmingVillaIndex: null,
       photoGalleryOpen: false,
@@ -731,8 +732,13 @@ export default {
         this.guestsOpen = false;
       }
     },
-    hasDates(val) {
-      if (val) this.fetchAvailability();
+    beginDateStr() {
+      if (this.hasDates) this.fetchAvailability();
+      else this.availabilityMap = {};
+    },
+    endDateStr() {
+      if (this.hasDates) this.fetchAvailability();
+      else this.availabilityMap = {};
     },
     photoGalleryOpen(open) {
       if (typeof document === "undefined") return;
@@ -913,9 +919,6 @@ export default {
       const normalized = this.normalizeDate(value ?? this.checkOutDate);
       if (normalized) this.checkOutDate = normalized;
       this.checkOutOpen = false;
-      this.$nextTick(() => {
-        if (this.hasDates) this.fetchAvailability();
-      });
     },
     setAdults(n) {
       const min = 1;
@@ -946,6 +949,9 @@ export default {
     },
     async fetchAvailability() {
       if (!this.hasDates || !this.apartments.length) return;
+      const requestId = ++this.availabilityRequestId;
+      const beginDate = this.beginDateStr;
+      const endDate = this.endDateStr;
       this.availabilityLoading = true;
       this.availabilityMap = {};
       try {
@@ -957,26 +963,20 @@ export default {
         };
         for (const apt of this.apartments) {
           if (!apt.id) continue;
+          if (requestId !== this.availabilityRequestId) return;
           try {
             const calendar = await this.$store.dispatch(
               "fetchCalendarForApartment",
               {
                 apartmentId: apt.id,
-                beginDate: this.beginDateStr,
-                endDate: this.endDateStr,
+                beginDate,
+                endDate,
                 guests,
               }
             );
-            const available = isStayAvailable(
-              calendar,
-              this.beginDateStr,
-              this.endDateStr
-            );
-            const stay = calcStayPrice(
-              calendar,
-              this.beginDateStr,
-              this.endDateStr
-            );
+            if (requestId !== this.availabilityRequestId) return;
+            const available = isStayAvailable(calendar, beginDate, endDate);
+            const stay = calcStayPrice(calendar, beginDate, endDate);
             const fallback =
               apt.price?.common?.without_discount != null
                 ? Number(apt.price.common.without_discount)
@@ -992,6 +992,7 @@ export default {
               },
             };
           } catch {
+            if (requestId !== this.availabilityRequestId) return;
             this.availabilityMap = {
               ...this.availabilityMap,
               [apt.id]: { available: false },
@@ -999,7 +1000,9 @@ export default {
           }
         }
       } finally {
-        this.availabilityLoading = false;
+        if (requestId === this.availabilityRequestId) {
+          this.availabilityLoading = false;
+        }
       }
     },
     async onBookVilla(index) {
