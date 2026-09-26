@@ -27,16 +27,17 @@
           </div>
 
           <div :class="$style.filtersBar">
-            <div :class="[$style.fieldGroup, $style.fieldGroupAccent]">
+            <div
+              ref="datesWrapRef"
+              :class="[
+                $style.fieldGroup,
+                $style.fieldGroupAccent,
+                (checkInOpen || checkOutOpen) && $style.fieldGroupOpen,
+              ]"
+            >
               <div :class="$style.fieldCell">
                 <span :class="$style.filterLabel">Дата заезда</span>
-                <div
-                  ref="checkInWrapRef"
-                  :class="[
-                    $style.dateInputWrap,
-                    checkInOpen && $style.dateInputWrapOpen,
-                  ]"
-                >
+                <div :class="$style.dateInputWrap">
                   <button
                     type="button"
                     :class="$style.filterInput"
@@ -44,6 +45,7 @@
                       checkInOpen = !checkInOpen;
                       checkOutOpen = false;
                       guestsOpen = false;
+                      childAgeOpenIndex = null;
                     "
                   >
                     <img
@@ -54,39 +56,11 @@
                     />
                     <span>{{ checkInFormatted || "Дата" }}</span>
                   </button>
-                  <Transition name="dropdown">
-                    <div
-                      v-show="checkInOpen"
-                      :class="$style.calendarDropdown"
-                      @mousedown.prevent
-                    >
-                      <VueDatePicker
-                        v-if="checkInOpen"
-                        v-model="checkInDate"
-                        :inline="true"
-                        :dark="true"
-                        :locale="ruLocale"
-                        :enable-time-picker="false"
-                        :hide-navigation="['time']"
-                        :min-date="minCheckInDate"
-                        :disabled-dates="isCheckInDisabled"
-                        auto-apply
-                        :teleport="false"
-                        @update:model-value="onCheckInSelect"
-                      />
-                    </div>
-                  </Transition>
                 </div>
               </div>
               <div :class="$style.fieldCell">
                 <span :class="$style.filterLabel">Дата выезда</span>
-                <div
-                  ref="checkOutWrapRef"
-                  :class="[
-                    $style.dateInputWrap,
-                    checkOutOpen && $style.dateInputWrapOpen,
-                  ]"
-                >
+                <div :class="$style.dateInputWrap">
                   <button
                     type="button"
                     :class="$style.filterInput"
@@ -95,6 +69,7 @@
                       checkOutOpen = !checkOutOpen;
                       checkInOpen = false;
                       guestsOpen = false;
+                      childAgeOpenIndex = null;
                     "
                   >
                     <img
@@ -105,30 +80,52 @@
                     />
                     <span>{{ checkOutFormatted || "Дата" }}</span>
                   </button>
-                  <Transition name="dropdown">
-                    <div
-                      v-show="checkOutOpen"
-                      :class="$style.calendarDropdown"
-                      @mousedown.prevent
-                    >
-                      <VueDatePicker
-                        v-if="checkOutOpen"
-                        v-model="checkOutDate"
-                        :inline="true"
-                        :dark="true"
-                        :locale="ruLocale"
-                        :enable-time-picker="false"
-                        :hide-navigation="['time']"
-                        :min-date="minCheckOutDate"
-                        :disabled-dates="isCheckOutDisabled"
-                        auto-apply
-                        :teleport="false"
-                        @update:model-value="onCheckOutSelect"
-                      />
-                    </div>
-                  </Transition>
                 </div>
               </div>
+              <Transition name="dropdown">
+                <div
+                  v-show="checkInOpen"
+                  :class="$style.calendarDropdown"
+                  @mousedown.stop
+                >
+                  <VueDatePicker
+                    v-if="checkInOpen"
+                    v-model="checkInDate"
+                    :inline="true"
+                    :dark="true"
+                    :locale="ruLocale"
+                    :enable-time-picker="false"
+                    :hide-navigation="['time']"
+                    :min-date="minCheckInDate"
+                    :disabled-dates="isCheckInDisabled"
+                    auto-apply
+                    :teleport="false"
+                    @update:model-value="onCheckInSelect"
+                  />
+                </div>
+              </Transition>
+              <Transition name="dropdown">
+                <div
+                  v-show="checkOutOpen"
+                  :class="$style.calendarDropdown"
+                  @mousedown.stop
+                >
+                  <VueDatePicker
+                    v-if="checkOutOpen"
+                    v-model="checkOutDate"
+                    :inline="true"
+                    :dark="true"
+                    :locale="ruLocale"
+                    :enable-time-picker="false"
+                    :hide-navigation="['time']"
+                    :min-date="minCheckOutDate"
+                    :disabled-dates="isCheckOutDisabled"
+                    auto-apply
+                    :teleport="false"
+                    @update:model-value="onCheckOutSelect"
+                  />
+                </div>
+              </Transition>
             </div>
 
             <div
@@ -210,34 +207,80 @@
                     <div
                       v-for="(child, index) in guestSelection.children"
                       :key="index"
-                      :class="$style.guestsChildRow"
+                      :class="[
+                        $style.guestsChildField,
+                        childAgeOpenIndex === index &&
+                          $style.guestsChildFieldOpen,
+                      ]"
                     >
-                      <span :class="$style.guestsChildLabel">
-                        Ребенок:
-                        <select
-                          :value="child.age"
-                          :class="$style.guestsChildSelect"
-                          @change="setChildAge(index, $event.target.value)"
-                        >
-                          <option v-for="a in childAges" :key="a" :value="a">
-                            {{ a }} лет
-                          </option>
-                        </select>
+                      <span :class="$style.guestsChildFieldLabel">
+                        Ребенок {{ index + 1 }}
                       </span>
-                      <button
-                        type="button"
-                        :class="$style.guestsChildRemove"
-                        aria-label="Удалить"
-                        @click="removeChild(index)"
-                      >
-                        ×
-                      </button>
+                      <div :class="$style.guestsChildFieldInner">
+                        <button
+                          type="button"
+                          :class="$style.guestsChildTrigger"
+                          aria-haspopup="listbox"
+                          :aria-expanded="childAgeOpenIndex === index"
+                          @click.stop="toggleChildAge(index)"
+                        >
+                          <span>{{ child.age }} лет</span>
+                          <span
+                            :class="$style.guestsChildChevron"
+                            aria-hidden="true"
+                          />
+                        </button>
+                        <button
+                          type="button"
+                          :class="$style.guestsChildRemove"
+                          aria-label="Удалить"
+                          @click.stop="
+                            removeChild(index);
+                            if (childAgeOpenIndex === index)
+                              childAgeOpenIndex = null;
+                            if (!guestSelection.children.length)
+                              guestsOpen = false;
+                          "
+                        >
+                          ×
+                        </button>
+                      </div>
+                      <Transition name="dropdown">
+                        <ul
+                          v-show="childAgeOpenIndex === index"
+                          :class="$style.guestsChildAgeList"
+                          role="listbox"
+                          @mousedown.stop
+                        >
+                          <li
+                            v-for="a in childAges"
+                            :key="a"
+                            role="option"
+                            :aria-selected="child.age === a"
+                          >
+                            <button
+                              type="button"
+                              :class="[
+                                $style.guestsChildAgeOption,
+                                child.age === a &&
+                                  $style.guestsChildAgeOptionActive,
+                              ]"
+                              @click.stop="selectChildAge(index, a)"
+                            >
+                              {{ a }} лет
+                            </button>
+                          </li>
+                        </ul>
+                      </Transition>
                     </div>
                   </div>
                   <button
                     type="button"
                     :class="$style.guestsClose"
-                    @click="guestsOpen = false"
+                    @click="
+                      guestsOpen = false;
+                      childAgeOpenIndex = null;
+                    "
                   >
                     Готово
                   </button>
@@ -565,6 +608,7 @@ export default {
       checkInOpen: false,
       checkOutOpen: false,
       guestsOpen: false,
+      childAgeOpenIndex: null,
       guestSelection: { adults: 1, children: [] },
       childAges: CHILD_AGES,
       availabilityLoading: false,
@@ -618,11 +662,9 @@ export default {
       return d;
     },
     hasDates() {
-      return (
-        this.checkInDate &&
-        this.checkOutDate &&
-        this.checkOutDate > this.checkInDate
-      );
+      const checkIn = this.normalizeDate(this.checkInDate);
+      const checkOut = this.normalizeDate(this.checkOutDate);
+      return !!(checkIn && checkOut && checkOut.getTime() > checkIn.getTime());
     },
     totalGuests() {
       const g = this.guestSelection;
@@ -797,15 +839,25 @@ export default {
       }
     },
     toDateStr(date) {
-      if (!date || !(date instanceof Date)) return "";
+      const d = this.normalizeDate(date);
+      if (!d) return "";
       const pad = (n) => String(n).padStart(2, "0");
-      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
     },
     formatDate(date) {
-      if (!date || !(date instanceof Date)) return "";
-      const day = date.getDate();
-      const month = date.toLocaleDateString("ru-RU", { month: "long" });
+      const d = this.normalizeDate(date);
+      if (!d) return "";
+      const day = d.getDate();
+      const month = d.toLocaleDateString("ru-RU", { month: "long" });
       return `${day} ${month}`;
+    },
+    normalizeDate(date) {
+      if (!date) return null;
+      const d =
+        date instanceof Date ? new Date(date.getTime()) : new Date(date);
+      if (Number.isNaN(d.getTime())) return null;
+      d.setHours(0, 0, 0, 0);
+      return d;
     },
     formatPrice(value) {
       if (value == null) return "—";
@@ -815,17 +867,27 @@ export default {
       return false;
     },
     isCheckOutDisabled(date) {
-      if (!this.checkInDate) return true;
-      return date <= this.checkInDate;
+      const checkIn = this.normalizeDate(this.checkInDate);
+      const day = this.normalizeDate(date);
+      if (!checkIn || !day) return true;
+      return day.getTime() <= checkIn.getTime();
     },
-    onCheckInSelect() {
+    onCheckInSelect(value) {
+      const normalized = this.normalizeDate(value ?? this.checkInDate);
+      if (normalized) this.checkInDate = normalized;
       this.checkInOpen = false;
-      if (this.checkOutDate && this.checkOutDate <= this.checkInDate) {
+      const checkOut = this.normalizeDate(this.checkOutDate);
+      if (checkOut && checkOut.getTime() <= (normalized?.getTime() ?? 0)) {
         this.checkOutDate = null;
       }
     },
-    onCheckOutSelect() {
+    onCheckOutSelect(value) {
+      const normalized = this.normalizeDate(value ?? this.checkOutDate);
+      if (normalized) this.checkOutDate = normalized;
       this.checkOutOpen = false;
+      this.$nextTick(() => {
+        if (this.hasDates) this.fetchAvailability();
+      });
     },
     setAdults(n) {
       const min = 1;
@@ -844,9 +906,14 @@ export default {
         this.guestSelection.children[index].age = age;
       }
     },
+    toggleChildAge(index) {
+      this.childAgeOpenIndex = this.childAgeOpenIndex === index ? null : index;
+    },
+    selectChildAge(index, age) {
+      this.setChildAge(index, age);
+      this.childAgeOpenIndex = null;
+    },
     onGuestsDropdownMousedown(event) {
-      const tag = event.target?.tagName;
-      if (tag === "SELECT" || tag === "OPTION") return;
       event.preventDefault();
     },
     async fetchAvailability() {
@@ -980,18 +1047,23 @@ export default {
           this.checkInOpen = false;
           this.checkOutOpen = false;
           this.guestsOpen = false;
+          this.childAgeOpenIndex = null;
         } else {
           this.$emit("close");
         }
       }
     },
     onClickOutside(e) {
-      const checkIn = this.$refs.checkInWrapRef;
-      const checkOut = this.$refs.checkOutWrapRef;
+      const dates = this.$refs.datesWrapRef;
       const guests = this.$refs.guestsWrapRef;
-      if (checkIn && !checkIn.contains(e.target)) this.checkInOpen = false;
-      if (checkOut && !checkOut.contains(e.target)) this.checkOutOpen = false;
-      if (guests && !guests.contains(e.target)) this.guestsOpen = false;
+      if (dates && !dates.contains(e.target)) {
+        this.checkInOpen = false;
+        this.checkOutOpen = false;
+      }
+      if (guests && !guests.contains(e.target)) {
+        this.guestsOpen = false;
+        this.childAgeOpenIndex = null;
+      }
     },
   },
 };
@@ -1161,15 +1233,9 @@ export default {
           }
         }
         &.fieldGroupOpen {
+          z-index: 20;
           .filterLabel {
             z-index: 1001;
-          }
-        }
-        &:has(.dateInputWrapOpen) {
-          .fieldCell:has(.dateInputWrapOpen) {
-            > .filterLabel {
-              z-index: 1001;
-            }
           }
         }
         .fieldCell {
@@ -1201,12 +1267,7 @@ export default {
             white-space: nowrap;
           }
           .dateInputWrap {
-            position: relative;
-            z-index: 2;
-            overflow: visible;
-            &.dateInputWrapOpen {
-              z-index: 100;
-            }
+            width: 100%;
             .filterInput {
               position: relative;
               z-index: 2;
@@ -1242,41 +1303,6 @@ export default {
                 height: 1rem;
                 opacity: 0.9;
                 display: block;
-              }
-            }
-            .calendarDropdown {
-              position: absolute;
-              left: 0;
-              top: calc(100% + 0.25rem);
-              z-index: 1000;
-              padding: 0.5rem;
-              background: rgba(30, 30, 30, 0.98);
-              border: 1px solid rgba(255, 255, 255, 0.2);
-              border-radius: 0.5rem;
-              box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.4);
-              --dp-disabled-color: rgba(255, 255, 255, 0.08);
-              --dp-disabled-color-text: rgba(255, 255, 255, 0.35);
-              :global(.dp__main) {
-                border: none;
-                background: transparent;
-              }
-              :global(.dp__input_wrap) {
-                display: none;
-              }
-              :global(.dp__cell_inner),
-              :global(.dp__calendar_item) {
-                color: rgba(255, 255, 255, 0.9);
-              }
-              :global(.dp__active_date),
-              :global(.dp__range_start),
-              :global(.dp__range_end),
-              :global(.dp__range_between) {
-                background: rgba(255, 255, 255, 0.2);
-                color: $text-white;
-              }
-              :global(.dp__month_year_select),
-              :global(.dp__arrow_top) {
-                color: $text-white;
               }
             }
           }
@@ -1326,82 +1352,267 @@ export default {
             }
           }
         }
-        .guestsDropdown {
+        .calendarDropdown {
+          grid-column: 1 / -1;
           position: absolute;
           left: 0;
           right: 0;
-          top: calc(100% + 0.25rem);
+          top: calc(100% + 0.35rem);
           z-index: 1000;
-          padding: 0.75rem;
+          width: 100%;
+          min-width: 0;
+          box-sizing: border-box;
+          padding: 0.65rem 0.75rem;
           background: rgba(30, 30, 30, 0.98);
           border: 1px solid rgba(255, 255, 255, 0.2);
           border-radius: 0.5rem;
           box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.4);
-          max-height: 16rem;
-          overflow-y: auto;
+          --dp-menu-min-width: 100%;
+          --dp-menu-width: 100%;
+          --dp-cell-size: 2.5rem;
+          --dp-font-size: 0.875rem;
+          --dp-common-padding: 0.35rem;
+          --dp-calendar-wrap-padding: 0;
+          --dp-menu-padding: 0;
+          --dp-row-margin: 0.15rem 0;
+          --dp-disabled-color: rgba(255, 255, 255, 0.08);
+          --dp-disabled-color-text: rgba(255, 255, 255, 0.35);
+          :global(.dp__main),
+          :global(.dp__instance_calendar),
+          :global(.dp__flex_display),
+          :global(.dp__calendar_wrap),
+          :global(.dp__calendar),
+          :global(.dp__menu) {
+            display: block;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: none !important;
+            box-sizing: border-box;
+          }
+          :global(.dp__input_wrap) {
+            display: none;
+          }
+          :global(.dp__calendar_header),
+          :global(.dp__calendar_row) {
+            display: flex;
+            width: 100%;
+            justify-content: stretch;
+          }
+          :global(.dp__calendar_header_item),
+          :global(.dp__calendar_item) {
+            flex: 1 1 0 !important;
+            width: auto !important;
+            min-width: 0 !important;
+            max-width: none !important;
+          }
+          :global(.dp__cell_inner) {
+            width: 100% !important;
+            height: 2.5rem !important;
+            max-width: none !important;
+            box-sizing: border-box;
+          }
+          :global(.dp__cell_inner),
+          :global(.dp__calendar_item) {
+            color: rgba(255, 255, 255, 0.9);
+          }
+          :global(.dp__active_date),
+          :global(.dp__range_start),
+          :global(.dp__range_end),
+          :global(.dp__range_between) {
+            background: rgba(255, 255, 255, 0.2);
+            color: $text-white;
+          }
+          :global(.dp__month_year_select),
+          :global(.dp__arrow_top) {
+            color: $text-white;
+          }
+          :global(.dp__month_year_wrap) {
+            width: 100%;
+            font-size: 0.9375rem;
+          }
+        }
+        .guestsDropdown {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: calc(100% + 0.35rem);
+          z-index: 1000;
+          padding: 0.85rem;
+          background: rgba(30, 30, 30, 0.98);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 0.5rem;
+          box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.4);
+          overflow: visible;
           .guestsDropdownInner {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
-            .guestsChildRow {
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              gap: 0.5rem;
-              padding: 0.5rem 0.75rem;
-              background: rgba(255, 255, 255, 0.08);
-              border-radius: 0.375rem;
-              .guestsChildLabel {
-                font-size: 0.875rem;
-                color: rgba(255, 255, 255, 0.9);
-                .guestsChildSelect {
-                  margin-left: 0.25rem;
-                  padding: 0.25rem 0.5rem;
-                  background: rgba(255, 255, 255, 0.1);
-                  border: 1px solid rgba(255, 255, 255, 0.2);
-                  border-radius: 0.25rem;
-                  color: $text-white;
-                  font-size: 0.875rem;
-                  font-family: inherit;
-                  cursor: pointer;
+            gap: 0.75rem;
+            .guestsChildField {
+              position: relative;
+              border: 1px solid rgba(255, 255, 255, 0.28);
+              border-radius: 0.5rem;
+              background: transparent;
+              box-sizing: border-box;
+              &.guestsChildFieldOpen {
+                z-index: 2;
+                .guestsChildFieldLabel {
+                  z-index: 3;
+                }
+                .guestsChildChevron {
+                  transform: rotate(180deg);
                 }
               }
-              .guestsChildRemove {
-                width: 1.5rem;
-                height: 1.5rem;
+              .guestsChildFieldLabel {
+                position: absolute;
+                top: 0;
+                left: 0.85rem;
+                z-index: 2;
+                transform: translateY(-50%);
+                padding: 0 0.35rem;
+                background: rgba(30, 30, 30, 0.98);
+                font-size: 0.75rem;
+                font-weight: 300;
+                line-height: 1.2;
+                color: rgba(255, 255, 255, 0.55);
+                pointer-events: none;
+                white-space: nowrap;
+              }
+              .guestsChildFieldInner {
                 display: flex;
                 align-items: center;
-                justify-content: center;
-                padding: 0;
-                background: none;
-                border: none;
-                color: rgba(255, 255, 255, 0.7);
-                font-size: 1.25rem;
-                line-height: 1;
-                cursor: pointer;
-                border-radius: 0.25rem;
-                transition:
-                  color 0.15s,
-                  background 0.15s;
-                &:hover {
+                gap: 0.35rem;
+                min-height: 2.5rem;
+                padding: 0.35rem 0.5rem 0.35rem 0.85rem;
+                .guestsChildTrigger {
+                  flex: 1;
+                  min-width: 0;
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  gap: 0.5rem;
+                  padding: 0;
+                  border: none;
+                  background: transparent;
                   color: $text-white;
-                  background: rgba(255, 255, 255, 0.1);
+                  font-size: 1rem;
+                  font-weight: 400;
+                  font-family: inherit;
+                  line-height: 1.2;
+                  cursor: pointer;
+                  text-align: left;
+                  span:first-child {
+                    min-width: 0;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                  }
+                }
+                .guestsChildChevron {
+                  flex-shrink: 0;
+                  width: 0.45rem;
+                  height: 0.45rem;
+                  border-right: 1.5px solid rgba(255, 255, 255, 0.7);
+                  border-bottom: 1.5px solid rgba(255, 255, 255, 0.7);
+                  transform: rotate(45deg);
+                  margin-top: -0.2rem;
+                  transition: transform 0.15s ease;
+                }
+                .guestsChildRemove {
+                  flex-shrink: 0;
+                  width: 1.75rem;
+                  height: 1.75rem;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  padding: 0;
+                  background: none;
+                  border: none;
+                  color: rgba(255, 255, 255, 0.55);
+                  font-size: 1.25rem;
+                  line-height: 1;
+                  cursor: pointer;
+                  border-radius: 0.25rem;
+                  transition:
+                    color 0.15s,
+                    background 0.15s;
+                  &:hover {
+                    color: $text-white;
+                    background: rgba(255, 255, 255, 0.1);
+                  }
+                }
+              }
+              .guestsChildAgeList {
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: calc(100% + 0.35rem);
+                z-index: 5;
+                margin: 0;
+                padding: 0.35rem;
+                list-style: none;
+                display: flex;
+                flex-direction: column;
+                gap: 0.15rem;
+                max-height: 11rem;
+                overflow-y: auto;
+                background: rgba(24, 24, 24, 0.98);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 0.5rem;
+                box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.45);
+                scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+                &::-webkit-scrollbar {
+                  width: 0.35rem;
+                }
+                &::-webkit-scrollbar-thumb {
+                  background: rgba(255, 255, 255, 0.25);
+                  border-radius: 0.25rem;
+                }
+                .guestsChildAgeOption {
+                  width: 100%;
+                  display: block;
+                  padding: 0.55rem 0.75rem;
+                  border: none;
+                  border-radius: 0.35rem;
+                  background: transparent;
+                  color: rgba(255, 255, 255, 0.85);
+                  font-size: 0.875rem;
+                  font-weight: 300;
+                  font-family: inherit;
+                  line-height: 1.2;
+                  text-align: left;
+                  cursor: pointer;
+                  transition:
+                    background 0.15s,
+                    color 0.15s;
+                  &:hover {
+                    background: rgba(255, 255, 255, 0.08);
+                    color: $text-white;
+                  }
+                  &.guestsChildAgeOptionActive {
+                    background: rgba(132, 99, 61, 0.35);
+                    color: $text-white;
+                  }
                 }
               }
             }
           }
           .guestsClose {
-            margin-top: 0.75rem;
-            padding: 0.5rem 1rem;
-            background: rgba(255, 255, 255, 0.15);
+            margin-top: 0.85rem;
+            padding: 0.65rem 1rem;
+            background: rgba(255, 255, 255, 0.12);
             border: none;
-            border-radius: 0.375rem;
+            border-radius: 0.45rem;
             color: $text-white;
             font-size: 0.875rem;
+            font-weight: 400;
+            font-family: inherit;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
             cursor: pointer;
             width: 100%;
+            transition: background 0.2s;
             &:hover {
-              background: rgba(255, 255, 255, 0.25);
+              background: rgba(255, 255, 255, 0.2);
             }
           }
         }
@@ -1464,14 +1675,14 @@ export default {
         .villaCard {
           padding-bottom: 0;
           .villaCardHeader {
-            display: flex;
-            flex-wrap: nowrap;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
             align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
             margin-bottom: 0.75rem;
             @include tablet {
-              flex-wrap: wrap;
+              grid-template-columns: 1fr;
+              gap: 1rem;
               align-items: flex-start;
             }
             .villaCardTitleRow {
@@ -1481,57 +1692,63 @@ export default {
               min-width: 0;
               .villaLabel {
                 font-size: 1rem;
-                color: rgba(255, 255, 255, 0.55);
-                font-weight: 400;
-                line-height: 1.1;
+                color: $text-white;
+                font-weight: 300;
               }
               .villaName {
                 margin: 0;
-                font-size: 2.5rem;
+                font-size: 3rem;
                 font-weight: 600;
                 color: $text-white;
                 line-height: 1;
-                letter-spacing: -0.04em;
+                letter-spacing: -0.02em;
                 @include tablet {
                   font-size: 1.75rem;
                 }
               }
             }
             .villaCardActions {
-              display: flex;
-              align-items: stretch;
-              gap: 0;
-              flex-shrink: 0;
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              width: 100%;
+              min-width: 0;
+              height: 3rem;
               border-radius: 0.5rem;
               overflow: hidden;
               .villaPriceBox {
-                display: inline-flex;
+                display: flex;
                 align-items: center;
                 justify-content: center;
-                min-width: 6.25rem;
-                padding: 0 1rem;
+                width: 100%;
+                min-width: 0;
+                height: 100%;
+                padding: 0 0.75rem;
                 border: none;
                 background: $bg-white;
-                color: $bg-brown;
+                color: $green-accent;
                 font-size: 1rem;
                 font-weight: 600;
                 line-height: 1;
+                box-sizing: border-box;
               }
               .bookBtn {
-                display: inline-flex;
+                display: flex;
                 align-items: center;
                 justify-content: center;
                 gap: 0.5rem;
-                min-width: 9.5rem;
-                min-height: 2.875rem;
-                padding: 0.75rem 1.25rem;
+                width: 100%;
+                min-width: 0;
+                height: 100%;
+                padding: 0 0.75rem;
                 background: #004f68;
                 color: $text-white;
                 border: none;
                 font-size: 1rem;
-                font-weight: 500;
+                font-weight: 600;
+                line-height: 1;
                 font-family: inherit;
                 cursor: pointer;
+                box-sizing: border-box;
                 transition: background 0.2s;
                 &:hover:not(:disabled) {
                   background: #006080;
@@ -1543,8 +1760,6 @@ export default {
                 .bookBtnSpinner {
                   width: 1.25rem;
                   height: 1.25rem;
-                  min-width: 1.25rem;
-                  min-height: 1.25rem;
                   flex-shrink: 0;
                   border: 2px solid rgba(255, 255, 255, 0.25);
                   border-top-color: $text-white;
@@ -1628,9 +1843,9 @@ export default {
                   justify-content: center;
                   background: rgba(0, 0, 0, 0.55);
                   font-size: 1rem;
-                  font-weight: 400;
+                  font-weight: 600;
+                  line-height: 1.2;
                   color: $text-white;
-                  letter-spacing: -0.02em;
                   pointer-events: none;
                 }
               }
