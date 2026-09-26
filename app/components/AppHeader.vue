@@ -142,8 +142,8 @@ export default {
       socialLinks: [
         { link: "https://vk.com/volga_doma", icon: "vk" },
         { link: "https://telegram.me/volga", icon: "telegram" },
+        { link: "https://www.instagram.com/", icon: "instagram" },
         { link: "https://max.com/volga", icon: "max" },
-        { link: "tel:+79171274080", icon: "phone" },
       ],
     };
   },
@@ -271,8 +271,8 @@ header {
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 2.5rem;
-      height: 2.5rem;
+      width: 3rem;
+      height: 3rem;
       border-radius: 0;
       background: transparent;
       transition: opacity 0.2s ease;

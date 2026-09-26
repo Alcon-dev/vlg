@@ -139,7 +139,11 @@
             ООО "Резиденция ВОЛГА"
           </span>
           <span
-            :class="[$style.bottomItem, $style.bottomEnd, $style.bottomRow]"
+            :class="[
+              $style.bottomItem,
+              $style.bottomCopyright,
+              $style.bottomRow,
+            ]"
           >
             © 2026 Все права защищены
           </span>
@@ -493,6 +497,15 @@ export default {
           }
           &.bottomItem {
             white-space: nowrap;
+          }
+          &.bottomCopyright {
+            text-align: left;
+            justify-self: start;
+            @include tablet {
+              justify-self: stretch;
+              width: 100%;
+              text-align: right;
+            }
           }
           &.bottomLink {
             color: $text-tertiary;

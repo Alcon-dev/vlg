@@ -303,6 +303,7 @@ export default {
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.55);
     background: $bg-transparent-16;
+    backdrop-filter: blur(8px);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -317,8 +318,8 @@ export default {
       height: 8rem;
     }
     @include tablet {
-      width: 6rem;
-      height: 6rem;
+      width: 4rem;
+      height: 4rem;
     }
   }
   .pauseIcon {
