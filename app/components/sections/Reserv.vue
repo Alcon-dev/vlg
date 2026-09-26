@@ -4,14 +4,15 @@
     :id="embedded ? undefined : 'reserv'"
     :class="embedded ? $style.embeddedWrap : $style.wrapper"
   >
-    <div v-if="!embedded" :class="$style.titleContainer">
-      <div :class="$style.titleLine1">
-        <h3>Резиденция<br />ВОЛГА</h3>
-        <h2>ВЫБЕРИТЕ ВИЛЛУ</h2>
+    <div v-if="!embedded" :class="$style.header">
+      <div :class="$style.titleRow">
+        <h2 :class="$style.titlePrimary">ВЫБЕРИТЕ ВИЛЛУ</h2>
+        <div :class="$style.titleBrand">
+          <p>Резиденция</p>
+          <p>ВОЛГА</p>
+        </div>
       </div>
-      <div :class="$style.titleLine2">
-        <h2>ДАТЫ БРОНИРОВАНИЯ</h2>
-      </div>
+      <h2 :class="$style.titleSecondary">ИЗ НАШЕЙ КОЛЛЕКЦИИ</h2>
     </div>
     <div :class="$style.reservContainer">
       <div :class="$style.switcher">
@@ -36,17 +37,8 @@
             aria-hidden="true"
           >
             <span :class="$style.switcherTabVilla">Вилла</span>
-            {{ tab.label }}
+            <span :class="$style.switcherTabLabel">{{ tab.label }}</span>
           </button>
-          <div :class="$style.tabCardLine" />
-          <div
-            v-if="tab.desc"
-            :class="[
-              $style.tabCardDesc,
-              activeTabIndex !== index && $style.tabCardDescInactive,
-            ]"
-            v-html="tab.desc"
-          />
         </div>
       </div>
 
@@ -55,23 +47,6 @@
           <div :key="currentApartment.id" :class="$style.tabContentInner">
             <div :class="$style.mainContent">
               <div :class="$style.carouselWrap">
-                <svg
-                  aria-hidden="true"
-                  class="visually-hidden"
-                  width="0"
-                  height="0"
-                >
-                  <defs>
-                    <clipPath
-                      id="carouselCounterClip"
-                      clipPathUnits="objectBoundingBox"
-                    >
-                      <path
-                        d="M 0.07 1 Q 0 1 0.008 0.93 L 0.112 0.07 Q 0.12 0 0.19 0 L 0.81 0 Q 0.88 0 0.888 0.07 L 0.992 0.935 Q 1 1 0.93 1 L 0.07 1 Z"
-                      />
-                    </clipPath>
-                  </defs>
-                </svg>
                 <p :class="$style.carouselPriceOverlay">
                   от
                   {{
@@ -79,46 +54,38 @@
                       currentApartment.price?.common?.without_discount
                     )
                   }}
-                  Р
-                </p>
-                <p :class="$style.carouselCounter">
-                  {{ carouselActiveIndex
-                  }}<span :class="$style.carouselCounterTotal">
-                    / {{ carouselPhotos.length }}</span
-                  >
                 </p>
                 <button
-                  v-if="carouselPhotos.length"
                   type="button"
-                  :class="$style.carouselAllPhotos"
-                  aria-label="Открыть все фотографии"
-                  @click.prevent="openPhotoGallery"
+                  :class="[
+                    $style.carouselNavBtn,
+                    $style.carouselNavBtnPrev,
+                    !canCarouselPrev && $style.carouselNavBtnDisabled,
+                  ]"
+                  aria-label="Предыдущее фото"
+                  :disabled="!canCarouselPrev"
+                  @click="carouselPrev"
                 >
-                  <span :class="$style.carouselAllPhotosText">Все фото</span>
-                  <svg
-                    :class="$style.carouselAllPhotosChevron"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M6 12l4-4-4-4"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
+                  <img
+                    :src="arrowLeftIcon"
+                    alt=""
+                    width="48"
+                    height="48"
+                    decoding="async"
+                  />
                 </button>
                 <Swiper
                   :modules="swiperModules"
-                  :slides-per-view="1"
-                  :space-between="0"
-                  navigation
+                  :slides-per-view="carouselSlidesPerView"
+                  :centered-slides="true"
+                  :space-between="carouselGap"
+                  :initial-slide="0"
+                  :loop="carouselLoop"
+                  :loop-additional-slides="2"
+                  :breakpoints="carouselBreakpoints"
                   :class="$style.carousel"
                   @swiper="onCarouselSwiper"
+                  @slide-change="onCarouselSlideChange"
                 >
                   <SwiperSlide
                     v-for="(photo, photoIndex) in carouselPhotos"
@@ -137,6 +104,25 @@
                     />
                   </SwiperSlide>
                 </Swiper>
+                <button
+                  type="button"
+                  :class="[
+                    $style.carouselNavBtn,
+                    $style.carouselNavBtnNext,
+                    !canCarouselNext && $style.carouselNavBtnDisabled,
+                  ]"
+                  aria-label="Следующее фото"
+                  :disabled="!canCarouselNext"
+                  @click="carouselNext"
+                >
+                  <img
+                    :src="arrowRightIcon"
+                    alt=""
+                    width="48"
+                    height="48"
+                    decoding="async"
+                  />
+                </button>
                 <div
                   v-if="carouselPhotos.length > 0"
                   :class="$style.carouselPagination"
@@ -186,7 +172,6 @@
                         currentApartment.price?.common?.without_discount
                       )
                     }}
-                    Р
                   </p>
                 </div>
                 <div
@@ -195,408 +180,116 @@
                   v-html="currentApartment.desc"
                 ></div>
 
-                <form
-                  :class="[$style.formRow, $style.formRowOneRow]"
-                  @submit.prevent="onBookingSubmit"
+                <div
+                  v-if="nearestDatesItems.length || nearestDatesLoading"
+                  :class="$style.upcomingDates"
                 >
-                  <div
-                    ref="checkInWrapRef"
-                    :class="[
-                      $style.dateSelectWrap,
-                      $style.formGroup,
-                      $style.dateField,
-                      calendarOpenCheckIn && $style.dateSelectWrapOpen,
-                    ]"
-                  >
-                    <label :class="$style.formLabel">Дата заезда</label>
-                    <div :class="$style.dateSelectTriggerWrap">
-                      <button
-                        ref="checkInTriggerRef"
-                        type="button"
-                        :class="[
-                          $style.formInput,
-                          $style.formInputWithIcon,
-                          $style.dateSelectTrigger,
-                          bookingCheckInError && $style.formInputError,
-                        ]"
-                        @click="toggleCheckInCalendar"
-                      >
+                  <span :class="$style.upcomingDatesTitle">Ближайшие даты</span>
+                  <div :class="$style.upcomingDatesNavWrap">
+                    <template v-if="nearestDatesLoading">
+                      <div :class="$style.upcomingDatesSkeleton">
                         <span
-                          v-if="checkInDateFormatted"
-                          :class="$style.dateRangeText"
-                        >
-                          {{ checkInDateFormatted }}
-                        </span>
-                        <span v-else :class="$style.guestsPlaceholder">
-                          Выберите дату
-                        </span>
-                      </button>
-                      <button
-                        v-if="checkInDate"
-                        type="button"
-                        :class="$style.dateSelectClearBtn"
-                        aria-label="Очистить дату заезда"
-                        @click.stop="clearCheckInDate"
-                      >
-                        ×
-                      </button>
-                      <AppIcon
-                        v-else
-                        name="reservCalendar"
-                        alt=""
-                        :class="$style.formInputIcon"
-                      />
-                    </div>
-                    <Transition name="date-dropdown">
-                      <div
-                        v-show="calendarOpenCheckIn"
-                        :class="$style.calendarDropdown"
-                        @mousedown.prevent
-                      >
-                        <VueDatePicker
-                          v-if="calendarOpenCheckIn"
-                          v-model="checkInDate"
-                          :inline="true"
-                          :dark="true"
-                          :locale="ruLocale"
-                          :enable-time-picker="false"
-                          :hide-navigation="['time']"
-                          :disabled-dates="isCalendarDateDisabled"
-                          auto-apply
-                          :teleport="false"
-                          @update:model-value="onCheckInDateSelect"
-                          @update-month-year="onCalendarMonthYearChange"
+                          v-for="n in 12"
+                          :key="n"
+                          :class="$style.upcomingDatesSkeletonCard"
                         />
                       </div>
-                    </Transition>
-                    <div :class="$style.fieldErrorSlot">
-                      <Transition name="field-error">
-                        <p
-                          v-if="bookingCheckInError"
-                          key="check-in-err"
-                          :class="$style.fieldError"
-                        >
-                          Выберите дату заезда
-                        </p>
-                      </Transition>
-                    </div>
-                  </div>
-                  <div
-                    ref="checkOutWrapRef"
-                    :class="[
-                      $style.dateSelectWrap,
-                      $style.formGroup,
-                      $style.dateField,
-                      calendarOpenCheckOut && $style.dateSelectWrapOpen,
-                    ]"
-                  >
-                    <label :class="$style.formLabel">Дата выезда</label>
-                    <div :class="$style.dateSelectTriggerWrap">
+                    </template>
+                    <template v-else>
                       <button
-                        ref="checkOutTriggerRef"
                         type="button"
                         :class="[
-                          $style.formInput,
-                          $style.formInputWithIcon,
-                          $style.dateSelectTrigger,
-                          bookingCheckOutError && $style.formInputError,
+                          $style.upcomingDatesNavBtn,
+                          $style.upcomingDatesNavBtnPrev,
+                          !canScrollNearestLeft &&
+                            $style.upcomingDatesNavBtnDisabled,
                         ]"
-                        @click="toggleCheckOutCalendar"
+                        aria-label="Назад"
+                        :disabled="!canScrollNearestLeft"
+                        @click="scrollNearestDates(-1)"
                       >
-                        <span
-                          v-if="checkOutDateFormatted"
-                          :class="$style.dateRangeText"
-                        >
-                          {{ checkOutDateFormatted }}
-                        </span>
-                        <span v-else :class="$style.guestsPlaceholder">
-                          Выберите дату
-                        </span>
-                      </button>
-                      <button
-                        v-if="checkOutDate"
-                        type="button"
-                        :class="$style.dateSelectClearBtn"
-                        aria-label="Очистить дату выезда"
-                        @click.stop="clearCheckOutDate"
-                      >
-                        ×
-                      </button>
-                      <AppIcon
-                        v-else
-                        name="reservCalendar"
-                        alt=""
-                        :class="$style.formInputIcon"
-                      />
-                    </div>
-                    <Transition name="date-dropdown">
-                      <div
-                        v-show="calendarOpenCheckOut"
-                        :class="$style.calendarDropdown"
-                        @mousedown.prevent
-                      >
-                        <VueDatePicker
-                          v-if="calendarOpenCheckOut"
-                          v-model="checkOutDate"
-                          :inline="true"
-                          :dark="true"
-                          :locale="ruLocale"
-                          :enable-time-picker="false"
-                          :hide-navigation="['time']"
-                          :disabled-dates="isCalendarDateDisabledForCheckOut"
-                          auto-apply
-                          :teleport="false"
-                          @update:model-value="onCheckOutDateSelect"
-                          @update-month-year="onCalendarMonthYearChange"
+                        <img
+                          :src="arrowLeftIcon"
+                          alt=""
+                          width="48"
+                          height="48"
+                          decoding="async"
                         />
-                      </div>
-                    </Transition>
-                    <div :class="$style.fieldErrorSlot">
-                      <Transition name="field-error">
-                        <p
-                          v-if="bookingCheckOutError"
-                          key="check-out-err"
-                          :class="$style.fieldError"
-                        >
-                          Выберите дату выезда
-                        </p>
-                      </Transition>
-                    </div>
-                  </div>
-
-                  <div :class="[$style.formGroup, $style.formGroupGuests]">
-                    <label :class="$style.formLabel">Кол-во гостей</label>
-                    <div
-                      ref="guestsSelectWrapRef"
-                      :class="[
-                        $style.guestsSelectWrap,
-                        guestsOpen && $style.guestsSelectWrapOpen,
-                      ]"
-                    >
-                      <button
-                        type="button"
-                        :class="[
-                          $style.formInput,
-                          $style.formInputWithIcon,
-                          $style.guestsSelectTrigger,
-                        ]"
-                        @click="guestsOpen = !guestsOpen"
-                        @blur="onGuestsBlur"
-                      >
-                        <span
-                          :class="totalGuests ? '' : $style.guestsPlaceholder"
-                        >
-                          {{
-                            totalGuests
-                              ? `${totalGuests} ${guestsLabel(totalGuests)}`
-                              : `До ${currentApartment.capacity} гостей`
-                          }}
-                        </span>
                       </button>
-                      <AppIcon
-                        name="reservArrowDown"
-                        alt=""
-                        :class="[
-                          $style.formInputIcon,
-                          guestsOpen && $style.guestsSelectIconOpen,
-                        ]"
-                      />
-                      <Transition name="guests-dropdown">
-                        <div
-                          v-show="guestsOpen"
-                          :class="$style.guestsDropdown"
-                          @mousedown="onGuestsDropdownMousedown"
-                        >
-                          <div :class="$style.guestsDropdownInner">
-                            <div :class="$style.guestsRow">
-                              <span :class="$style.guestsRowLabel"
-                                >Взрослые</span
-                              >
-                              <div :class="$style.guestsCounter">
-                                <button
-                                  type="button"
-                                  :class="$style.guestsCounterBtn"
-                                  :disabled="guestSelection.adults <= 1"
-                                  aria-label="Меньше"
-                                  @click="setAdults(guestSelection.adults - 1)"
-                                >
-                                  −
-                                </button>
-                                <span :class="$style.guestsCounterValue">{{
-                                  guestSelection.adults
-                                }}</span>
-                                <button
-                                  type="button"
-                                  :class="$style.guestsCounterBtn"
-                                  :disabled="!canAddAdult"
-                                  aria-label="Больше"
-                                  @click="setAdults(guestSelection.adults + 1)"
-                                >
-                                  +
-                                </button>
-                              </div>
-                            </div>
-                            <div
-                              v-for="(child, index) in guestSelection.children"
-                              :key="index"
-                              :class="$style.guestsChildRow"
-                            >
-                              <span :class="$style.guestsChildLabel">
-                                Ребенок:
-                                <select
-                                  :value="child.age"
-                                  :class="$style.guestsChildSelect"
-                                  @change="
-                                    setChildAge(index, $event.target.value)
-                                  "
-                                >
-                                  <option
-                                    v-for="a in childAges"
-                                    :key="a"
-                                    :value="a"
-                                  >
-                                    {{ a }} лет
-                                  </option>
-                                </select>
-                              </span>
-                              <button
-                                type="button"
-                                :class="$style.guestsChildRemove"
-                                aria-label="Удалить"
-                                @click="removeChild(index)"
-                              >
-                                ×
-                              </button>
-                            </div>
-                            <button
-                              v-if="canAddChild"
-                              type="button"
-                              :class="$style.guestsAddChild"
-                              @click="addChild"
-                            >
-                              Добавить ребенка
-                              <span :class="$style.guestsAddChildChevron"
-                                >▼</span
-                              >
-                            </button>
-                          </div>
-                        </div>
-                      </Transition>
-                    </div>
-                  </div>
-
-                  <button
-                    type="submit"
-                    :class="$style.bookButton"
-                    :disabled="bookingSubmitting"
-                  >
-                    Забронировать
-                    <span
-                      v-if="bookingSubmitting"
-                      :class="$style.bookButtonSpinner"
-                      aria-hidden="true"
-                    />
-                    <AppIcon
-                      v-else
-                      name="reservArrowUpRight"
-                      alt=""
-                      :class="$style.bookButtonIcon"
-                    />
-                  </button>
-
-                  <div
-                    v-if="nearestDatesItems.length || nearestDatesLoading"
-                    :class="[$style.upcomingDates, $style.formRowFullWidth]"
-                  >
-                    <span :class="$style.upcomingDatesTitle"
-                      >Ближайшие даты</span
-                    >
-                    <div :class="$style.upcomingDatesNavWrap">
-                      <template v-if="nearestDatesLoading">
-                        <div :class="$style.upcomingDatesSkeleton">
-                          <span
-                            v-for="n in 12"
-                            :key="n"
-                            :class="$style.upcomingDatesSkeletonCard"
-                          />
-                        </div>
-                      </template>
-                      <template v-else>
-                        <Transition name="nav-btn">
-                          <button
-                            v-if="canScrollNearestLeft"
-                            key="prev"
-                            type="button"
+                      <div
+                        ref="nearestDatesScrollRef"
+                        :class="$style.upcomingDatesScroll"
+                        @scroll="updateNearestDatesScrollState"
+                      >
+                        <div :class="$style.upcomingDatesScrollInner">
+                          <div
+                            v-for="(item, index) in nearestDatesItems"
+                            :key="index"
                             :class="[
-                              $style.upcomingDatesNavBtn,
-                              $style.upcomingDatesNavBtnPrev,
+                              $style.dateCard,
+                              !item.available && $style.dateCardUnavailable,
+                              isDateCardSelected(item) &&
+                                $style.dateCardSelected,
                             ]"
-                            aria-label="Назад"
-                            @click="scrollNearestDates(-1)"
-                          />
-                        </Transition>
-                        <div
-                          ref="nearestDatesScrollRef"
-                          :class="$style.upcomingDatesScroll"
-                          @scroll="updateNearestDatesScrollState"
-                        >
-                          <div :class="$style.upcomingDatesScrollInner">
-                            <div
-                              v-for="(item, index) in nearestDatesItems"
-                              :key="index"
-                              :class="[
-                                $style.dateCard,
-                                !item.available && $style.dateCardUnavailable,
-                                isDateCardSelected(item) &&
-                                  $style.dateCardSelected,
-                              ]"
-                              @click="onDateCardClick(item)"
+                            @click="onDateCardClick(item)"
+                          >
+                            <span
+                              v-if="item.available && item.discountPercent"
+                              :class="$style.dateCardDiscount"
                             >
+                              {{ item.discountLabel }}
+                            </span>
+                            <div :class="$style.dateCardMain">
                               <span
-                                v-if="item.price != null"
+                                v-if="item.available && item.price != null"
                                 :class="$style.dateCardPrice"
                               >
                                 {{ item.priceFormatted }}
-                                <span
-                                  v-if="item.discountPercent"
-                                  :class="$style.dateCardDiscount"
-                                >
-                                  {{ item.discountLabel }}
-                                </span>
                               </span>
-                              <span :class="$style.dateCardDates">
-                                {{ item.dateLabel }}
+                              <span
+                                v-else-if="!item.available"
+                                :class="$style.dateCardBusy"
+                              >
+                                ЗАНЯТО
                               </span>
+                              <span v-else :class="$style.dateCardPrice"
+                                >—</span
+                              >
+                            </div>
+                            <div :class="$style.dateCardFooter">
+                              <span :class="$style.dateCardDays">{{
+                                item.dayRange
+                              }}</span>
+                              <span :class="$style.dateCardMonth">{{
+                                item.monthLabel
+                              }}</span>
                             </div>
                           </div>
                         </div>
-                        <Transition name="nav-btn">
-                          <button
-                            v-if="canScrollNearestRight"
-                            key="next"
-                            type="button"
-                            :class="[
-                              $style.upcomingDatesNavBtn,
-                              $style.upcomingDatesNavBtnNext,
-                            ]"
-                            aria-label="Вперёд"
-                            @click="scrollNearestDates(1)"
-                          />
-                        </Transition>
-                      </template>
-                    </div>
+                      </div>
+                      <button
+                        type="button"
+                        :class="[
+                          $style.upcomingDatesNavBtn,
+                          $style.upcomingDatesNavBtnNext,
+                          !canScrollNearestRight &&
+                            $style.upcomingDatesNavBtnDisabled,
+                        ]"
+                        aria-label="Вперёд"
+                        :disabled="!canScrollNearestRight"
+                        @click="scrollNearestDates(1)"
+                      >
+                        <img
+                          :src="arrowRightIcon"
+                          alt=""
+                          width="48"
+                          height="48"
+                          decoding="async"
+                        />
+                      </button>
+                    </template>
                   </div>
-
-                  <p
-                    v-if="bookingValidationError"
-                    :class="[
-                      $style.bookingValidationMessage,
-                      $style.formRowFullWidth,
-                    ]"
-                  >
-                    {{ bookingValidationMessage }}
-                  </p>
-                </form>
+                </div>
               </div>
             </div>
 
@@ -604,19 +297,50 @@
               <div
                 :class="[
                   $style.block,
-                  expandedBlocks.about && $style.blockExpanded,
+                  expandedBlocks.philosophy && $style.blockExpanded,
                 ]"
               >
                 <h5
                   :class="$style.blockTitle"
                   role="button"
                   tabindex="0"
-                  :aria-expanded="expandedBlocks.about"
-                  @click="toggleBlock('about')"
-                  @keydown.enter.prevent="toggleBlock('about')"
-                  @keydown.space.prevent="toggleBlock('about')"
+                  :aria-expanded="expandedBlocks.philosophy"
+                  @click="toggleBlock('philosophy')"
+                  @keydown.enter.prevent="toggleBlock('philosophy')"
+                  @keydown.space.prevent="toggleBlock('philosophy')"
                 >
-                  О вилле
+                  Философия и стиль
+                  <AppIcon
+                    name="reservArrowDownRight"
+                    alt=""
+                    :class="$style.blockTitleIcon"
+                  />
+                </h5>
+                <div :class="$style.blockContent">
+                  <div
+                    v-if="currentApartment.desc"
+                    :class="$style.blockDesc"
+                    v-html="currentApartment.desc"
+                  />
+                  <p v-else :class="$style.blockListInline">—</p>
+                </div>
+              </div>
+              <div
+                :class="[
+                  $style.block,
+                  expandedBlocks.details && $style.blockExpanded,
+                ]"
+              >
+                <h5
+                  :class="$style.blockTitle"
+                  role="button"
+                  tabindex="0"
+                  :aria-expanded="expandedBlocks.details"
+                  @click="toggleBlock('details')"
+                  @keydown.enter.prevent="toggleBlock('details')"
+                  @keydown.space.prevent="toggleBlock('details')"
+                >
+                  Детали размещения
                   <AppIcon
                     name="reservArrowDownRight"
                     alt=""
@@ -626,83 +350,49 @@
                 <div :class="$style.blockContent">
                   <div :class="$style.blockListTwoCol">
                     <div :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel">Кол-во гостей:</span>
+                      <span :class="$style.blockListLabel">Кол-во гостей</span>
                       <span :class="$style.blockListValue">{{
                         currentApartment.capacity ?? "—"
                       }}</span>
                     </div>
                     <div :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel">Спальных мест:</span>
+                      <span :class="$style.blockListLabel"
+                        >Кол-во спальных мест</span
+                      >
                       <span :class="$style.blockListValue">{{
                         sleepsTotal ?? "—"
                       }}</span>
                     </div>
                     <div :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel">Кол-во этажей:</span>
+                      <span :class="$style.blockListLabel">Кол-во этажей</span>
                       <span :class="$style.blockListValue">{{
                         currentApartment.floor ?? "—"
                       }}</span>
                     </div>
                     <div :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel">Кол-во комнат:</span>
+                      <span :class="$style.blockListLabel">Кол-во комнат</span>
                       <span :class="$style.blockListValue">{{
                         currentApartment.rooms ?? "—"
                       }}</span>
                     </div>
                     <div :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel">Площадь:</span>
-                      <span :class="$style.blockListValue"
-                        >{{ currentApartment.area ?? "—" }} м²</span
+                      <span :class="$style.blockListLabel"
+                        >Кол-во санузлов</span
                       >
-                    </div>
-                    <div
-                      v-if="currentApartment?.services?.includes('balcony')"
-                      :class="$style.blockListRow"
-                    >
-                      <span :class="$style.blockListLabel">Зона отдыха:</span>
                       <span :class="$style.blockListValue">{{
-                        serviceLabel("balcony")
+                        bathroomsCount
                       }}</span>
+                    </div>
+                    <div :class="$style.blockListRow">
+                      <span :class="$style.blockListLabel">Площадь</span>
+                      <span :class="$style.blockListValue"
+                        >{{ currentApartment.area ?? "—" }} м2</span
+                      >
                     </div>
                   </div>
                 </div>
               </div>
               <div
-                v-if="equipmentKeys.length"
-                :class="[
-                  $style.block,
-                  expandedBlocks.equipment && $style.blockExpanded,
-                ]"
-              >
-                <h5
-                  :class="$style.blockTitle"
-                  role="button"
-                  tabindex="0"
-                  :aria-expanded="expandedBlocks.equipment"
-                  @click="toggleBlock('equipment')"
-                  @keydown.enter.prevent="toggleBlock('equipment')"
-                  @keydown.space.prevent="toggleBlock('equipment')"
-                >
-                  <span :class="$style.blockTitleDesktopOnly"
-                    >Техника и оснащение</span
-                  >
-                  <span :class="$style.blockTitleTabletOnly">Оснащение</span>
-                  <AppIcon
-                    name="reservArrowDownRight"
-                    alt=""
-                    :class="$style.blockTitleIcon"
-                  />
-                </h5>
-                <div :class="$style.blockContent">
-                  <p :class="$style.blockListInline">
-                    <template v-for="(key, i) in equipmentKeys" :key="key">
-                      <span v-if="i"> · </span>{{ serviceLabel(key) }}
-                    </template>
-                  </p>
-                </div>
-              </div>
-              <div
-                v-if="comfortKeys.length"
                 :class="[
                   $style.block,
                   expandedBlocks.comfort && $style.blockExpanded,
@@ -717,7 +407,7 @@
                   @keydown.enter.prevent="toggleBlock('comfort')"
                   @keydown.space.prevent="toggleBlock('comfort')"
                 >
-                  Комфорт
+                  Условия комфорта
                   <AppIcon
                     name="reservArrowDownRight"
                     alt=""
@@ -725,29 +415,28 @@
                   />
                 </h5>
                 <div :class="$style.blockContent">
-                  <p :class="$style.blockListInline">
-                    <template v-for="(key, i) in comfortKeys" :key="key">
-                      <span v-if="i"> · </span>{{ serviceLabel(key) }}
-                    </template>
+                  <p v-if="comfortServicesText" :class="$style.blockListInline">
+                    {{ comfortServicesText }}
                   </p>
+                  <p v-else :class="$style.blockListInline">—</p>
                 </div>
               </div>
               <div
                 :class="[
                   $style.block,
-                  expandedBlocks.rules && $style.blockExpanded,
+                  expandedBlocks.etiquette && $style.blockExpanded,
                 ]"
               >
                 <h5
                   :class="$style.blockTitle"
                   role="button"
                   tabindex="0"
-                  :aria-expanded="expandedBlocks.rules"
-                  @click="toggleBlock('rules')"
-                  @keydown.enter.prevent="toggleBlock('rules')"
-                  @keydown.space.prevent="toggleBlock('rules')"
+                  :aria-expanded="expandedBlocks.etiquette"
+                  @click="toggleBlock('etiquette')"
+                  @keydown.enter.prevent="toggleBlock('etiquette')"
+                  @keydown.space.prevent="toggleBlock('etiquette')"
                 >
-                  Правила
+                  Гостевой этикет
                   <AppIcon
                     name="reservArrowDownRight"
                     alt=""
@@ -756,46 +445,34 @@
                 </h5>
                 <div :class="$style.blockContent">
                   <div :class="$style.blockListTwoCol">
-                    <div v-if="rulesCheckInLabel" :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel">Заезд:</span>
+                    <div :class="$style.blockListRow">
+                      <span :class="$style.blockListLabel">Время прибытия</span>
                       <span :class="$style.blockListValue">{{
-                        rulesCheckInLabel
-                      }}</span>
-                    </div>
-                    <div v-if="rulesCheckOutLabel" :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel">Выезд:</span>
-                      <span :class="$style.blockListValue">{{
-                        rulesCheckOutLabel
+                        rulesCheckInLabel || "—"
                       }}</span>
                     </div>
                     <div :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel"
-                        >Можно с детьми:</span
-                      >
+                      <span :class="$style.blockListLabel">Время выезда</span>
                       <span :class="$style.blockListValue">{{
-                        rulesKidsAllowed ? "да" : "нет"
+                        rulesCheckOutLabel || "—"
                       }}</span>
                     </div>
                     <div :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel"
-                        >Можно с питомцем:</span
-                      >
-                      <span :class="$style.blockListValue">{{
-                        rulesPetsAllowed ? "да" : "нет"
-                      }}</span>
-                    </div>
-                    <div :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel"
-                        >Разрешены вечеринки:</span
-                      >
-                      <span :class="$style.blockListValue">{{
-                        rulesPartyAllowed ? "да" : "нет"
-                      }}</span>
-                    </div>
-                    <div :class="$style.blockListRow">
-                      <span :class="$style.blockListLabel">Можно курить:</span>
+                      <span :class="$style.blockListLabel">Можно курить</span>
                       <span :class="$style.blockListValue">{{
                         rulesSmokeAllowed ? "да" : "нет"
+                      }}</span>
+                    </div>
+                    <div :class="$style.blockListRow">
+                      <span :class="$style.blockListLabel"
+                        >Есть отчётные документы</span
+                      >
+                      <span :class="$style.blockListValue">да</span>
+                    </div>
+                    <div :class="$style.blockListRow">
+                      <span :class="$style.blockListLabel">С питомцем</span>
+                      <span :class="$style.blockListValue">{{
+                        rulesPetsAllowed ? "По согласованию" : "нет"
                       }}</span>
                     </div>
                   </div>
@@ -991,6 +668,8 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { ru } from "date-fns/locale";
+import arrowLeftIcon from "@app/assets/icons/ui/arrow-left.svg?url";
+import arrowRightIcon from "@app/assets/icons/ui/arrow-right.svg?url";
 
 const VueDatePicker = defineAsyncComponent(async () => {
   await import("@vuepic/vue-datepicker/dist/main.css");
@@ -1035,13 +714,13 @@ const SERVICE_LABELS = {
   seaview: "Вид на море",
   mountainview: "Вид на горы",
   seafront: "У моря",
-  air_conditioning: "Кондиционер",
+  air_conditioning: "Индивидуальная система кондиционирования",
   pool: "Бассейн",
   washing_machine: "Стиральная машина",
-  wi_fi: "Wi-Fi",
+  wi_fi: "Высокоскоростной Wi-Fi",
   animals: "Можно с животными",
   party: "Можно проводить вечеринки",
-  tv: "Телевизор",
+  tv: "Smart TV",
   kids: "Подходит для детей",
   playground: "Детская площадка",
   refrigerator: "Холодильник",
@@ -1067,6 +746,14 @@ const SERVICE_LABELS = {
   elevator: "Лифт",
 };
 
+const COMFORT_SERVICE_KEYS = [
+  ...COMFORT_KEYS,
+  ...EQUIPMENT_KEYS,
+  "balcony",
+  "party",
+  "kids",
+];
+
 export default {
   name: "Reserv",
   components: { Swiper, SwiperSlide, VueDatePicker },
@@ -1086,10 +773,16 @@ export default {
   },
   data() {
     return {
+      arrowLeftIcon,
+      arrowRightIcon,
       localSelectedIndex: 0,
       swiperModules: [Navigation],
       carouselSwiper: null,
       carouselActiveIndex: 1,
+      canCarouselPrev: false,
+      canCarouselNext: false,
+      carouselGap: 16,
+      carouselSlidesPerView: 1.35,
       photoGalleryOpen: false,
       fullscreenPhotoIndex: null,
       fullscreenScale: 1,
@@ -1120,27 +813,49 @@ export default {
       nearestDatesLoading: false,
       isMobile: false,
       expandedBlocks: {
-        about: true,
-        equipment: false,
+        philosophy: true,
+        details: false,
         comfort: false,
-        rules: false,
+        etiquette: false,
       },
     };
   },
   computed: {
     checkInDateFormatted() {
       if (!this.checkInDate) return "";
-      return this.checkInDate.toLocaleDateString("ru-RU", {
-        day: "numeric",
-        month: "long",
-      });
+      const months = [
+        "января",
+        "февраля",
+        "марта",
+        "апреля",
+        "мая",
+        "июня",
+        "июля",
+        "августа",
+        "сентября",
+        "октября",
+        "ноября",
+        "декабря",
+      ];
+      return `${this.checkInDate.getDate()} ${months[this.checkInDate.getMonth()]}`;
     },
     checkOutDateFormatted() {
       if (!this.checkOutDate) return "";
-      return this.checkOutDate.toLocaleDateString("ru-RU", {
-        day: "numeric",
-        month: "long",
-      });
+      const months = [
+        "января",
+        "февраля",
+        "марта",
+        "апреля",
+        "мая",
+        "июня",
+        "июля",
+        "августа",
+        "сентября",
+        "октября",
+        "ноября",
+        "декабря",
+      ];
+      return `${this.checkOutDate.getDate()} ${months[this.checkOutDate.getMonth()]}`;
     },
     totalGuests() {
       const g = this.guestSelection;
@@ -1160,7 +875,7 @@ export default {
       const g = this.guestSelection;
       return {
         adults: g?.adults ?? 0,
-        children: (g?.children ?? []).map((c) => ({ age: c?.age ?? "0" })),
+        children: [],
       };
     },
     activeTabIndex() {
@@ -1174,7 +889,6 @@ export default {
       return this.apartments.map((a) => ({
         id: a.id,
         label: a.title,
-        desc: a.desc || "",
       }));
     },
     currentApartment() {
@@ -1184,6 +898,25 @@ export default {
       const photos = this.currentApartment?.photos;
       if (!Array.isArray(photos)) return [];
       return photos.slice(0, 25);
+    },
+    carouselLoop() {
+      return this.carouselPhotos.length > 1;
+    },
+    carouselBreakpoints() {
+      return {
+        0: {
+          slidesPerView: 1,
+          centeredSlides: false,
+          spaceBetween: this.carouselGap,
+          loop: this.carouselLoop,
+        },
+        769: {
+          slidesPerView: this.carouselSlidesPerView,
+          centeredSlides: true,
+          spaceBetween: this.carouselGap,
+          loop: this.carouselLoop,
+        },
+      };
     },
     carouselPaginationActiveDot() {
       const len = this.carouselPhotos.length;
@@ -1203,15 +936,17 @@ export default {
         .reduce((acc, n) => acc + n, 0);
       return sum > 0 ? sum : null;
     },
-    equipmentKeys() {
-      return EQUIPMENT_KEYS.filter((key) =>
-        this.currentApartment?.services?.includes(key)
-      );
+    bathroomsCount() {
+      return "—";
     },
-    comfortKeys() {
-      return COMFORT_KEYS.filter((key) =>
-        this.currentApartment?.services?.includes(key)
-      );
+    comfortServicesText() {
+      const services = this.currentApartment?.services;
+      if (!Array.isArray(services) || !services.length) return "";
+      const labels = COMFORT_SERVICE_KEYS.filter((key) =>
+        services.includes(key)
+      ).map((key) => this.serviceLabel(key));
+      const unique = [...new Set(labels)];
+      return unique.join(" · ");
     },
     rulesKidsAllowed() {
       return this.currentApartment?.services?.includes("kids") ?? false;
@@ -1273,18 +1008,22 @@ export default {
         const partsTo = this.formatCalendarDateParts(nextDayStr);
         const shortFrom = this.formatCalendarDateShortMonth(entry.date);
         const shortTo = this.formatCalendarDateShortMonth(nextDayStr);
-        const dateLabel =
+        const dayRange = `${partsFrom.day}-${partsTo.day}`;
+        const monthLabel =
           partsFrom.month === partsTo.month
-            ? `${partsFrom.day}-${partsTo.day} ${partsTo.month}`
-            : `${partsFrom.day}-${partsTo.day} ${shortFrom}/${shortTo}`;
+            ? partsTo.month
+            : `${shortFrom}/${shortTo}`;
+        const dateLabel = `${dayRange} ${monthLabel}`;
         const price = entry.price;
         const discountPercent = entry.discounts?.[0]?.percent ?? 0;
         const checkInDate = this.parseDateStr(entry.date);
         const checkOutDate = this.parseDateStr(nextDayStr);
         return {
+          dayRange,
+          monthLabel,
           dateLabel,
           price,
-          priceFormatted: price != null ? `${this.formatPrice(price)} ₽` : null,
+          priceFormatted: price != null ? this.formatPrice(price) : null,
           discountPercent: discountPercent || null,
           discountLabel: discountPercent ? `-${discountPercent}%` : "",
           available:
@@ -1431,6 +1170,7 @@ export default {
     }
     this._resizeHandler = () => {
       this.isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+      this.syncCarouselGap();
       this.$nextTick(() => this.updateNearestDatesScrollState());
     };
     this._resizeHandler();
@@ -1455,20 +1195,63 @@ export default {
   methods: {
     onCarouselSwiper(swiper) {
       this.carouselSwiper = swiper;
+      this.syncCarouselGap();
       if (swiper) {
-        this.carouselActiveIndex =
-          (swiper.realIndex ?? swiper.activeIndex ?? 0) + 1;
+        this.carouselActiveIndex = (swiper.realIndex ?? 0) + 1;
+        this.updateCarouselNavState(swiper);
         swiper.on("realIndexChange", (s) => {
           this.carouselActiveIndex = (s.realIndex ?? s.activeIndex ?? 0) + 1;
+          this.updateCarouselNavState(s);
         });
       }
+    },
+    syncCarouselGap() {
+      if (typeof window === "undefined" || typeof document === "undefined")
+        return;
+      const rem =
+        parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      this.carouselGap = rem;
+      const swiper = this.carouselSwiper;
+      if (!swiper?.params) return;
+      swiper.params.spaceBetween = rem;
+      if (swiper.params.breakpoints?.[769]) {
+        swiper.params.breakpoints[769].spaceBetween = rem;
+      }
+      if (swiper.params.breakpoints?.[0]) {
+        swiper.params.breakpoints[0].spaceBetween = rem;
+      }
+      swiper.update?.();
+    },
+    onCarouselSlideChange(swiper) {
+      this.updateCarouselNavState(swiper);
+    },
+    updateCarouselNavState(swiper = this.carouselSwiper) {
+      if (!swiper || this.carouselPhotos.length <= 1) {
+        this.canCarouselPrev = false;
+        this.canCarouselNext = false;
+        return;
+      }
+      this.canCarouselPrev = true;
+      this.canCarouselNext = true;
+    },
+    carouselPrev() {
+      if (!this.canCarouselPrev) return;
+      this.carouselSwiper?.slidePrev?.();
+    },
+    carouselNext() {
+      if (!this.canCarouselNext) return;
+      this.carouselSwiper?.slideNext?.();
     },
     goToCarouselDot(dotIndex) {
       if (!this.carouselSwiper || !this.carouselPhotos.length) return;
       const len = this.carouselPhotos.length;
-      if (dotIndex === 0) this.carouselSwiper.slideTo(0);
-      else if (dotIndex === 1) this.carouselSwiper.slideTo(Math.floor(len / 2));
-      else this.carouselSwiper.slideTo(len - 1);
+      const target =
+        dotIndex === 0 ? 0 : dotIndex === 1 ? Math.floor(len / 2) : len - 1;
+      if (this.carouselLoop && this.carouselSwiper.slideToLoop) {
+        this.carouselSwiper.slideToLoop(target);
+      } else {
+        this.carouselSwiper.slideTo(target);
+      }
     },
     openPhotoGallery() {
       this.photoGalleryOpen = true;
@@ -1536,7 +1319,7 @@ export default {
     },
     formatPrice(value) {
       if (value == null) return "—";
-      return Number(value).toLocaleString("ru-RU");
+      return `${Number(value).toLocaleString("ru-RU")} ₽`;
     },
     formatCalendarDateParts(dateStr) {
       if (!dateStr) return { day: "", month: "" };
@@ -1613,6 +1396,34 @@ export default {
       this.bookingValidationError = "";
       this.bookingCheckInError = false;
       this.bookingCheckOutError = false;
+
+      const apt = this.currentApartment;
+      if (!apt?.id) return;
+
+      const guests = {
+        adults: this.guestSelection?.adults ?? 1,
+        children: (this.guestSelection?.children ?? []).map((c) => ({
+          age: c?.age ?? "0",
+        })),
+      };
+
+      const basePrice =
+        item.discountPercent && item.price != null
+          ? Math.round(item.price / (1 - item.discountPercent / 100))
+          : null;
+
+      this.$store.commit("setBookingFormData", {
+        checkInDate: this.toDateStr(this.checkInDate),
+        checkOutDate: this.toDateStr(this.checkOutDate),
+        guests,
+        apartment: apt,
+        price: item.price ?? null,
+        priceFormatted: item.priceFormatted ?? null,
+        discountPercent: item.discountPercent ?? null,
+        basePrice,
+      });
+      this.$store.commit("setSelectedApartmentIndex", this.activeTabIndex);
+      this.$store.commit("setBookingFormModalOpen", true);
     },
     isCalendarDateDisabledForCheckOut(date) {
       if (this.isCalendarDateDisabled(date)) return true;
@@ -1886,71 +1697,85 @@ export default {
 .wrapper {
   display: flex;
   flex-direction: column;
-  padding: 7.5rem 2.5rem;
-  background-color: $text-primary;
+  width: 100%;
+  padding: 7.5rem 0;
+  background-color: $bg-brown;
   color: $text-white;
   gap: 5rem;
-  @include mobile {
-    padding: 5rem 1rem;
-    gap: 2.5rem;
+  @include laptop {
+    padding: 5rem 0;
+    gap: 3.5rem;
   }
-  h2 {
-    color: $text-tertiary;
-    font-weight: 300;
-    line-height: 0.8;
-    @include mobile {
-      font-size: 1.875rem;
-      color: $text-white;
+  @include tablet {
+    padding: 2.5rem 0;
+    gap: 1.5rem;
+  }
+  .header {
+    display: flex;
+    flex-direction: column;
+    @include content-width;
+    .titleRow {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      width: 100%;
+      gap: 0.25rem;
+      .titlePrimary {
+        margin: 0;
+        font-weight: 400;
+        font-size: 6.25rem;
+        letter-spacing: -0.04em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.55);
+        line-height: 1;
+        @include laptop {
+          font-size: 5rem;
+        }
+        @include tablet {
+          font-size: 1.75rem;
+        }
+      }
+      .titleBrand {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        flex-shrink: 0;
+        font-size: 1.5rem;
+        font-weight: 300;
+        letter-spacing: -0.04em;
+        line-height: 1.2;
+        text-transform: uppercase;
+        color: $text-tertiary;
+        text-align: right;
+        @include tablet {
+          font-size: 0.75rem;
+          padding-top: 0.125rem;
+          p:first-child {
+            text-transform: none;
+          }
+        }
+      }
     }
-  }
-  h3 {
-    font-size: 1rem;
-    font-weight: 300;
-    margin: 0.25rem 0 0 0;
-    line-height: 120%;
-    @include mobile {
-      font-size: 0.625rem;
-      color: $text-tertiary;
+    .titleSecondary {
       margin: 0;
+      font-weight: 400;
+      font-size: 6.25rem;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      color: $text-accent;
+      align-self: flex-end;
+      line-height: 1;
+      @include laptop {
+        font-size: 5rem;
+      }
+      @include tablet {
+        font-size: 1.5rem;
+      }
     }
   }
 }
-
-.titleContainer {
-  max-width: 110rem;
-  margin: 0 auto;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  @include mobile {
-    gap: 0.25rem;
-  }
-}
-
-.titleLine1 {
-  display: flex;
-  text-wrap: nowrap;
-  gap: 0;
-  justify-content: space-between;
-  letter-spacing: -4%;
-  @include mobile {
-    gap: 0;
-  }
-}
-
-.titleLine2 {
-  display: flex;
-  letter-spacing: -4%;
-  text-wrap: nowrap;
-  h2 {
-    color: #685137;
-  }
-  @include mobile {
-  }
-}
-
 .embeddedWrap {
-  background-color: $text-primary;
+  background-color: $bg-footer;
   color: $text-white;
   display: flex;
   flex-direction: column;
@@ -1958,7 +1783,6 @@ export default {
   height: 100%;
   min-height: 0;
   overflow: auto;
-
   .carouselWrap {
     width: 100%;
     margin-left: 0;
@@ -1970,375 +1794,1370 @@ export default {
     margin-right: 0;
   }
 }
-
 .reservContainer {
-  max-width: 110rem;
-  margin: 0 auto;
+  @include content-width;
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
-  width: stretch;
-  @include mobile {
+  @include tablet {
     gap: 1.5rem;
-    width: stretch;
   }
-}
-
-.tabContentInner {
-  display: block;
-}
-
-:global(.tab-content-enter-active),
-:global(.tab-content-leave-active) {
-  transition:
-    opacity 0.15s ease,
-    transform 0.15s ease;
-}
-
-:global(.tab-content-enter-from),
-:global(.tab-content-leave-to) {
-  opacity: 0;
-  transform: translateY(0.625rem);
-}
-
-:global(.tab-content-enter-to),
-:global(.tab-content-leave-from) {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.switcher {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0;
-  border-bottom: none;
-  @include mobile {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: auto auto;
-    gap: 0;
-    padding-bottom: 0;
-    -webkit-overflow-scrolling: touch;
-    border-bottom: none;
-  }
-}
-
-.tabCard {
-  &:nth-child(even) {
-    .switcherTab {
-      padding: 1.5rem;
-      @include mobile {
-        padding: 0.5rem 0.25rem 0.5rem 0;
-      }
-    }
-    .tabCardDesc {
-      padding: 0 1.5rem;
-      @include mobile {
-        padding: 0.5rem 0 0;
-      }
-    }
-  }
-}
-
-.switcherTab {
-  display: flex;
-  align-items: flex-end;
-  text-align: left;
-  padding: 1.5rem 0.5rem;
-  font-size: 3rem;
-  font-weight: 300;
-  color: #685137;
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  cursor: pointer;
-  font-family: inherit;
-  transition:
-    color 0.2s,
-    border-color 0.2s;
-
-  &:hover {
-    color: rgba(255, 255, 255, 0.85);
-  }
-  @include mobile {
-    font-size: 1rem;
-    padding: 0.5rem 0.25rem 0.5rem 0;
-    margin-bottom: 0;
-    white-space: nowrap;
-    flex-shrink: 0;
-    border-bottom: 2px solid #685137;
-  }
-}
-
-.switcherTabActive {
-  color: $text-white;
-  font-weight: 600;
-  border-bottom-color: $text-white;
-}
-
-.tabCard {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
-  cursor: pointer;
-  @include mobile {
-    display: contents;
-  }
-
-  &:hover .switcherTab {
-    color: $text-white;
-  }
-
-  &:hover .switcherTabVilla {
-    color: $text-white;
-    @include mobile {
-      color: #685137;
-    }
-
-    &:hover .tabCardDesc {
-      color: $text-white;
-      @include mobile {
-        color: #685137;
-      }
-    }
-
-    &:hover .tabCardLine {
-      background: $text-white;
-      @include mobile {
-        background: #685137;
-      }
-    }
-  }
-}
-
-.switcherTabVilla {
-  display: block;
-  font-size: 1rem;
-  font-weight: 400;
-  color: #685137;
-  margin-bottom: 0.5rem;
-  margin-right: 0.5rem;
-
-  @include mobile {
-    display: none !important;
-  }
-}
-
-.switcherTabActive .switcherTabVilla {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.tabCardLine {
-  display: block;
-  height: 2px;
-  margin-top: -1px;
-  margin-bottom: 0;
-  background: #685137;
-  min-height: 2px;
-
-  @include mobile {
-    display: none !important;
-  }
-}
-
-.tabCard:has(.switcherTabActive) .tabCardLine {
-  background: $text-white;
-}
-
-.tabCardDesc {
-  display: block;
-  font-size: 1rem;
-  font-weight: 300;
-  line-height: 1.2;
-  color: $text-white;
-  margin-top: 0.75rem;
-  text-align: justify;
-
-  :global(p) {
-    margin: 0 0 0.5em 0;
-  }
-  :global(p:last-child) {
-    margin-bottom: 0;
-  }
-}
-
-.tabCardDescInactive {
-  color: #685137;
-}
-
-.tabCardDesc {
-  @include mobile {
-    display: none;
-    font-size: 0.625rem;
-    margin-top: 0;
-    padding: 0.5rem 0 0;
-    color: rgba(255, 255, 255, 0.85);
-    grid-row: 2;
-    grid-column: 1 / -1;
-  }
-}
-
-.tabCard:has(.switcherTabActive) .tabCardDesc {
-  @include mobile {
-    display: block;
-  }
-}
-
-@include mobile {
-  .switcher .tabCard:nth-child(1) .switcherTab,
-  .switcher .tabCard:nth-child(1) .tabCardLine {
-    grid-row: 1;
-    grid-column: 1;
-  }
-  .switcher .tabCard:nth-child(2) .switcherTab,
-  .switcher .tabCard:nth-child(2) .tabCardLine {
-    grid-row: 1;
-    grid-column: 2;
-  }
-  .switcher .tabCard:nth-child(3) .switcherTab,
-  .switcher .tabCard:nth-child(3) .tabCardLine {
-    grid-row: 1;
-    grid-column: 3;
-  }
-}
-
-.villaDescDesktopOnly {
-  display: none !important;
-  @include mobile {
-    display: none;
-  }
-}
-
-.mainContent {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  align-items: center;
-}
-
-.carouselWrap {
-  position: relative;
-  border-radius: 0;
-  display: flex;
-  overflow: hidden;
-  background: $text-primary;
-  height: 100%;
-  min-height: 20rem;
-  user-select: none;
-  width: 100%;
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
-
-  @include mobile {
+  .switcher {
     display: flex;
-    width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-    border-radius: 1rem;
-    min-height: auto;
+    justify-content: space-around;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 4rem;
+    border-bottom: none;
+    @include laptop {
+      gap: 2.5rem;
+    }
+    @include tablet {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      padding-bottom: 0;
+      -webkit-overflow-scrolling: touch;
+      border-bottom: none;
+      .tabCard:nth-child(1) .switcherTab {
+        grid-row: 1;
+        grid-column: 1;
+      }
+      .tabCard:nth-child(2) .switcherTab {
+        grid-row: 1;
+        grid-column: 2;
+      }
+      .tabCard:nth-child(3) .switcherTab {
+        grid-row: 1;
+        grid-column: 3;
+      }
+    }
+    .tabCard {
+      display: flex;
+      flex-direction: column;
+      flex: 0 0 auto;
+      min-width: 0;
+      cursor: pointer;
+      @include tablet {
+        display: contents;
+      }
+      &:hover .switcherTab {
+        color: $text-white;
+      }
+      &:hover .switcherTabVilla {
+        color: rgba(255, 255, 255, 0.85);
+        @include tablet {
+          color: $text-accent;
+        }
+      }
+      .switcherTab {
+        display: flex;
+        align-items: flex-end;
+        gap: 1rem;
+        text-align: left;
+        padding: 0;
+        font-size: 3rem;
+        font-weight: 300;
+        color: $text-accent;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+        transition: color 0.2s;
+        line-height: 1;
+        &:hover {
+          color: rgba(255, 255, 255, 0.85);
+        }
+        @include laptop {
+          font-size: 2.25rem;
+        }
+        @include tablet {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.15rem;
+          font-size: 1rem;
+          font-weight: 400;
+          padding: 0.35rem 0.15rem 0.5rem 0;
+          white-space: nowrap;
+          flex-shrink: 0;
+          border-bottom: 2px solid rgba($text-accent, 0.45);
+        }
+        &.switcherTabActive {
+          color: $text-white;
+          font-weight: 600;
+          @include tablet {
+            border-bottom-color: $text-white;
+            font-weight: 600;
+          }
+          .switcherTabVilla {
+            color: rgba(255, 255, 255, 0.55);
+          }
+        }
+        .switcherTabLabel {
+          display: block;
+        }
+        .switcherTabVilla {
+          display: block;
+          font-size: 1rem;
+          font-weight: 400;
+          color: rgba(255, 255, 255, 0.45);
+          margin-bottom: 0.35rem;
+          @include tablet {
+            display: block !important;
+            font-size: 0.625rem;
+            font-weight: 400;
+            margin-bottom: 0;
+            color: rgba(255, 255, 255, 0.45);
+            line-height: 1.2;
+          }
+        }
+      }
+    }
   }
-}
-
-.carouselPriceOverlay {
-  display: none;
-
-  @include mobile {
-    display: none;
-    position: absolute;
-    top: 0.75rem;
-    left: 0.75rem;
-    z-index: 10;
-    margin: 0;
-    padding: 0.5rem 0.75rem;
-    background: $bg-overlay;
-    backdrop-filter: blur(0.5rem);
-    border-radius: 0.5rem;
-    color: $text-white;
-    font-size: 0.875rem;
-    font-weight: 500;
-  }
-}
-
-.carouselCounterTotal {
-  color: #685137;
-}
-
-.carouselCounter {
-  display: block;
-  position: absolute;
-  bottom: -0.625rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  margin: 0;
-  padding: 0.75rem 4.5rem;
-  background: $text-primary;
-  color: $text-white;
-  font-size: 2rem;
-  font-weight: 300;
-  pointer-events: none;
-  clip-path: url(#carouselCounterClip);
-
-  @include mobile {
+  .tabContentInner {
     display: block;
-    position: absolute;
-    bottom: 0.5rem;
-    left: 0.5rem;
-    transform: none;
-    padding: 0.625rem 1.5rem;
-    background: $bg-overlay;
-    backdrop-filter: blur(0.5rem);
-    border-radius: 6rem;
-    font-size: 1.5rem;
-    clip-path: none;
+    .mainContent {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      align-items: stretch;
+      width: 100%;
+      .carouselWrap {
+        position: relative;
+        border-radius: 0;
+        display: block;
+        overflow: hidden;
+        background: $bg-footer;
+        min-height: 28rem;
+        user-select: none;
+        width: 100vw;
+        max-width: 100vw;
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        @include tablet {
+          width: 100%;
+          max-width: 100%;
+          margin-left: 0;
+          margin-right: 0;
+          border-radius: 0;
+          min-height: auto;
+        }
+        .carouselPriceOverlay {
+          display: none;
+          @include tablet {
+            display: none;
+            position: absolute;
+            top: 0.75rem;
+            left: 0.75rem;
+            z-index: 10;
+            margin: 0;
+            padding: 0.5rem 0.75rem;
+            background: $bg-overlay;
+            backdrop-filter: blur(0.5rem);
+            border-radius: 0.5rem;
+            color: $text-white;
+            font-size: 0.875rem;
+            font-weight: 500;
+          }
+        }
+        .carouselNavBtn {
+          position: absolute;
+          top: 50%;
+          z-index: 12;
+          width: 3rem;
+          height: 3rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          border: none;
+          border-radius: 50%;
+          background: transparent;
+          cursor: pointer;
+          transform: translateY(-50%);
+          transition: opacity 0.2s;
+          img {
+            width: 3rem;
+            height: 3rem;
+            display: block;
+            object-fit: contain;
+          }
+          &:hover:not(:disabled) {
+            opacity: 0.75;
+          }
+          &.carouselNavBtnDisabled,
+          &:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+          }
+          @include tablet {
+            display: none;
+          }
+          &.carouselNavBtnPrev {
+            left: 1.5rem;
+          }
+          &.carouselNavBtnNext {
+            right: 1.5rem;
+          }
+        }
+        .carousel {
+          width: 100%;
+          height: 46rem;
+          min-height: 0;
+          border-radius: 0;
+          :global(.swiper-wrapper) {
+            height: 100% !important;
+          }
+          :global(.swiper-slide) {
+            position: relative;
+            height: 100% !important;
+            min-height: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: stretch;
+            border-radius: 0;
+            &::after {
+              content: "";
+              position: absolute;
+              inset: 0;
+              background: rgba(0, 0, 0, 0.55);
+              opacity: 1;
+              transition: opacity 0.3s ease;
+              pointer-events: none;
+              z-index: 1;
+            }
+            &:global(.swiper-slide-active)::after {
+              opacity: 0;
+            }
+          }
+          :global(.swiper-button-prev),
+          :global(.swiper-button-next) {
+            display: none !important;
+          }
+          @include tablet {
+            height: 11.25rem;
+            margin: 0;
+            border-radius: 0;
+            :global(.swiper-slide) {
+              border-radius: 0;
+              &::after {
+                display: none;
+              }
+            }
+          }
+        }
+        .carouselPagination {
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 2.5rem;
+          display: none;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          z-index: 2;
+          .carouselPaginationDot {
+            width: 1rem;
+            height: 1rem;
+            padding: 0;
+            border: 2px solid #685137;
+            background-color: #000000;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            &.carouselPaginationDotActive {
+              width: 5rem;
+              background: #004f68;
+              border: 2px solid $bg-transparent-16;
+              border-radius: 1rem;
+            }
+          }
+        }
+        .carouselImg {
+          width: 100%;
+          height: 100%;
+          min-height: 0;
+          max-height: 100%;
+          object-fit: cover;
+          object-position: center;
+          display: block;
+        }
+      }
+      .detailsColumn {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        box-sizing: border-box;
+        .detailsHeader {
+          display: flex;
+          align-items: baseline;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          &.detailsHeaderDesktopOnly {
+            display: none;
+          }
+          .villaTitle {
+            font-size: 2rem;
+            font-weight: 300;
+            margin: 0;
+          }
+          .villaPrice {
+            display: none;
+            font-size: 2rem;
+            color: $text-tertiary;
+            font-weight: 300;
+            margin: 0;
+          }
+        }
+        .villaDesc {
+          font-size: 1rem;
+          font-family: "Montserrat", sans-serif;
+          color: $text-white;
+          font-weight: 300;
+          line-height: 1.2;
+          text-align: justify;
+          margin: 1rem 0 2.5rem 0;
+          :global(p) {
+            margin: 0 0 0.5em;
+            &:last-child {
+              margin-bottom: 0;
+            }
+          }
+          &.villaDescDesktopOnly {
+            display: none !important;
+            @include tablet {
+              display: none;
+            }
+          }
+        }
+        .upcomingDates {
+          display: flex;
+          flex-direction: column;
+          order: -1;
+          width: 100%;
+          padding: 1.5rem 0;
+          box-sizing: border-box;
+          @include tablet {
+            padding: 1.5rem 0 0;
+          }
+          .upcomingDatesTitle {
+            font-size: 1rem;
+            font-weight: 600;
+            color: $text-white;
+            margin: 0 0 0.5rem 0;
+            display: none;
+          }
+          .upcomingDatesNavWrap {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            min-height: 0;
+            @include tablet {
+              gap: 0;
+            }
+            .upcomingDatesSkeleton {
+              flex: 1;
+              min-width: 0;
+              display: flex;
+              gap: 0.5rem;
+              align-items: center;
+              overflow: hidden;
+              .upcomingDatesSkeletonCard {
+                flex: 0 0 auto;
+                width: 10rem;
+                max-width: 10rem;
+                min-height: 4.5rem;
+                height: auto;
+                border-radius: 0.5rem;
+                background: linear-gradient(
+                  90deg,
+                  rgba(255, 255, 255, 0.06) 0%,
+                  rgba(255, 255, 255, 0.14) 50%,
+                  rgba(255, 255, 255, 0.06) 100%
+                );
+                background-size: 200% 100%;
+                animation: upcomingDatesShimmer 1.5s ease-in-out infinite;
+                @include tablet {
+                  width: 7.5rem;
+                  max-width: 7.5rem;
+                  min-height: 3.75rem;
+                }
+              }
+            }
+            .upcomingDatesNavBtn {
+              flex-shrink: 0;
+              width: 3rem;
+              height: 3rem;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 0;
+              border: none;
+              border-radius: 50%;
+              background: transparent;
+              cursor: pointer;
+              transition: opacity 0.2s;
+              img {
+                width: 3rem;
+                height: 3rem;
+                display: block;
+                object-fit: contain;
+              }
+              &:hover:not(:disabled) {
+                opacity: 0.75;
+              }
+              &.upcomingDatesNavBtnDisabled,
+              &:disabled {
+                opacity: 0.35;
+                cursor: not-allowed;
+                pointer-events: auto;
+              }
+              @include tablet {
+                display: none;
+              }
+              &.upcomingDatesNavBtnPrev,
+              &.upcomingDatesNavBtnNext {
+                border-radius: 50%;
+                transform: none;
+              }
+            }
+            .upcomingDatesScroll {
+              flex: 1;
+              min-width: 0;
+              overflow-x: auto;
+              scroll-snap-type: x proximity;
+              scrollbar-width: none;
+              -ms-overflow-style: none;
+              min-height: 0;
+              &::-webkit-scrollbar {
+                display: none;
+              }
+              .upcomingDatesScrollInner {
+                display: flex;
+                gap: 0.5rem;
+                min-height: 0;
+                align-items: stretch;
+                @include tablet {
+                  gap: 0.5rem;
+                }
+                .dateCard {
+                  $date-card-ease: cubic-bezier(0.4, 0, 0.2, 1);
+                  position: relative;
+                  flex: 0 0 auto;
+                  width: 100%;
+                  max-width: 10rem;
+                  height: auto;
+                  padding: 1rem;
+                  border: 1px solid rgba(255, 255, 255, 0.16);
+                  border-radius: 0.5rem;
+                  background: transparent;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: flex-start;
+                  align-items: stretch;
+                  gap: 0.75rem;
+                  scroll-snap-align: start;
+                  cursor: pointer;
+                  box-sizing: border-box;
+                  transition:
+                    background 0.3s $date-card-ease,
+                    border-color 0.3s $date-card-ease;
+                  @include tablet {
+                    max-width: 7.5rem;
+                    padding: 0.75rem;
+                    border-radius: 0.5rem;
+                    border-color: rgba(255, 255, 255, 0.22);
+                  }
+                  &:hover:not(.dateCardUnavailable):not(.dateCardSelected) {
+                    background: rgba(255, 255, 255, 0.04);
+                    border-color: rgba(255, 255, 255, 0.22);
+                  }
+                  &.dateCardUnavailable {
+                    background: #4a4a4a;
+                    border-color: transparent;
+                    cursor: not-allowed;
+                    pointer-events: none;
+                    .dateCardBusy,
+                    .dateCardDays,
+                    .dateCardMonth {
+                      color: $text-tertiary;
+                    }
+                    @include tablet {
+                      background: #3d3d3d;
+                      border-color: transparent;
+                    }
+                  }
+                  &.dateCardSelected {
+                    background: #000000;
+                    border-color: #000000;
+                    .dateCardPrice,
+                    .dateCardDays,
+                    .dateCardMonth {
+                      color: $text-white;
+                    }
+                  }
+                  .dateCardDiscount {
+                    position: absolute;
+                    top: 0.35rem;
+                    left: 0.5rem;
+                    margin: 0;
+                    padding: 0;
+                    font-size: 0.75rem;
+                    font-weight: 500;
+                    line-height: 1;
+                    color: $main-red;
+                    background: none;
+                    @include tablet {
+                      top: 0.5rem;
+                      left: 0.625rem;
+                      font-size: 0.625rem;
+                      font-weight: 600;
+                    }
+                  }
+                  .dateCardMain {
+                    flex: 0 0 auto;
+                    display: flex;
+                    align-items: flex-end;
+                    justify-content: flex-end;
+                    min-height: 0;
+                    width: 100%;
+                    .dateCardPrice {
+                      font-size: 1.125rem;
+                      font-weight: 600;
+                      color: $text-white;
+                      line-height: 1.2;
+                      text-align: right;
+                      white-space: nowrap;
+                      @include tablet {
+                        font-size: 0.875rem;
+                        font-weight: 600;
+                        letter-spacing: -0.02em;
+                      }
+                    }
+                    .dateCardBusy {
+                      font-size: 1rem;
+                      font-weight: 600;
+                      letter-spacing: 0.04em;
+                      text-transform: uppercase;
+                      color: $text-tertiary;
+                      line-height: 1.2;
+                      text-align: right;
+                      @include tablet {
+                        font-size: 0.875rem;
+                        font-weight: 600;
+                        letter-spacing: 0.02em;
+                      }
+                    }
+                  }
+                  .dateCardFooter {
+                    display: flex;
+                    align-items: baseline;
+                    justify-content: space-between;
+                    width: 100%;
+                    gap: 0.5rem;
+                    .dateCardDays {
+                      flex-shrink: 0;
+                      font-size: 0.75rem;
+                      font-weight: 300;
+                      color: rgba(255, 255, 255, 0.75);
+                      line-height: 1.2;
+                      text-align: left;
+                      @include tablet {
+                        font-size: 0.6875rem;
+                        color: rgba(255, 255, 255, 0.55);
+                      }
+                    }
+                    .dateCardMonth {
+                      flex-shrink: 0;
+                      font-size: 0.75rem;
+                      font-weight: 300;
+                      color: rgba(255, 255, 255, 0.75);
+                      line-height: 1.2;
+                      text-align: right;
+                      @include tablet {
+                        font-size: 0.6875rem;
+                        color: rgba(255, 255, 255, 0.55);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        .formRow {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+          padding: 0 0 1.5rem 0;
+          @include tablet {
+            flex-direction: column;
+            padding: 0 0 1rem 0;
+            gap: 0;
+            padding: 0;
+          }
+        }
+        .formRowOneRow {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          align-items: flex-start;
+          gap: 1rem;
+          padding: 0 0 1rem 0;
+          & > .dateSelectWrap,
+          & > .formGroupGuests,
+          & > .bookButton {
+            flex: 1 1 calc((100% - 3rem) / 4);
+            width: calc((100% - 3rem) / 4);
+            min-width: 0;
+          }
+          & > .dateSelectWrap,
+          & > .formGroupGuests {
+            position: relative;
+            padding: 0.45rem 0 0 0;
+            gap: 0;
+          }
+          & > .dateSelectWrap .formLabel,
+          & > .formGroupGuests .formLabel {
+            position: absolute;
+            top: 0.45rem;
+            left: 0.75rem;
+            transform: translateY(-50%);
+            margin: 0;
+            padding: 0 0.35rem;
+            font-size: 0.625rem;
+            font-weight: 300;
+            line-height: 1;
+            color: rgba(255, 255, 255, 0.6);
+            background: $text-primary;
+            z-index: 2;
+          }
+          & > .bookButton {
+            padding: 0 1rem;
+            height: 3rem;
+            min-height: 3rem;
+            box-sizing: border-box;
+            margin-top: 0.45rem;
+          }
+          .dateSelectTriggerWrap .formInput,
+          .guestsSelectWrap .formInput {
+            height: 3rem;
+            min-height: 3rem;
+            box-sizing: border-box;
+          }
+          .dateSelectTrigger,
+          .guestsSelectTrigger {
+            display: flex;
+            align-items: center;
+            text-align: left;
+          }
+          .dateSelectTrigger span,
+          .guestsSelectTrigger span {
+            width: 100%;
+            text-align: left;
+            line-height: 1.2;
+          }
+          @include tablet {
+            flex-direction: column;
+            align-items: stretch;
+            & > .dateSelectWrap,
+            & > .formGroupGuests,
+            & > .bookButton {
+              width: 100%;
+              flex: 1 1 100%;
+            }
+            & > .bookButton {
+              height: auto;
+              margin-top: 0.5rem;
+              padding: 0.875rem 1rem;
+            }
+          }
+        }
+        .formRowFullWidth {
+          flex-basis: 100%;
+          width: 100%;
+        }
+        .formGroup {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          padding: 0 0 1.5rem 0;
+          flex: 1;
+          min-width: 0;
+          @include tablet {
+            padding: 0 0 1rem 0;
+          }
+          &:last-child {
+            padding: 0;
+            @include tablet {
+              padding: 0 0 1rem 0;
+            }
+          }
+        }
+        .formLabel {
+          font-size: 1rem;
+          font-weight: 600;
+          color: $text-white;
+          @include tablet {
+            display: none;
+          }
+        }
+        .dateField {
+          .formInput {
+            border-color: #685137 !important;
+          }
+          .formLabel {
+            color: #685137 !important;
+          }
+        }
+        .formGroupContact {
+          padding: 0 0 2.5rem 0;
+          @include tablet {
+            padding: 0 0 1.5rem 0;
+          }
+        }
+        .formContactRow {
+          display: flex;
+          flex-direction: row;
+          gap: 1.5rem;
+          @include tablet {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+          }
+          .formInputUnderline {
+            flex: 1;
+            min-width: 0;
+          }
+        }
+        .formLabelContact {
+          font-size: 2.375rem;
+          font-weight: 300;
+          color: $text-tertiary;
+          margin-bottom: 0.5rem;
+          @include tablet {
+            display: none;
+          }
+        }
+        .formInputUnderline {
+          padding: 1.125rem 0;
+          border: none;
+          border-bottom: 1px solid #685137;
+          border-radius: 0;
+          background: transparent;
+          color: $text-white;
+          font-size: 1rem;
+          font-family: inherit;
+          width: 100%;
+          @include tablet {
+            padding: 0.75rem;
+            width: auto;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid $bg-transparent-16;
+          }
+          &::placeholder {
+            color: $text-tertiary;
+          }
+          &:focus {
+            transition: all 0.2s ease;
+            outline: none;
+            border-bottom-color: $text-white;
+            @include tablet {
+              border-color: $text-white;
+            }
+          }
+        }
+        .formInputError {
+          border-color: $main-red !important;
+          @include tablet {
+            border-color: $main-red !important;
+          }
+        }
+        .bookingValidationMessage {
+          margin: 0 0 0.75rem 0;
+          font-size: 0.875rem;
+          color: $main-red;
+          line-height: 1.3;
+        }
+        .fieldErrorSlot {
+          flex-shrink: 0;
+          min-height: 0.5rem;
+          margin-top: 0.25rem;
+          @include tablet {
+            min-height: 0;
+          }
+        }
+        .fieldError {
+          margin: 0;
+          font-size: 0.75rem;
+          color: $main-red;
+          line-height: 1.3;
+          @include tablet {
+            font-size: 0.6875rem;
+          }
+        }
+        .formInputWrap {
+          position: relative;
+        }
+        .formInput {
+          padding: 1rem;
+          border: 1px solid $bg-transparent-16 !important;
+          border-radius: 0.5rem;
+          background: transparent;
+          color: $text-white;
+          font-size: 1rem;
+          font-family: inherit;
+          @include tablet {
+            padding: 0.75rem;
+            font-size: 1rem;
+          }
+          &::placeholder {
+            color: rgba(255, 255, 255, 0.45);
+          }
+          &.formInputError {
+            border-color: $main-red !important;
+          }
+        }
+        .formInputWithIcon {
+          padding-right: 2.75rem;
+        }
+        .formInputIcon {
+          position: absolute;
+          right: 0.75rem;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 1.25rem;
+          height: 1.25rem;
+          pointer-events: none;
+          opacity: 0.7;
+        }
+        .dateSelectClearBtn {
+          position: absolute;
+          right: 0.5rem;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 1.75rem;
+          height: 1.75rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          border: none;
+          border-radius: 0.25rem;
+          background: transparent;
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 1.5rem;
+          line-height: 1;
+          cursor: pointer;
+          font-family: inherit;
+          transition:
+            color 0.2s,
+            background 0.2s;
+          &:hover {
+            color: $text-white;
+            background: rgba(255, 255, 255, 0.1);
+          }
+        }
+        .dateSelectWrap {
+          position: relative;
+          z-index: 0;
+          &.dateSelectWrapOpen {
+            z-index: 3;
+          }
+        }
+        .dateSelectWrapRow {
+          display: flex;
+          flex-wrap: nowrap;
+          gap: 1rem;
+          align-items: flex-end;
+          flex: 0 1 auto;
+          min-width: 0;
+          .formGroup {
+            padding: 0;
+            flex: 0 1 auto;
+            min-width: 10rem;
+            width: 30rem;
+            @include tablet {
+              width: 37rem;
+            }
+          }
+          .calendarDropdown {
+            position: absolute;
+            left: 0;
+            top: 100%;
+            margin-top: 0.25rem;
+          }
+          @include tablet {
+            flex-wrap: wrap;
+            .formGroup {
+              min-width: 0;
+              width: 100%;
+            }
+          }
+        }
+        .dateSelectTriggerWrap {
+          position: relative;
+          display: block;
+        }
+        .dateSelectTrigger {
+          width: 100%;
+          text-align: left;
+          cursor: pointer;
+          border: none;
+          font-family: inherit;
+          appearance: none;
+        }
+        .dateRangeText {
+          color: inherit;
+        }
+        .calendarDropdown {
+          position: absolute;
+          left: 0;
+          top: calc(100% + 0.25rem);
+          padding: 0.5rem;
+          background: rgba(30, 30, 30, 0.98);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 0.375rem;
+          box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3);
+          --dp-disabled-color: rgba(255, 255, 255, 0.08);
+          --dp-disabled-color-text: rgba(255, 255, 255, 0.35);
+          :global(.dp__cell_inner.dp__cell_disabled) {
+            background: rgba(80, 50, 50, 0.4) !important;
+            color: rgba(255, 255, 255, 0.35) !important;
+            cursor: not-allowed;
+            text-decoration: line-through;
+            opacity: 0.85;
+          }
+          :global(.dp__cell_inner.dp__cell_disabled:hover) {
+            background: rgba(80, 50, 50, 0.5) !important;
+          }
+          :global(.dp__main) {
+            border: none;
+            background: transparent;
+          }
+          :global(.dp__input_wrap) {
+            display: none;
+          }
+          :global(.dp__calendar_wrap),
+          :global(.dp__calendar) {
+            background: transparent;
+          }
+          :global(.dp__cell_inner),
+          :global(.dp__calendar_item) {
+            color: rgba(255, 255, 255, 0.9);
+          }
+          :global(.dp__active_date),
+          :global(.dp__range_start),
+          :global(.dp__range_end),
+          :global(.dp__range_between) {
+            background: rgba(255, 255, 255, 0.2);
+            color: $text-white;
+          }
+          :global(.dp__month_year_select),
+          :global(.dp__arrow_top) {
+            color: $text-white;
+          }
+          :global(.dp__inner_nav:hover),
+          :global(.dp__cell_inner:hover) {
+            background: rgba(255, 255, 255, 0.15);
+          }
+          :global(.dp--time-overlay-btn),
+          :global(.dp__button.dp__overlay_action),
+          :global([data-dp-toggle-time]) {
+            display: none !important;
+          }
+        }
+        .guestsSelectWrap {
+          position: relative;
+          z-index: 0;
+          &.guestsSelectWrapOpen {
+            z-index: 2;
+          }
+        }
+        .guestsSelectTrigger {
+          width: 100%;
+          text-align: left;
+          cursor: pointer;
+          border: none;
+          font-family: inherit;
+          appearance: none;
+        }
+        .guestsPlaceholder {
+          color: rgba(255, 255, 255, 0.45);
+        }
+        .guestsSelectIconOpen {
+          transform: translateY(-50%) rotate(180deg);
+          transition: transform 0.25s ease;
+        }
+        .guestsDropdown {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: calc(100% + 0.25rem);
+          max-height: 20rem;
+          overflow-y: auto;
+          scrollbar-width: 0.125rem;
+          scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+          background: rgba(30, 30, 30, 0.98);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 0.375rem;
+          box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3);
+          .guestsDropdownInner {
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            .guestsRow {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 1rem;
+              .guestsRowLabel {
+                font-size: 0.9375rem;
+                color: rgba(255, 255, 255, 0.9);
+              }
+              .guestsCounter {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                .guestsCounterBtn {
+                  width: 2rem;
+                  height: 2rem;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  border-radius: 50%;
+                  background: rgba(255, 255, 255, 0.15);
+                  border: none;
+                  color: $text-white;
+                  font-size: 1.25rem;
+                  line-height: 1;
+                  cursor: pointer;
+                  font-family: inherit;
+                  transition: background 0.15s;
+                  &:hover:not(:disabled) {
+                    background: rgba(255, 255, 255, 0.25);
+                  }
+                  &:disabled {
+                    opacity: 0.4;
+                    cursor: not-allowed;
+                  }
+                }
+                .guestsCounterValue {
+                  min-width: 1.5rem;
+                  text-align: center;
+                  font-size: 1rem;
+                  font-weight: 500;
+                }
+              }
+            }
+            .guestsChildRow {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 0.5rem;
+              padding: 0.5rem 0.75rem;
+              background: rgba(255, 255, 255, 0.08);
+              border-radius: 0.375rem;
+              .guestsChildLabel {
+                font-size: 0.875rem;
+                color: rgba(255, 255, 255, 0.9);
+              }
+              .guestsChildSelect {
+                margin-left: 0.25rem;
+                padding: 0.25rem 0.5rem;
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 0.25rem;
+                color: $text-white;
+                font-size: 0.875rem;
+                font-family: inherit;
+                cursor: pointer;
+              }
+              .guestsChildRemove {
+                width: 1.5rem;
+                height: 1.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+                background: none;
+                border: none;
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 1.25rem;
+                line-height: 1;
+                cursor: pointer;
+                border-radius: 0.25rem;
+                transition:
+                  color 0.15s,
+                  background 0.15s;
+                &:hover {
+                  color: $text-white;
+                  background: rgba(255, 255, 255, 0.1);
+                }
+              }
+            }
+            .guestsAddChild {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              width: 100%;
+              padding: 0.5rem 0.75rem;
+              background: rgba(255, 255, 255, 0.08);
+              border: none;
+              border-radius: 0.375rem;
+              color: rgba(255, 255, 255, 0.9);
+              font-size: 0.875rem;
+              font-family: inherit;
+              cursor: pointer;
+              text-align: left;
+              transition: background 0.15s;
+              &:hover {
+                background: rgba(255, 255, 255, 0.12);
+              }
+              .guestsAddChildChevron {
+                font-size: 0.75rem;
+                opacity: 0.8;
+              }
+            }
+          }
+        }
+        .bookButton {
+          padding: 1rem 0;
+          background: #004f68;
+          color: $text-white;
+          border: none;
+          border-radius: 0.5rem;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          transition: background 0.2s;
+          width: 46rem;
+          justify-content: center;
+          @include tablet {
+            margin-top: 0.5rem;
+            padding: 0.875rem 1rem;
+          }
+          &:hover:not(:disabled) {
+            background: #006080;
+          }
+          &:disabled {
+            cursor: not-allowed;
+            opacity: 0.9;
+          }
+          .bookButtonSpinner {
+            width: 1.5rem;
+            height: 1.5rem;
+            min-width: 1.5rem;
+            min-height: 1.5rem;
+            flex-shrink: 0;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            border-top-color: $text-white;
+            border-radius: 50%;
+            box-sizing: border-box;
+            animation: spinnerRotate 0.8s linear infinite;
+          }
+          .bookButtonIcon {
+            width: 1.5rem;
+            height: 1.5rem;
+            min-width: 1.5rem;
+            min-height: 1.5rem;
+            flex-shrink: 0;
+          }
+        }
+      }
+    }
+    .bottomBlocks {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      margin: 5rem 0 0 0;
+      @include tablet {
+        grid-template-columns: 1fr;
+        margin-top: 1.5rem;
+        padding-top: 0;
+        border-top: none;
+        gap: 0;
+      }
+      .block {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 0 1.5rem;
+        border-right: 1px solid rgba($text-accent, 0.45);
+        &:last-child {
+          border-right: none;
+        }
+        @include tablet {
+          padding: 0;
+          gap: 0;
+          border-right: none;
+          border-top: 1px solid rgba($text-accent, 0.45);
+          transition: border-top-color 0.2s ease;
+        }
+        &.blockExpanded {
+          @include tablet {
+            .blockTitle {
+              color: $text-white;
+            }
+            .blockTitleIcon {
+              transform: scaleY(-1);
+              filter: brightness(0) invert(1);
+            }
+          }
+          .blockContent {
+            @include tablet {
+              grid-template-rows: 1fr;
+              padding-bottom: 0.75rem;
+            }
+          }
+        }
+        .blockTitle {
+          display: inline-flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 0.5rem;
+          font-size: 2rem;
+          font-weight: 300;
+          letter-spacing: -0.04rem;
+          line-height: 1.2;
+          margin: 0;
+          color: $text-tertiary;
+          text-wrap: balance;
+          @include laptop {
+            font-size: 1.25rem;
+          }
+          @include tablet {
+            font-size: 1.25rem;
+            padding: 1rem 0;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            transition: color 0.2s ease;
+            .blockTitleIcon {
+              flex-shrink: 0;
+              transition:
+                transform 0.2s ease,
+                filter 0.2s ease;
+            }
+          }
+          &.blockTitleDesktopOnly {
+            display: none;
+          }
+          &.blockTitleTabletOnly {
+            display: none;
+          }
+          .blockTitleIcon {
+            width: 1.5rem;
+            height: 1.5rem;
+            flex-shrink: 0;
+            transform: none;
+            opacity: 0.85;
+            @include tablet {
+              transform: none;
+            }
+          }
+        }
+        .blockContent {
+          @include tablet {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.3s ease-out;
+            padding-bottom: 0;
+            & > * {
+              min-height: 0;
+              overflow: hidden;
+            }
+          }
+          .blockDesc {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.4;
+            color: $text-white;
+            :global(p) {
+              margin: 0 0 0.75em;
+              &:last-child {
+                margin-bottom: 0;
+              }
+            }
+            @include tablet {
+              font-size: 0.875rem;
+            }
+          }
+          .blockListInline {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 300;
+            color: $text-white;
+            line-height: 1.6;
+            @include tablet {
+              font-size: 0.875rem;
+            }
+          }
+          .blockListTwoCol {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 300;
+            color: $text-white;
+            line-height: 1.5;
+            @include tablet {
+              font-size: 0.875rem;
+              gap: 0.35rem;
+            }
+            .blockListRow {
+              display: flex;
+              justify-content: space-between;
+              align-items: baseline;
+              gap: 1rem;
+              .blockListLabel {
+                flex-shrink: 1;
+                text-align: left;
+                color: $text-white;
+              }
+              .blockListValue {
+                flex-shrink: 0;
+                text-align: right;
+                color: $text-white;
+              }
+            }
+          }
+          .blockList {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            font-size: 1rem;
+            color: $text-white;
+            line-height: 1.6;
+            li {
+              margin-bottom: 0.25rem;
+            }
+          }
+        }
+      }
+    }
+  }
+  .loadingWrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 20rem;
+    padding: 3rem;
+    .spinner {
+      width: 3rem;
+      height: 3rem;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-top-color: $text-white;
+      border-radius: 50%;
+      animation: spinnerRotate 0.8s linear infinite;
+    }
   }
 }
-
-.carouselAllPhotos {
-  position: absolute;
-  top: 1.25rem;
-  right: 1.5rem;
-  z-index: 10;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.5rem 1rem;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(0.5rem);
-  border-radius: 999px;
-  border: 0;
-  color: $text-white;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition:
-    opacity 0.2s,
-    background 0.2s;
-  &:hover {
-    opacity: 0.95;
-    background: rgba(0, 0, 0, 0.6);
-  }
-  @include mobile {
-    top: 0.75rem;
-    right: 0.75rem;
-    padding: 0.4rem 0.75rem;
-    font-size: 0.75rem;
-  }
-}
-
-.carouselAllPhotosText {
-  display: block;
-}
-
-.carouselAllPhotosChevron {
-  flex-shrink: 0;
-  opacity: 0.95;
-}
-
-/* Photo gallery modal */
 .photoGalleryOverlay {
   position: fixed;
   inset: 0;
@@ -2347,197 +3166,164 @@ export default {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-
-.photoGalleryPanel {
-  flex: 1 1 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.photoGalleryHeader {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-  padding-top: max(1rem, env(safe-area-inset-top));
-  background: #000;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.photoGalleryBack {
-  flex-shrink: 0;
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  background: transparent;
-  border: 0;
-  color: $text-white;
-  cursor: pointer;
-  border-radius: 0.5rem;
-  transition:
-    background 0.2s,
-    opacity 0.2s;
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
+  .photoGalleryPanel {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    .photoGalleryHeader {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      padding-top: max(1rem, env(safe-area-inset-top));
+      background: #000;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      .photoGalleryBack {
+        flex-shrink: 0;
+        width: 2.5rem;
+        height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        color: $text-white;
+        cursor: pointer;
+        border-radius: 0.5rem;
+        transition:
+          background 0.2s,
+          opacity 0.2s;
+        &:hover {
+          background: rgba(255, 255, 255, 0.1);
+        }
+      }
+      .photoGalleryTitle {
+        flex: 1;
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: $text-white;
+        text-align: center;
+      }
+      .photoGalleryHeaderSpacer {
+        width: 2.5rem;
+        flex-shrink: 0;
+      }
+    }
+    .photoGalleryGrid {
+      flex: 1 1 0;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 0.5rem;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-auto-rows: minmax(min(40vmin, 12rem), auto);
+      gap: 0.5rem;
+      align-content: start;
+      .photoGalleryItem {
+        position: relative;
+        min-height: min(40vmin, 12rem);
+        overflow: hidden;
+        background: #1a1a1a;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+        display: block;
+        width: 100%;
+        text-align: left;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          pointer-events: none;
+        }
+      }
+    }
+    .photoFullscreenOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10001;
+      background: rgba(0, 0, 0, 0.97);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      box-sizing: border-box;
+      .photoFullscreenClose {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        z-index: 2;
+        width: 2.5rem;
+        height: 2.5rem;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.1);
+        border: 0;
+        border-radius: 50%;
+        color: $text-white;
+        cursor: pointer;
+        transition: background 0.2s;
+        top: max(1rem, env(safe-area-inset-top));
+        right: max(1rem, env(safe-area-inset-right));
+        &:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+      }
+      .photoFullscreenNav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 2;
+        width: 3rem;
+        height: 3rem;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.15);
+        border: 0;
+        border-radius: 50%;
+        color: $text-white;
+        cursor: pointer;
+        transition: background 0.2s;
+        &:hover {
+          background: rgba(255, 255, 255, 0.25);
+        }
+        &.photoFullscreenPrev {
+          left: 1rem;
+        }
+        &.photoFullscreenNext {
+          right: 1rem;
+        }
+      }
+      .photoFullscreenImgWrap {
+        max-width: 100%;
+        max-height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .photoFullscreenImg {
+          max-width: 100%;
+          max-height: 100%;
+          width: auto;
+          height: auto;
+          object-fit: cover;
+          display: block;
+        }
+      }
+    }
   }
 }
-
-.photoGalleryTitle {
-  flex: 1;
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: $text-white;
-  text-align: center;
-}
-
-.photoGalleryHeaderSpacer {
-  width: 2.5rem;
-  flex-shrink: 0;
-}
-
-.photoGalleryGrid {
-  flex: 1 1 0;
-  min-height: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 0.5rem;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-auto-rows: minmax(min(40vmin, 12rem), auto);
-  gap: 0.5rem;
-  align-content: start;
-}
-
-.photoGalleryItem {
-  position: relative;
-  min-height: min(40vmin, 12rem);
-  overflow: hidden;
-  background: #1a1a1a;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-  display: block;
-  width: 100%;
-  text-align: left;
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    pointer-events: none;
-  }
-}
-
-.photoFullscreenOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 10001;
-  background: rgba(0, 0, 0, 0.97);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem;
-  box-sizing: border-box;
-}
-
-.photoFullscreenClose {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  z-index: 2;
-  width: 2.5rem;
-  height: 2.5rem;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.1);
-  border: 0;
-  border-radius: 50%;
-  color: $text-white;
-  cursor: pointer;
-  transition: background 0.2s;
-  top: max(1rem, env(safe-area-inset-top));
-  right: max(1rem, env(safe-area-inset-right));
-  &:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
-}
-
-.photoFullscreenNav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-  width: 3rem;
-  height: 3rem;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.15);
-  border: 0;
-  border-radius: 50%;
-  color: $text-white;
-  cursor: pointer;
-  transition: background 0.2s;
-  &:hover {
-    background: rgba(255, 255, 255, 0.25);
-  }
-}
-
-.photoFullscreenPrev {
-  left: 1rem;
-}
-
-.photoFullscreenNext {
-  right: 1rem;
-}
-
-.photoFullscreenImgWrap {
-  max-width: 100%;
-  max-height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.photoFullscreenImg {
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
-  object-fit: cover;
-  display: block;
-}
-
-:global(.photo-fullscreen-enter-active),
-:global(.photo-fullscreen-leave-active) {
-  transition: opacity 0.2s ease;
-}
-:global(.photo-fullscreen-enter-from),
-:global(.photo-fullscreen-leave-to) {
-  opacity: 0;
-}
-
-:global(.photo-gallery-enter-active),
-:global(.photo-gallery-leave-active) {
-  transition: opacity 0.2s ease;
-}
-:global(.photo-gallery-enter-from),
-:global(.photo-gallery-leave-to) {
-  opacity: 0;
-}
-
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -2549,471 +3335,101 @@ export default {
   white-space: nowrap;
   border: 0;
 }
-
-.carousel {
-  height: 100%;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-
-  :global(.swiper-wrapper) {
-    flex: 1 1 0;
-    min-height: 0;
-    height: 100% !important;
-  }
-
-  :global(.swiper-slide) {
-    height: 100% !important;
-    min-height: 0;
-    overflow: hidden;
-    display: flex;
-    align-items: stretch;
-  }
-
-  height: 46rem;
-  border-radius: 1.5rem;
-
+:global(.tab-content-enter-active),
+:global(.tab-content-leave-active) {
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+:global(.tab-content-enter-from),
+:global(.tab-content-leave-to) {
+  opacity: 0;
+  transform: translateY(0.625rem);
+}
+:global(.tab-content-enter-to),
+:global(.tab-content-leave-from) {
+  opacity: 1;
+  transform: translateY(0);
+}
+:global(.photo-fullscreen-enter-active),
+:global(.photo-fullscreen-leave-active) {
+  transition: opacity 0.2s ease;
+}
+:global(.photo-fullscreen-enter-from),
+:global(.photo-fullscreen-leave-to) {
+  opacity: 0;
+}
+:global(.photo-gallery-enter-active),
+:global(.photo-gallery-leave-active) {
+  transition: opacity 0.25s ease;
   @include tablet {
-    height: 32.25rem;
-  }
-  @include mobile {
-    height: 11.25rem;
-    margin: 0;
-    border-radius: 1.5rem;
-  }
-  :global(.swiper-button-prev),
-  :global(.swiper-button-next) {
-    top: auto;
-    bottom: 2.5rem;
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 50%;
-    background-color: $bg-transparent-16;
-    backdrop-filter: blur(2.5rem);
-    transition: all 0.2s ease;
-    background-image: url("../../assets/img/sections/reserv/swiper-arrow.svg");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 1.5rem;
-    z-index: 1000;
-    svg {
-      display: none;
-    }
-
-    &::before,
-    &::after {
-      display: none;
-    }
-
-    top: 55%;
-    bottom: auto;
-
-    @include mobile {
-      display: none;
-    }
-  }
-
-  :global(.swiper-button-prev) {
-    left: 2.5rem;
-    transform: translateY(-50%) scaleX(-1);
-  }
-
-  :global(.swiper-button-next) {
-    right: 2.5rem;
-    transform: translateY(-50%);
+    transition: transform 0.35s ease;
   }
 }
-
-.carouselPagination {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 2.5rem;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  z-index: 2;
-}
-
-.carouselPaginationDot {
-  width: 1rem;
-  height: 1rem;
-  padding: 0;
-  border: 2px solid #685137;
-  background-color: #000000;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &.carouselPaginationDotActive {
-    width: 5rem;
-    background: #004f68;
-    border: 2px solid $bg-transparent-16;
-    border-radius: 1rem;
+:global(.photo-gallery-enter-from),
+:global(.photo-gallery-leave-to) {
+  opacity: 0;
+  @include tablet {
+    opacity: 1;
+    transform: translateY(100%);
   }
 }
-
-.carouselImg {
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  max-height: 100%;
-  object-position: center;
-  display: block;
+:global(.date-dropdown-enter-active),
+:global(.date-dropdown-leave-active) {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
-
-.detailsColumn {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  box-sizing: border-box;
+:global(.date-dropdown-enter-from),
+:global(.date-dropdown-leave-to) {
+  opacity: 0;
+  transform: translateY(-0.5rem);
 }
-
-.upcomingDates {
-  display: flex;
-  flex-direction: column;
-  order: -1;
-  width: 100%;
-  margin-right: calc(-50vw + 50%);
-  padding: 1.5rem 0;
-  box-sizing: border-box;
-  background: $text-primary;
-
-  @include mobile {
-    width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-    padding: 1.5rem 0 1rem 0;
-  }
+:global(.date-dropdown-enter-to),
+:global(.date-dropdown-leave-from) {
+  opacity: 1;
+  transform: translateY(0);
 }
-
-.detailsHeader {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  flex-wrap: wrap;
+:global(.field-error-enter-active),
+:global(.field-error-leave-active) {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
-
-.detailsHeaderDesktopOnly {
-  display: none;
+:global(.field-error-enter-from),
+:global(.field-error-leave-to) {
+  opacity: 0;
+  transform: translateY(0.25rem);
 }
-
-.villaTitle {
-  font-size: 2rem;
-  font-weight: 300;
-  margin: 0;
+:global(.field-error-enter-to),
+:global(.field-error-leave-from) {
+  opacity: 1;
+  transform: translateY(0);
 }
-
-.villaPrice {
-  display: none;
-  font-size: 2rem;
-  color: $text-tertiary;
-  font-weight: 300;
-  margin: 0;
+:global(.guests-dropdown-enter-active),
+:global(.guests-dropdown-leave-active) {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
-
-.villaDesc {
-  font-size: 1rem;
-  font-family: "Montserrat", sans-serif;
-  color: $text-white;
-  font-weight: 300;
-  line-height: 1.2;
-  text-align: justify;
-  margin: 1rem 0 2.5rem 0;
-  :global(p) {
-    margin: 0 0 0.5em;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
+:global(.guests-dropdown-enter-from),
+:global(.guests-dropdown-leave-to) {
+  opacity: 0;
+  transform: translateY(-0.5rem);
 }
-
-.formRow {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 0 0 1.5rem 0;
-
-  @include mobile {
-    flex-direction: column;
-    padding: 0 0 1rem 0;
-    gap: 0;
-    padding: 0;
-  }
+:global(.guests-dropdown-enter-to),
+:global(.guests-dropdown-leave-from) {
+  opacity: 1;
+  transform: translateY(0);
 }
-
-.formRowOneRow {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 1rem;
-  padding: 0 0 1rem 0;
-
-  & > .dateSelectWrap,
-  & > .formGroupGuests,
-  & > .bookButton {
-    flex: 1 1 calc((100% - 3rem) / 4);
-    width: calc((100% - 3rem) / 4);
-    min-width: 0;
-  }
-
-  & > .dateSelectWrap,
-  & > .formGroupGuests {
-    position: relative;
-    padding: 0.45rem 0 0 0;
-    gap: 0;
-  }
-
-  & > .dateSelectWrap .formLabel,
-  & > .formGroupGuests .formLabel {
-    position: absolute;
-    top: 0.45rem;
-    left: 0.75rem;
-    transform: translateY(-50%);
-    margin: 0;
-    padding: 0 0.35rem;
-    font-size: 0.625rem;
-    font-weight: 300;
-    line-height: 1;
-    color: rgba(255, 255, 255, 0.6);
-    background: $text-primary;
-    z-index: 2;
-  }
-
-  & > .bookButton {
-    padding: 0 1rem;
-    height: 3rem;
-    min-height: 3rem;
-    box-sizing: border-box;
-    margin-top: 0.45rem;
-  }
-
-  .dateSelectTriggerWrap .formInput,
-  .guestsSelectWrap .formInput {
-    height: 3rem;
-    min-height: 3rem;
-    box-sizing: border-box;
-  }
-
-  .dateSelectTrigger,
-  .guestsSelectTrigger {
-    display: flex;
-    align-items: center;
-    text-align: left;
-  }
-
-  .dateSelectTrigger span,
-  .guestsSelectTrigger span {
-    width: 100%;
-    text-align: left;
-    line-height: 1.2;
-  }
-
-  @include mobile {
-    flex-direction: column;
-    align-items: stretch;
-
-    & > .dateSelectWrap,
-    & > .formGroupGuests,
-    & > .bookButton {
-      width: 100%;
-      flex: 1 1 100%;
-    }
-
-    & > .bookButton {
-      height: auto;
-      margin-top: 0.5rem;
-      padding: 0.875rem 1rem;
-    }
-  }
+.nav-btn-enter-active,
+.nav-btn-leave-active {
+  transition: opacity 0.25s ease;
 }
-
-.formRowFullWidth {
-  flex-basis: 100%;
-  width: 100%;
+.nav-btn-enter-from,
+.nav-btn-leave-to {
+  opacity: 0;
 }
-
-.formGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 0 0 1.5rem 0;
-  flex: 1;
-  min-width: 0;
-
-  @include mobile {
-    padding: 0 0 1rem 0;
-  }
-
-  &:last-child {
-    padding: 0;
-
-    @include mobile {
-      padding: 0 0 1rem 0;
-    }
-  }
-}
-
-.formLabel {
-  font-size: 1rem;
-  font-weight: 600;
-  color: $text-white;
-  @include mobile {
-    display: none;
-  }
-}
-
-.dateField {
-  .formInput {
-    border-color: #685137 !important;
-  }
-
-  .formLabel {
-    color: #685137 !important;
-  }
-}
-
-.formGroupContact {
-  padding: 0 0 2.5rem 0;
-
-  @include mobile {
-    padding: 0 0 1.5rem 0;
-  }
-}
-
-.formContactRow {
-  display: flex;
-  flex-direction: row;
-  gap: 1.5rem;
-
-  @include mobile {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-}
-
-.formContactRow .formInputUnderline {
-  flex: 1;
-  min-width: 0;
-}
-
-.formLabelContact {
-  font-size: 2.375rem;
-  font-weight: 300;
-  color: $text-tertiary;
-  margin-bottom: 0.5rem;
-  @include mobile {
-    display: none;
-  }
-}
-
-.formInputUnderline {
-  padding: 1.125rem 0;
-  border: none;
-  border-bottom: 1px solid #685137;
-  border-radius: 0;
-  background: transparent;
-  color: $text-white;
-  font-size: 1rem;
-  font-family: inherit;
-  width: 100%;
-  @include mobile {
-    padding: 0.75rem;
-    width: auto;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    border: 1px solid $bg-transparent-16;
-  }
-
-  &::placeholder {
-    color: $text-tertiary;
-  }
-
-  &:focus {
-    transition: all 0.2s ease;
-    outline: none;
-    border-bottom-color: $text-white;
-    @include mobile {
-      border-color: $text-white;
-    }
-  }
-}
-
-.formInputError {
-  border-color: $main-red !important;
-  @include mobile {
-    border-color: $main-red !important;
-  }
-}
-
-.bookingValidationMessage {
-  margin: 0 0 0.75rem 0;
-  font-size: 0.875rem;
-  color: $main-red;
-  line-height: 1.3;
-}
-
-.fieldErrorSlot {
-  flex-shrink: 0;
-  min-height: 0.5rem;
-  margin-top: 0.25rem;
-  @include mobile {
-    min-height: 0;
-  }
-}
-
-.fieldError {
-  margin: 0;
-  font-size: 0.75rem;
-  color: $main-red;
-  line-height: 1.3;
-  @include mobile {
-    font-size: 0.6875rem;
-  }
-}
-
-.upcomingDatesTitle {
-  font-size: 1rem;
-  font-weight: 600;
-  color: $text-white;
-  margin: 0 0 0.5rem 0;
-  display: none;
-}
-
-.upcomingDatesNavWrap {
-  display: flex;
-  align-items: center;
-  min-height: 5.125rem;
-}
-
-.upcomingDatesSkeleton {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  overflow: hidden;
-}
-
-.upcomingDatesSkeletonCard {
-  flex: 0 0 auto;
-  width: 10rem;
-  height: 4.5rem;
-  border-radius: 0.375rem;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.06) 0%,
-    rgba(255, 255, 255, 0.14) 50%,
-    rgba(255, 255, 255, 0.06) 100%
-  );
-  background-size: 200% 100%;
-  animation: upcomingDatesShimmer 1.5s ease-in-out infinite;
-}
-
 @keyframes upcomingDatesShimmer {
   0% {
     background-position: 200% 0;
@@ -3022,837 +3438,6 @@ export default {
     background-position: -200% 0;
   }
 }
-
-.upcomingDatesNavBtn {
-  flex-shrink: 0;
-  width: 1.5rem;
-  height: 5.125rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 0.5rem 0.5rem 0 0;
-  background: $bg-overlay
-    url("../../assets/img/sections/reserv/swiper-arrow.svg") no-repeat center;
-  background-size: 1rem;
-  cursor: pointer;
-  transition: background 0.2s;
-  @include mobile {
-    height: 4.5rem;
-  }
-  &:hover {
-    background-color: rgba(50, 50, 50, 0.98);
-  }
-}
-
-.upcomingDatesNavBtnPrev {
-  border-radius: 0 0.5rem 0.5rem 0;
-  transform: scaleX(-1);
-}
-
-.upcomingDatesNavBtnNext {
-  border-radius: 0 0.5rem 0.5rem 0;
-}
-
-.upcomingDatesScroll {
-  flex: 1;
-  min-width: 0;
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  min-height: 5.5rem;
-  @include mobile {
-    min-height: auto;
-  }
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-.upcomingDatesScrollInner {
-  display: flex;
-  gap: 0.75rem;
-  min-height: 5.5rem;
-  align-items: center;
-  @include mobile {
-    min-height: 4.5rem;
-    gap: 0.5rem;
-  }
-}
-
-.dateCard {
-  $date-card-ease: cubic-bezier(0.4, 0, 0.2, 1);
-
-  flex: 0 0 auto;
-  min-height: 5.125rem;
-  padding: 0 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.375rem;
-  background: transparent;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.75rem;
-  scroll-snap-align: start;
-  cursor: pointer;
-  transition:
-    background 0.35s $date-card-ease,
-    border-color 0.35s $date-card-ease,
-    color 0.35s $date-card-ease;
-  @include mobile {
-    min-height: 4rem;
-    gap: 0.25rem;
-  }
-
-  &:hover:not(.dateCardUnavailable):not(.dateCardSelected) {
-    background: rgba(0, 0, 0, 0.5);
-    border-color: #000000;
-  }
-}
-
-.dateCardUnavailable {
-  background: rgba(255, 255, 255, 0.16);
-  background-clip: border-box;
-  border: 1px solid transparent;
-  cursor: not-allowed;
-  pointer-events: none;
-
-  .dateCardDates,
-  .dateCardPrice {
-    color: rgba(255, 255, 255, 0.45);
-  }
-
-  .dateCardDiscount {
-    color: rgba(229, 115, 115, 0.7);
-  }
-}
-
-.dateCardSelected {
-  background: #004f68;
-  border-color: #004f68;
-
-  .dateCardDates,
-  .dateCardPrice {
-    color: $text-white;
-  }
-}
-
-.dateCardDates {
-  font-size: 1rem;
-  color: $text-white;
-  @include mobile {
-    font-size: 0.75rem;
-  }
-}
-
-.dateCardPrice {
-  font-size: 1rem;
-  font-weight: 600;
-  color: $text-white;
-  @include mobile {
-    font-size: 0.875rem;
-  }
-}
-
-.dateCardDiscount {
-  margin-left: 0.35em;
-  font-size: 1rem;
-  color: $main-red;
-  @include mobile {
-    font-size: 0.75rem;
-  }
-}
-
-.formInputWrap {
-  position: relative;
-}
-
-.formInput {
-  padding: 1rem;
-  border: 1px solid $bg-transparent-16 !important;
-  border-radius: 0.5rem;
-  background: transparent;
-  color: $text-white;
-  font-size: 1rem;
-  font-family: inherit;
-  @include mobile {
-    padding: 0.75rem;
-    font-size: 1rem;
-  }
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.45);
-  }
-}
-
-.formInputWithIcon {
-  padding-right: 2.75rem;
-}
-
-.formInput.formInputError {
-  border-color: $main-red !important;
-}
-
-.formInputIcon {
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1.25rem;
-  height: 1.25rem;
-  pointer-events: none;
-  opacity: 0.7;
-}
-
-.dateSelectClearBtn {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1.75rem;
-  height: 1.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: none;
-  border-radius: 0.25rem;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1.5rem;
-  line-height: 1;
-  cursor: pointer;
-  font-family: inherit;
-  transition:
-    color 0.2s,
-    background 0.2s;
-}
-
-.dateSelectClearBtn:hover {
-  color: $text-white;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.dateSelectWrap {
-  position: relative;
-  z-index: 0;
-
-  &.dateSelectWrapOpen {
-    z-index: 3;
-  }
-}
-
-.dateSelectWrapRow {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 1rem;
-  align-items: flex-end;
-  flex: 0 1 auto;
-  min-width: 0;
-
-  .formGroup {
-    padding: 0;
-    flex: 0 1 auto;
-    min-width: 10rem;
-    width: 30rem;
-    @include tablet {
-      width: 37rem;
-    }
-  }
-
-  .calendarDropdown {
-    position: absolute;
-    left: 0;
-    top: 100%;
-    margin-top: 0.25rem;
-  }
-
-  @include mobile {
-    flex-wrap: wrap;
-    .formGroup {
-      min-width: 0;
-      width: 100%;
-    }
-  }
-}
-
-.dateSelectTriggerWrap {
-  position: relative;
-  display: block;
-}
-
-.dateSelectTrigger {
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-  border: none;
-  font-family: inherit;
-  appearance: none;
-}
-
-.dateRangeText {
-  color: inherit;
-}
-
-.calendarDropdown {
-  position: absolute;
-  left: 0;
-  top: calc(100% + 0.25rem);
-  padding: 0.5rem;
-  background: rgba(30, 30, 30, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.375rem;
-  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3);
-
-  --dp-disabled-color: rgba(255, 255, 255, 0.08);
-  --dp-disabled-color-text: rgba(255, 255, 255, 0.35);
-
-  :global(.dp__cell_inner.dp__cell_disabled) {
-    background: rgba(80, 50, 50, 0.4) !important;
-    color: rgba(255, 255, 255, 0.35) !important;
-    cursor: not-allowed;
-    text-decoration: line-through;
-    opacity: 0.85;
-  }
-
-  :global(.dp__cell_inner.dp__cell_disabled:hover) {
-    background: rgba(80, 50, 50, 0.5) !important;
-  }
-
-  :global(.dp__main) {
-    border: none;
-    background: transparent;
-  }
-
-  :global(.dp__input_wrap) {
-    display: none;
-  }
-
-  :global(.dp__calendar_wrap),
-  :global(.dp__calendar) {
-    background: transparent;
-  }
-
-  :global(.dp__cell_inner),
-  :global(.dp__calendar_item) {
-    color: rgba(255, 255, 255, 0.9);
-  }
-
-  :global(.dp__active_date),
-  :global(.dp__range_start),
-  :global(.dp__range_end),
-  :global(.dp__range_between) {
-    background: rgba(255, 255, 255, 0.2);
-    color: $text-white;
-  }
-
-  :global(.dp__month_year_select),
-  :global(.dp__arrow_top) {
-    color: $text-white;
-  }
-
-  :global(.dp__inner_nav:hover),
-  :global(.dp__cell_inner:hover) {
-    background: rgba(255, 255, 255, 0.15);
-  }
-
-  :global(.dp--time-overlay-btn),
-  :global(.dp__button.dp__overlay_action),
-  :global([data-dp-toggle-time]) {
-    display: none !important;
-  }
-}
-
-:global(.date-dropdown-enter-active),
-:global(.date-dropdown-leave-active) {
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
-}
-
-:global(.date-dropdown-enter-from),
-:global(.date-dropdown-leave-to) {
-  opacity: 0;
-  transform: translateY(-0.5rem);
-}
-
-:global(.date-dropdown-enter-to),
-:global(.date-dropdown-leave-from) {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-:global(.field-error-enter-active),
-:global(.field-error-leave-active) {
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
-}
-
-:global(.field-error-enter-from),
-:global(.field-error-leave-to) {
-  opacity: 0;
-  transform: translateY(0.25rem);
-}
-
-:global(.field-error-enter-to),
-:global(.field-error-leave-from) {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.guestsSelectWrap {
-  position: relative;
-  z-index: 0;
-
-  &.guestsSelectWrapOpen {
-    z-index: 2;
-  }
-}
-
-.guestsSelectTrigger {
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-  border: none;
-  font-family: inherit;
-  appearance: none;
-}
-
-.guestsPlaceholder {
-  color: rgba(255, 255, 255, 0.45);
-}
-
-.guestsSelectIconOpen {
-  transform: translateY(-50%) rotate(180deg);
-  transition: transform 0.25s ease;
-}
-
-.guestsDropdown {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% + 0.25rem);
-  max-height: 20rem;
-  overflow-y: auto;
-  scrollbar-width: 0.125rem;
-  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-  background: rgba(30, 30, 30, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.375rem;
-  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.3);
-}
-
-.guestsDropdownInner {
-  padding: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.guestsRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.guestsRowLabel {
-  font-size: 0.9375rem;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.guestsCounter {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.guestsCounterBtn {
-  width: 2rem;
-  height: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  border: none;
-  color: $text-white;
-  font-size: 1.25rem;
-  line-height: 1;
-  cursor: pointer;
-  font-family: inherit;
-  transition: background 0.15s;
-
-  &:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.25);
-  }
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-}
-
-.guestsCounterValue {
-  min-width: 1.5rem;
-  text-align: center;
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.guestsChildRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 0.375rem;
-}
-
-.guestsChildLabel {
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.guestsChildSelect {
-  margin-left: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.25rem;
-  color: $text-white;
-  font-size: 0.875rem;
-  font-family: inherit;
-  cursor: pointer;
-}
-
-.guestsChildRemove {
-  width: 1.5rem;
-  height: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1.25rem;
-  line-height: 1;
-  cursor: pointer;
-  border-radius: 0.25rem;
-  transition:
-    color 0.15s,
-    background 0.15s;
-
-  &:hover {
-    color: $text-white;
-    background: rgba(255, 255, 255, 0.1);
-  }
-}
-
-.guestsAddChild {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: none;
-  border-radius: 0.375rem;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.875rem;
-  font-family: inherit;
-  cursor: pointer;
-  text-align: left;
-  transition: background 0.15s;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.12);
-  }
-}
-
-.guestsAddChildChevron {
-  font-size: 0.75rem;
-  opacity: 0.8;
-}
-
-:global(.guests-dropdown-enter-active),
-:global(.guests-dropdown-leave-active) {
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
-}
-
-:global(.guests-dropdown-enter-from),
-:global(.guests-dropdown-leave-to) {
-  opacity: 0;
-  transform: translateY(-0.5rem);
-}
-
-:global(.guests-dropdown-enter-to),
-:global(.guests-dropdown-leave-from) {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.bookButton {
-  padding: 1rem 0;
-  background: #004f68;
-  color: $text-white;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: background 0.2s;
-  width: 46rem;
-  justify-content: center;
-  @include mobile {
-    margin-top: 0.5rem;
-    padding: 0.875rem 1rem;
-  }
-}
-
-.bookButton:hover:not(:disabled) {
-  background: #006080;
-}
-
-.bookButton:disabled {
-  cursor: not-allowed;
-  opacity: 0.9;
-}
-
-.bookButtonSpinner {
-  width: 1.5rem;
-  height: 1.5rem;
-  min-width: 1.5rem;
-  min-height: 1.5rem;
-  flex-shrink: 0;
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  border-top-color: $text-white;
-  border-radius: 50%;
-  box-sizing: border-box;
-  animation: spinnerRotate 0.8s linear infinite;
-}
-
-.bookButtonIcon {
-  width: 1.5rem;
-  height: 1.5rem;
-  min-width: 1.5rem;
-  min-height: 1.5rem;
-  flex-shrink: 0;
-}
-
-.bottomBlocks {
-  display: grid;
-  grid-template-columns: 25% 25% 25% 25%;
-  padding: 2.5rem 0 0 0;
-
-  @include mobile {
-    grid-template-columns: 1fr;
-    padding-top: 2.5rem;
-    gap: 0;
-  }
-}
-
-.block {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 0 1rem 0 1rem;
-  border-right: 1px solid #685137;
-  &:first-child {
-    padding: 0 1rem 0 0;
-    @include mobile {
-      padding: 0;
-    }
-  }
-  &:last-child {
-    padding: 0 0 0 1rem;
-    border-right: none;
-    @include mobile {
-      padding: 0;
-    }
-  }
-  @include mobile {
-    padding: 0;
-    gap: 0;
-    border-right: none;
-    border-top: 1px solid #685137;
-    transition: border-top-color 0.2s ease;
-  }
-}
-
-.blockExpanded {
-  @include mobile {
-    border-top-color: $text-white;
-
-    .blockTitle {
-      color: $text-white;
-    }
-
-    .blockTitleIcon {
-      transform: rotate(90deg);
-      filter: brightness(0) invert(1);
-    }
-  }
-}
-
-.blockTitle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  font-size: 2rem;
-  font-weight: 300;
-  margin: 0;
-  color: $text-tertiary;
-  text-wrap: nowrap;
-  letter-spacing: -5%;
-  @include mobile {
-    font-size: 1.5rem;
-    padding: 1rem 0;
-    cursor: pointer;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    transition: color 0.2s ease;
-    .blockTitleIcon {
-      flex-shrink: 0;
-      transition:
-        transform 0.2s ease,
-        filter 0.2s ease;
-    }
-  }
-}
-
-.blockContent {
-  @include mobile {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 0.3s ease-out;
-    padding-bottom: 0;
-
-    & > * {
-      min-height: 0;
-      overflow: hidden;
-    }
-  }
-}
-
-.blockExpanded .blockContent {
-  @include mobile {
-    grid-template-rows: 1fr;
-    padding-bottom: 0.75rem;
-  }
-}
-
-.blockTitleDesktopOnly {
-  display: none;
-  @include mobile {
-    display: none;
-  }
-}
-
-.blockTitleTabletOnly {
-  display: inline;
-  @include mobile {
-    display: inline;
-  }
-}
-
-.blockTitleIcon {
-  width: 1.5rem;
-  height: 1.5rem;
-  flex-shrink: 0;
-}
-
-.blockListInline {
-  margin: 0;
-  font-size: 1rem;
-  color: $text-white;
-  line-height: 1.6;
-  @include mobile {
-    font-size: 0.875rem;
-  }
-}
-
-.blockListTwoCol {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.5;
-
-  @include mobile {
-    font-size: 0.875rem;
-    gap: 0.25rem;
-  }
-}
-
-.blockListRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1rem;
-}
-
-.blockListLabel {
-  flex-shrink: 0;
-  text-align: left;
-}
-
-.blockListValue {
-  flex-shrink: 0;
-  text-align: right;
-}
-
-.blockList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  font-size: 1rem;
-  color: $text-white;
-  line-height: 1.6;
-
-  li {
-    margin-bottom: 0.25rem;
-  }
-}
-
-.nav-btn-enter-active,
-.nav-btn-leave-active {
-  transition: opacity 0.25s ease;
-}
-
-.nav-btn-enter-from,
-.nav-btn-leave-to {
-  opacity: 0;
-}
-
-.loadingWrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 20rem;
-  padding: 3rem;
-}
-
-.spinner {
-  width: 3rem;
-  height: 3rem;
-  border: 3px solid rgba(255, 255, 255, 0.2);
-  border-top-color: $text-white;
-  border-radius: 50%;
-  animation: spinnerRotate 0.8s linear infinite;
-}
-
 @keyframes spinnerRotate {
   to {
     transform: rotate(360deg);

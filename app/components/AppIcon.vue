@@ -17,6 +17,7 @@ import vk from "@app/assets/img/header/vk.svg";
 import telegram from "@app/assets/img/header/telegram.svg";
 import max from "@app/assets/img/header/max.svg";
 import phone from "@app/assets/img/header/phone.svg";
+import instagram from "@app/assets/img/header/instagram.svg";
 import mainBlockMapPin from "@app/assets/img/sections/main-block/map-pin.svg";
 import mainBlockUsers from "@app/assets/img/sections/main-block/users.svg";
 import mainBlockFlag from "@app/assets/img/sections/main-block/pool.svg";
@@ -37,6 +38,7 @@ const icons = {
   telegram,
   max,
   phone,
+  instagram,
   mainBlockMapPin,
   mainBlockUsers,
   mainBlockFlag,
@@ -58,6 +60,7 @@ const iconDimensions = {
   telegram: { width: 20, height: 16 },
   max: { width: 20, height: 20 },
   phone: { width: 20, height: 20 },
+  instagram: { width: 20, height: 20 },
   mainBlockMapPin: { width: 48, height: 48 },
   mainBlockUsers: { width: 48, height: 48 },
   mainBlockFlag: { width: 48, height: 48 },

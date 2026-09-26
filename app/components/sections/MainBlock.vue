@@ -1,19 +1,26 @@
 <template>
-  <section id="main" :class="$style.wrapper">
+  <section
+    id="main"
+    :class="[
+      $style.wrapper,
+      isPlaying && $style.wrapperPlaying,
+      showRotate && $style.wrapperNeedsRotate,
+    ]"
+  >
     <div :class="$style.media">
-      <picture v-if="posterWebpUrl">
-        <source :srcset="posterWebpUrl" type="image/webp" />
-        <img
-          :src="posterJpgUrl"
-          :class="[$style.poster, { [$style.posterHidden]: isPlaying }]"
-          alt=""
-          width="1920"
-          height="1080"
-          decoding="async"
-          loading="eager"
-          fetchpriority="high"
-        />
-      </picture>
+      <img
+        :src="heroImage"
+        :class="[
+          $style.poster,
+          { [$style.posterHidden]: isPlaying || showRotate },
+        ]"
+        alt=""
+        width="1920"
+        height="1080"
+        decoding="async"
+        loading="eager"
+        fetchpriority="high"
+      />
       <video
         ref="videoRef"
         :class="$style.video"
@@ -21,61 +28,93 @@
         muted
         playsinline
         preload="none"
-        :poster="posterJpgUrl"
+        :poster="heroImage"
+        @playing="isPlaying = true"
         @pause="isPlaying = false"
         @ended="isPlaying = false"
-        @playing="onVideoPlaying"
       >
         <source v-if="videoSrc" :src="videoSrc" type="video/webm" />
       </video>
-      <button
-        type="button"
-        :class="[
-          $style.videoButton,
-          { [$style.videoButtonPlaying]: isPlaying },
-        ]"
-        :aria-label="isPlaying ? 'Пауза' : 'Смотреть видео'"
-        @click="isPlaying ? pauseVideo() : playVideo()"
-      >
-        <span :class="$style.iconFlipContainer">
-          <span
-            :class="[
-              $style.iconWrap,
-              $style.iconPlay,
-              { [$style.iconFlipped]: isPlaying },
-            ]"
-            aria-hidden="true"
-          >
-            <span :class="$style.playIcon" />
-          </span>
-          <span
-            :class="[
-              $style.iconWrap,
-              $style.iconPause,
-              { [$style.iconFlipped]: !isPlaying },
-            ]"
-            aria-hidden="true"
-          >
-            <span :class="$style.pauseIcon" />
-          </span>
-        </span>
-      </button>
     </div>
 
-    <AppHeader />
+    <div :class="$style.headerWrap" @click.capture="onHeaderClick">
+      <AppHeader />
+    </div>
 
-    <div :class="$style.features">
-      <div
-        v-for="item in features"
-        :key="item.text"
-        :class="$style.featureItem"
-      >
-        <AppIcon
-          :name="item.icon"
-          :alt="item.text"
-          :class="$style.featureIcon"
-        />
-        <span :class="$style.featureText">{{ item.text }}</span>
+    <div v-if="showRotate" :class="$style.rotatePrompt" aria-live="polite">
+      <img
+        :src="rotatePhoneIcon"
+        :class="$style.rotateIcon"
+        alt="Поверните устройство горизонтально"
+        width="115"
+        height="120"
+        decoding="async"
+      />
+    </div>
+
+    <button
+      v-if="isPlaying"
+      type="button"
+      :class="$style.pauseButton"
+      aria-label="Пауза"
+      @click="exitVideo"
+    >
+      <span :class="$style.pauseIcon" aria-hidden="true" />
+    </button>
+
+    <div v-show="!isPlaying && !showRotate" :class="$style.content">
+      <div :class="$style.heroRow">
+        <div :class="$style.heroCopy">
+          <h1 :class="$style.title">
+            <span :class="$style.titlePrimary">ИСКУССТВО УЕДИНЕНИЯ</span>
+            <span :class="$style.titleSecondary">
+              <span>ФИЛОСОФИЯ</span>
+              <span>ТИШИНЫ</span>
+            </span>
+          </h1>
+          <div :class="$style.descRow">
+            <div :class="$style.desc">
+              <p :class="$style.descLead">
+                Приватная резиденция на берегу Волги — это эксклюзивный формат
+                отдыха в сосновом лесу для тех, кто перерос классические
+                загородные отели. Всего 15 минут от города, и вы попадаете в мир
+                тишины и безупречного сервиса: три премиальных виллы, общий
+                подогреваемый бассейн и вдохновляющий панорамный вид на Волгу и
+                Жигулевские горы.
+              </p>
+              <p :class="$style.descTrail">
+                Здесь вам не придется думать о мелочах: персональный консьерж
+                полностью организует ваше пребывание — от изысканного питания до
+                любых сценариев отдыха и развлечений.
+              </p>
+            </div>
+            <button
+              type="button"
+              :class="$style.videoCircle"
+              aria-label="Смотреть видеообзор резиденции"
+              @click="onVideoClick"
+            >
+              <span :class="$style.videoCircleText">
+                ВИДЕООБЗОР<br />РЕЗИДЕНЦИИ
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div :class="$style.features">
+        <div
+          v-for="item in features"
+          :key="item.text"
+          :class="$style.featureItem"
+        >
+          <AppIcon
+            :name="item.icon"
+            :alt="item.text"
+            :class="$style.featureIcon"
+          />
+          <span :class="$style.featureText">{{ item.text }}</span>
+        </div>
       </div>
     </div>
   </section>
@@ -84,42 +123,74 @@
 <script>
 import AppHeader from "@app/components/AppHeader.vue";
 import mainVideo from "@app/assets/video/main.webm";
-
+import heroImage from "@app/assets/img/sections/main-block/hero.webp";
+import rotatePhoneIcon from "@app/assets/img/sections/main-block/rotate_phone.svg";
 export default {
   name: "MainBlock",
   components: {
     AppHeader,
   },
-  setup() {
-    const { app } = useRuntimeConfig();
-    const baseURL = app?.baseURL || "/";
-    const publicBaseURL = baseURL.endsWith("/") ? baseURL : `${baseURL}/`;
-    return { publicBaseURL };
-  },
   data() {
     return {
-      // Lazy-load video only on user interaction to cut initial payload/TTFB
+      heroImage,
+      rotatePhoneIcon,
       videoSrc: null,
       isPlaying: false,
+      showRotate: false,
       features: [
-        { icon: "mainBlockMapPin", text: "Уникальное расположение" },
-        { icon: "mainBlockUsers", text: "Размещение до 30 гостей" },
-        { icon: "mainBlockFlag", text: "Подогреваемый бассейн 12м." },
-        { icon: "mainBlockEye", text: "Панорамный\u00A0вид\nна\u00A0горы\u00A0и\u00A0волгу" },
+        { icon: "mainBlockMapPin", text: "Уникальное\nрасположение" },
+        { icon: "mainBlockUsers", text: "Размещение до\n30 гостей" },
+        { icon: "mainBlockFlag", text: "Подогреваемый\nбассейн 12м." },
+        {
+          icon: "mainBlockEye",
+          text: "Панорамный вид\nна волгу и горы",
+        },
       ],
     };
   },
-  computed: {
-    posterWebpUrl() {
-      return `${this.publicBaseURL}main-poster.webp`;
-    },
-    posterJpgUrl() {
-      // Fallback for browsers/video-poster that may not support WebP
-      return `${this.publicBaseURL}main-poster.webp`;
-    },
+  mounted() {
+    if (typeof window === "undefined") return;
+    window.addEventListener("resize", this.onScreenChange);
+    window.addEventListener("orientationchange", this.onScreenChange);
+  },
+  beforeUnmount() {
+    if (typeof window === "undefined") return;
+    window.removeEventListener("resize", this.onScreenChange);
+    window.removeEventListener("orientationchange", this.onScreenChange);
   },
   methods: {
-    async playVideo() {
+    isMobile() {
+      return typeof window !== "undefined" && window.innerWidth <= 768;
+    },
+    isPortrait() {
+      return (
+        typeof window !== "undefined" && window.innerHeight > window.innerWidth
+      );
+    },
+    onVideoClick() {
+      if (this.isMobile() && this.isPortrait()) {
+        this.showRotate = true;
+        return;
+      }
+      this.startVideo();
+    },
+    onHeaderClick() {
+      if (!this.showRotate) return;
+      this.showRotate = false;
+    },
+    onScreenChange() {
+      if (this.showRotate && !this.isPortrait()) {
+        this.showRotate = false;
+        this.startVideo();
+        return;
+      }
+      if (this.isPlaying && this.isMobile() && this.isPortrait()) {
+        this.$refs.videoRef?.pause();
+        this.isPlaying = false;
+        this.showRotate = true;
+      }
+    },
+    async startVideo() {
       const video = this.$refs.videoRef;
       if (!video) return;
       if (!this.videoSrc) {
@@ -127,15 +198,13 @@ export default {
         await this.$nextTick();
         video.load?.();
       }
+      this.showRotate = false;
       video.play().catch(() => {});
     },
-    onVideoPlaying() {
-      this.isPlaying = true;
-    },
-    pauseVideo() {
-      const video = this.$refs.videoRef;
-      if (!video) return;
-      video.pause();
+    exitVideo() {
+      this.$refs.videoRef?.pause();
+      this.isPlaying = false;
+      this.showRotate = false;
     },
   },
 };
@@ -147,218 +216,420 @@ export default {
   color: $text-white;
   min-height: 100vh;
   overflow: hidden;
-}
-
-.media {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: #000;
-}
-
-.poster {
-  position: absolute;
-  inset: 0;
-  // Keep preview above the <video> element, because the video has no source
-  // until user interaction and otherwise paints its own (black) background.
-  z-index: 2;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 1;
-  // Use filter instead of opacity so layers behind never show through.
-  filter: brightness(0.85);
-  transition: opacity 0.25s ease;
-  pointer-events: none;
-}
-
-.posterHidden {
-  opacity: 0;
-  visibility: hidden;
-}
-
-.video {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  // Don’t paint a black rectangle above the poster while the video source is not loaded.
-  background: transparent;
-  opacity: 1;
-  // Match poster look without allowing bleed-through.
-  filter: brightness(0.85);
-}
-
-.videoButton {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 3;
-  width: 10rem;
-  height: 10rem;
-  border-radius: 50%;
-  border: none;
-  background: $bg-transparent-16;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  cursor: pointer;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    background 0.2s,
-    backdrop-filter 0.2s;
-
-  &:hover {
-    background: $bg-transparent-40;
-  }
-
-  &.videoButtonPlaying {
-    background: transparent;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-
-    &:hover {
-      background: $bg-transparent-16;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+  flex-direction: column;
+  &.wrapperPlaying {
+    :global(header) {
+      position: relative;
+      z-index: 4;
+    }
+    @include tablet {
+      :global(header) {
+        display: none;
+      }
     }
   }
-}
-
-.iconFlipContainer {
-  position: relative;
-  width: 3rem;
-  height: 3rem;
-  perspective: 120px;
-  perspective-origin: center;
-  transform-style: preserve-3d;
-}
-
-.iconWrap {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.iconPlay {
-  transform: rotateY(0deg);
-
-  &.iconFlipped {
-    transform: rotateY(-180deg);
+  &.wrapperNeedsRotate {
+    :global(header) {
+      position: relative;
+      z-index: 4;
+    }
+    background: #2b2b2b;
+    .media {
+      background: #2b2b2b;
+    }
   }
-}
-
-.iconPause {
-  transform: rotateY(180deg);
-
-  &:not(.iconFlipped) {
-    transform: rotateY(0deg);
+  .headerWrap {
+    position: relative;
+    z-index: 4;
   }
-}
-
-.playIcon {
-  width: 0;
-  height: 0;
-  margin-left: 1.75rem;
-  border-style: solid;
-  border-width: 1.5rem 1.5rem 1.5rem 2.5rem;
-  border-color: transparent transparent transparent $text-white;
-}
-
-.pauseIcon {
-  width: 2rem;
-  height: 3rem;
-  display: flex;
-  gap: 0.5rem;
-  align-items: stretch;
-
-  &::before,
-  &::after {
-    content: "";
-    width: 0.75rem;
+  .rotatePrompt {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #2b2b2b;
+    pointer-events: none;
+    .rotateIcon {
+      width: 7.1875rem;
+      height: 7.5rem;
+      object-fit: contain;
+      @include tablet {
+        width: 5.75rem;
+        height: 6rem;
+      }
+    }
+  }
+  .media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: #000;
+    .poster {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 1;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+      &.posterHidden {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+    .video {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: transparent;
+    }
+  }
+  .pauseButton {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    width: 10rem;
+    height: 10rem;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    background: $bg-transparent-16;
+    backdrop-filter: blur(8px);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.2s ease;
+    &:hover {
+      background: $bg-transparent-40;
+    }
+    @include laptop {
+      width: 8rem;
+      height: 8rem;
+    }
+    @include tablet {
+      width: 4rem;
+      height: 4rem;
+    }
+  }
+  .pauseIcon {
+    width: 2rem;
     height: 3rem;
-    background: $text-white;
-    border-radius: 2px;
-  }
-}
-
-.features {
-  max-width: 110rem;
-  margin: 0 auto;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  justify-content: center;
-  flex-wrap: wrap;
-  padding: 1.5rem 1rem;
-  @include mobile {
-    grid-template-columns: repeat(2, 1fr);
-    padding: 0.75rem 0.5rem 1rem;
-    gap: 0.25rem;
-  }
-}
-
-.featureItem {
-  display: flex;
-  align-items: center;
-  width: auto;
-  gap: 1.5rem;
-  text-align: center;
-  padding: 1.5rem;
-  @include tablet {
-    padding: 1rem 1.25rem;
-    gap: 1rem;
-  }
-  @include mobile {
-    padding: 0.5rem 0.375rem;
+    display: flex;
     gap: 0.5rem;
+    align-items: stretch;
+    &::before,
+    &::after {
+      content: "";
+      width: 0.75rem;
+      height: 3rem;
+      background: $text-white;
+      border-radius: 2px;
+    }
+    @include laptop {
+      width: 1.5rem;
+      height: 2.25rem;
+      gap: 0.375rem;
+      &::before,
+      &::after {
+        width: 0.55rem;
+        height: 2.25rem;
+      }
+    }
+    @include tablet {
+      width: 0.75rem;
+      height: 1.125rem;
+      gap: 0.2rem;
+      &::before,
+      &::after {
+        width: 0.275rem;
+        height: 1.125rem;
+      }
+    }
   }
-}
-
-.featureIcon {
-  width: 3rem;
-  height: 3rem;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
-  @include tablet {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-  @include mobile {
-    width: 1.5rem;
-    height: 1.5rem;
-    flex-shrink: 0;
-  }
-}
-
-.featureText {
-  font-size: 1.5rem;
-  line-height: 1.3;
-  font-weight: 600;
-  text-align: left;
-  white-space: pre-line;
-  max-width: 14rem;
-  @include tablet {
-    font-size: 1rem;
-    max-width: 10rem;
-  }
-  @include mobile {
-    font-size: 0.6875rem;
-    line-height: 1.25;
-    max-width: none;
-    font-weight: 300;
+  .content {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8rem;
+    width: 100%;
+    @include content-width;
+    padding-block: 5rem 2.5rem;
+    @include laptop {
+      padding-block: 2.5rem;
+    }
+    @include tablet {
+      padding-block: 0.75rem 1.25rem;
+      gap: 1.25rem;
+      justify-content: flex-start;
+    }
+    .heroRow {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      @include tablet {
+        flex: 0 0 auto;
+        justify-content: flex-start;
+      }
+      .heroCopy {
+        display: flex;
+        flex-direction: column;
+        gap: 5rem;
+        width: 100%;
+        min-width: 0;
+        @include laptop {
+          gap: 5.25rem;
+        }
+        @include tablet {
+          gap: 1.25rem;
+        }
+        .title {
+          display: flex;
+          flex-direction: column;
+          margin: 0;
+          font-weight: 400;
+          text-transform: uppercase;
+          line-height: 1;
+          .titlePrimary {
+            display: block;
+            font-size: 6.25rem;
+            letter-spacing: -0.04em;
+            color: $text-white;
+            @include laptop {
+              font-size: 5rem;
+            }
+            @include tablet {
+              width: 100%;
+              font-size: 1.75rem;
+              letter-spacing: -0.04em;
+              white-space: nowrap;
+            }
+          }
+          .titleSecondary {
+            display: flex;
+            justify-content: space-between;
+            gap: 1.5rem;
+            width: 100%;
+            font-size: 6.25rem;
+            letter-spacing: -0.04em;
+            color: $text-accent;
+            @include laptop {
+              font-size: 5rem;
+            }
+            @include tablet {
+              font-size: 1.5rem;
+              letter-spacing: -0.04em;
+              gap: 0.75rem;
+            }
+          }
+        }
+        .descRow {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 2rem;
+          width: 100%;
+          @include tablet {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-areas:
+              "lead"
+              "video"
+              "trail";
+            gap: 2.625rem;
+            align-items: stretch;
+          }
+          .desc {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 30rem;
+            min-width: 0;
+            @include tablet {
+              display: contents;
+              max-width: none;
+            }
+            p {
+              margin: 0;
+              font-size: 1.125rem;
+              font-weight: 600;
+              line-height: 1.2;
+              color: $text-white;
+              @include laptop {
+                font-size: 1rem;
+              }
+              @include tablet {
+                font-size: 0.875rem;
+                font-weight: 400;
+              }
+            }
+            .descLead {
+              @include tablet {
+                grid-area: lead;
+              }
+            }
+            .descTrail {
+              @include tablet {
+                grid-area: trail;
+              }
+            }
+          }
+          .videoCircle {
+            flex-shrink: 0;
+            width: 15rem;
+            height: 15rem;
+            border-radius: 50%;
+            border: 2px solid $bg-white;
+            background: transparent;
+            color: $text-white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            transition:
+              background 0.2s ease,
+              border-color 0.2s ease;
+            &:hover {
+              background: rgba(255, 255, 255, 0.08);
+              border-color: $text-white;
+            }
+            @include laptop {
+              width: 12.5rem;
+              height: 12.5rem;
+            }
+            @include tablet {
+              grid-area: video;
+              justify-self: center;
+              background: $bg-overlay;
+              border: none;
+            }
+            .videoCircleText {
+              font-size: 1.125rem;
+              font-weight: 600;
+              line-height: 1.2;
+              text-align: center;
+              text-transform: uppercase;
+              @include laptop {
+                font-size: 0.75rem;
+                max-width: 6rem;
+              }
+              @include tablet {
+                font-size: 0.8125rem;
+                line-height: 1.2;
+                max-width: 7rem;
+              }
+            }
+          }
+        }
+      }
+    }
+    .features {
+      max-width: 57rem;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      align-items: stretch;
+      gap: 3rem;
+      height: 8.875rem;
+      padding: 1.2375rem 1.5rem;
+      border-radius: 0.5rem;
+      background: $bg-overlay;
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      box-sizing: border-box;
+      @include tablet {
+        max-width: none;
+        height: auto;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0;
+        padding: 0;
+        margin-top: auto;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+      .featureItem {
+        position: relative;
+        flex: 1 1 0;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        text-align: center;
+        &:not(:last-child)::after {
+          content: "";
+          position: absolute;
+          top: 50%;
+          right: -1.5rem;
+          transform: translate(50%, -50%);
+          width: 1px;
+          height: 6.4rem;
+          background: $text-accent;
+        }
+        @include tablet {
+          flex-direction: row;
+          align-items: center;
+          justify-content: flex-start;
+          gap: 0.75rem;
+          padding: 0.75rem;
+          text-align: left;
+          &:not(:last-child)::after {
+            display: none;
+          }
+          &:nth-child(odd) {
+            border-right: 1px solid rgba($text-accent, 0.25);
+          }
+          &:nth-child(-n + 2) {
+            border-bottom: 1px solid rgba($text-accent, 0.25);
+          }
+        }
+        .featureIcon {
+          width: 3rem;
+          height: 3rem;
+          object-fit: contain;
+          flex-shrink: 0;
+          @include tablet {
+            width: 1.625rem;
+            height: 1.625rem;
+          }
+        }
+        .featureText {
+          margin: 0;
+          font-size: 1rem;
+          line-height: 1.2;
+          font-weight: 600;
+          text-align: center;
+          color: $text-white;
+          white-space: pre-line;
+          @include tablet {
+            font-size: 0.75rem;
+            font-weight: 300;
+            line-height: 1.2;
+            text-align: left;
+            letter-spacing: -0.04em;
+          }
+        }
+      }
+    }
   }
 }
 </style>

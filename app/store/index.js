@@ -41,9 +41,7 @@ export const store = createStore({
         data && typeof data === "object"
           ? {
               firstName: data.firstName ?? "",
-              lastName: data.lastName ?? "",
               phone: data.phone ?? "",
-              email: data.email ?? "",
               wish: data.wish ?? "",
             }
           : null;
@@ -66,7 +64,7 @@ export const store = createStore({
     setApiConfig(state, config) {
       state.apiBaseUrl = config.homeReserveApiUrl || "https://realtycalendar.ru/v2/widget";
       state.apiKey = config.homeReserveApiKey || "HE3NXyOLk4";
-      state.apartmentIds = config.apartmentIds || [323833, 333838];
+      state.apartmentIds = config.apartmentIds || [323833, 333838, 338841];
     },
     setApartments(state, apartments) {
       state.apartments = apartments;

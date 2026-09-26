@@ -1,7 +1,7 @@
 import attractionsJson from "@app/data/attractions.json";
 
 const imageModules = import.meta.glob(
-  "@app/assets/img/sections/about/attractions/**/*.png",
+  "@app/assets/img/sections/about/attractions/**/*.webp",
   { eager: true, query: "?url", import: "default" }
 );
 
@@ -17,5 +17,7 @@ export const attractions = attractionsJson.map((item) => ({
   images: item.images.map((img) => ({
     src: resolveImageUrl(typeof img === "string" ? img : img.src),
     size: typeof img === "object" && img.size ? img.size : "medium",
+    laptopSize:
+      typeof img === "object" && img.laptopSize ? img.laptopSize : null,
   })),
 }));

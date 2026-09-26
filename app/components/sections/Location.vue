@@ -1,47 +1,29 @@
 <template>
   <section id="location" ref="sectionRef" :class="$style.wrapper">
-    <div :class="$style.titleContainer">
-      <div :class="$style.titleLine1">
-        <p :class="$style.title">Резиденция<br />ВОЛГА</p>
-        <h2 :class="$style.titleH2">УНИКАЛЬНОЕ</h2>
-        <div :class="$style.titleLine1Right">
-          <p :class="$style.phone">+7 (927) 767-56-00</p>
-          <div :class="$style.titleLine1Desc">
-            <p :class="$style.descLine">
-              Уединенное место с панорамными видами
-            </p>
-            <p :class="$style.descLine">
-              на волгу и горы в окружении уникальных объектов
-            </p>
-          </div>
+    <div :class="$style.header">
+      <div :class="$style.headerRow">
+        <h2 :class="$style.titlePrimary">НАШИ КОНТАКТЫ</h2>
+        <div :class="$style.headerMeta">
+          <p>Самарская область, г. Тольятти,</p>
+          <p>СНТ Волгарь, 18/3 р-н Центральный</p>
         </div>
       </div>
-      <div :class="$style.titleLine2">
-        <h2 :class="$style.titleH2">РАСПОЛОЖЕНИЕ</h2>
-        <p :class="$style.titleDescMobile">
-          Уединенное место с панорамными видами на волгу и горы в окружении
-          достопримечательностей и уникальных объектов.
-        </p>
-        <p :class="$style.address">
-          Самарская обл., Тольятти,<br />СНТ Волгарь, 18/3 р-н Центральный
-        </p>
-      </div>
-      <div :class="$style.titleLine3">
-        <span :class="$style.contactItem"
-          >Самарская обл., Тольятти, СНТ Волгарь, 18/3 р-н Центральный</span
-        >
-        <a
-          :class="$style.contactItem"
-          href="tel:+79171274080"
-          aria-label="Позвонить"
-          >8 (917) 127-40-80</a
-        >
-        <a
-          :class="$style.contactItem"
-          href="mailto:volga-dom163@mail.ru"
-          aria-label="Написать на почту"
-          >volga-dom163@mail.ru</a
-        >
+      <div :class="$style.headerRow">
+        <div :class="$style.headerContacts">
+          <a
+            :class="$style.contactItem"
+            href="tel:+79171556888"
+            aria-label="Позвонить"
+            >+7 917 155-68-88</a
+          >
+          <a
+            :class="$style.contactItem"
+            href="mailto:volga-dom163@mail.ru"
+            aria-label="Написать на почту"
+            >volga-dom163@mail.ru</a
+          >
+        </div>
+        <h2 :class="$style.titleSecondary">ГЕОГРАФИЯ УЕДИНЕНИЯ</h2>
       </div>
     </div>
     <div :class="$style.mapAndFormWrap">
@@ -261,7 +243,7 @@
                               :key="`location-child-age-${index}-${a}`"
                               :value="a"
                             >
-                              {{ a }} лет
+                              {{ locationFormatAgeYears(a) }}
                             </option>
                           </select>
                         </span>
@@ -337,12 +319,12 @@
                       @click="onLocationNearestDateClick(item, index)"
                     >
                       <span :class="$style.locationDateCardPrice">
-                        {{ item.priceText }}
+                        {{ item.priceFormatted }}
                         <span
-                          v-if="item.discountText"
+                          v-if="item.discountPercent"
                           :class="$style.locationDateCardDiscount"
                         >
-                          {{ item.discountText }}
+                          {{ item.discountLabel }}
                         </span>
                       </span>
                       <span :class="$style.locationDateCardDates">
@@ -654,7 +636,7 @@
                             :key="a"
                             :value="a"
                           >
-                            {{ a }} лет
+                            {{ locationFormatAgeYears(a) }}
                           </option>
                         </select>
                       </span>
@@ -841,175 +823,111 @@
           >
         </div>
         <h3 :class="$style.bookingFormUnifiedTitle">
-          БРОНИРУЙТЕ ВИЛЛУ<br />
+          ОТКРОЙТЕ ДЛЯ СЕБЯ<br />
           <span :class="$style.bookingFormUnifiedTitleAccent">
-            В РЕЗИДЕНЦИИ ВОЛГА
+            НОВЫЙ ФОРМАТ ОТДЫХА
           </span>
         </h3>
         <div :class="$style.bookingFormUnifiedBody">
-          <div :class="$style.bookingFormUnifiedRow">
-            <div :class="$style.bookingFormUnifiedFieldWrap">
+          <div
+            :class="[
+              $style.fieldRow,
+              {
+                [$style.fieldRowHasError]:
+                  unifiedErrors.firstName || unifiedErrors.phone,
+              },
+            ]"
+          >
+            <div
+              :class="[
+                $style.fieldCell,
+                { [$style.fieldCellError]: unifiedErrors.firstName },
+              ]"
+            >
+              <span :class="$style.fieldLabel">Имя</span>
               <input
                 ref="locationShortNameRef"
                 v-model="bookingName"
                 type="text"
                 autocomplete="given-name"
-                placeholder="Введите имя"
-                :class="[
-                  $style.bookingFormUnifiedField,
-                  $style.bookingFormUnifiedFieldHalf,
-                  locationUnifiedFirstNameErrorText &&
-                    $style.locationInputError,
-                ]"
+                placeholder="Имя"
+                :class="$style.fieldInput"
                 @input="onLocationUnifiedFirstNameInput"
               />
-              <p
-                v-if="locationUnifiedFirstNameErrorText"
-                :class="$style.bookingFormUnifiedFieldTooltip"
-              >
-                {{ locationUnifiedFirstNameErrorText }}
-              </p>
             </div>
-            <div :class="$style.bookingFormUnifiedFieldWrap">
-              <input
-                ref="locationShortLastNameRef"
-                v-model="bookingLastName"
-                type="text"
-                autocomplete="family-name"
-                placeholder="Введите фамилию"
-                :class="[
-                  $style.bookingFormUnifiedField,
-                  $style.bookingFormUnifiedFieldHalf,
-                  locationUnifiedLastNameErrorText && $style.locationInputError,
-                ]"
-                @input="onLocationUnifiedLastNameInput"
-              />
-              <p
-                v-if="locationUnifiedLastNameErrorText"
-                :class="$style.bookingFormUnifiedFieldTooltip"
-              >
-                {{ locationUnifiedLastNameErrorText }}
-              </p>
-            </div>
-          </div>
-          <div :class="$style.bookingFormUnifiedRow">
-            <div :class="$style.bookingFormUnifiedFieldWrap">
+            <div
+              :class="[
+                $style.fieldCell,
+                { [$style.fieldCellError]: unifiedErrors.phone },
+              ]"
+            >
+              <span :class="$style.fieldLabel">Телефон</span>
               <input
                 ref="locationShortPhoneRef"
-                v-model="bookingPhone"
+                :value="bookingPhone"
                 type="tel"
+                inputmode="tel"
+                maxlength="18"
                 autocomplete="tel"
-                placeholder="Телефон"
-                :class="[
-                  $style.bookingFormUnifiedField,
-                  $style.bookingFormUnifiedFieldHalf,
-                  locationUnifiedPhoneErrorText && $style.locationInputError,
-                ]"
-                @input="onLocationUnifiedPhoneInput"
-                @blur="validateLocationUnifiedPhoneField"
+                placeholder="+7 (XXX) XXX-XX-XX"
+                :class="$style.fieldInput"
+                @focus="onLocationPhoneFocus"
+                @keydown="onLocationPhoneKeydown"
+                @input="onLocationPhoneInput"
+                @blur="onLocationPhoneBlur"
               />
-              <p
-                v-if="locationUnifiedPhoneErrorText"
-                :class="$style.bookingFormUnifiedFieldTooltip"
-              >
-                {{ locationUnifiedPhoneErrorText }}
-              </p>
-            </div>
-            <div :class="$style.bookingFormUnifiedFieldWrap">
-              <input
-                ref="locationShortEmailRef"
-                v-model="bookingEmail"
-                type="email"
-                autocomplete="email"
-                placeholder="E-mail (опционально)"
-                :class="[
-                  $style.bookingFormUnifiedField,
-                  $style.bookingFormUnifiedFieldHalf,
-                  locationUnifiedEmailErrorText && $style.locationInputError,
-                ]"
-                @input="onLocationUnifiedEmailInput"
-                @blur="validateLocationUnifiedEmailField"
-              />
-              <p
-                v-if="locationUnifiedEmailErrorText"
-                :class="$style.bookingFormUnifiedFieldTooltip"
-              >
-                {{ locationUnifiedEmailErrorText }}
-              </p>
             </div>
           </div>
-          <textarea
-            v-model="bookingWish"
+
+          <div :class="[$style.fieldBox, $style.commentBox]">
+            <span :class="$style.fieldLabel">Комментарий</span>
+            <textarea
+              v-model="bookingWish"
+              :class="$style.commentInput"
+              placeholder="Ваши пожелания (опционально)"
+              rows="4"
+            />
+          </div>
+
+          <div
             :class="[
-              $style.bookingFormUnifiedField,
-              $style.bookingFormUnifiedTextarea,
+              $style.consentBlock,
+              { [$style.consentBlockError]: unifiedErrors.consent },
             ]"
-            placeholder="Ваши пожелания (опционально)"
-            rows="4"
-          />
-          <div :class="$style.bookingFormUnifiedConsentRow">
-            <div :class="$style.bookingFormUnifiedConsentWrap">
+          >
+            <label :class="$style.consentLabel">
               <input
-                id="location-booking-consent"
                 v-model="bookingConsent"
                 type="checkbox"
-                :class="$style.bookingFormUnifiedConsentInput"
-                @change="clearLocationUnifiedField('consent')"
+                :class="$style.consentInput"
+                @change="clearUnifiedError('consent')"
               />
-              <label
-                for="location-booking-consent"
-                :class="$style.bookingFormUnifiedConsentLabel"
-              >
-                <span
-                  :class="$style.bookingFormUnifiedConsentBox"
-                  aria-hidden="true"
+              <span :class="$style.consentCheckbox" aria-hidden="true">
+                <span :class="$style.consentCheckmark" />
+              </span>
+              <span :class="$style.consentText">
+                Я даю согласие на обработку
+                <a href="#" :class="$style.consentLink" @click.stop.prevent
+                  >персональных данных</a
+                >, и подтверждаю ознакомление с
+                <a href="#" :class="$style.consentLink" @click.stop.prevent
+                  >Правилами бронирования</a
+                >,
+                <a href="#" :class="$style.consentLink" @click.stop.prevent
+                  >условиями оферты</a
                 >
-                  <span :class="$style.bookingFormUnifiedConsentCheckmark" />
-                </span>
-                <span :class="$style.bookingFormUnifiedConsentText">
-                  Я даю согласие на обработку
-                  <a
-                    href="#"
-                    :class="$style.bookingFormUnifiedConsentLink"
-                    @click.stop.prevent
-                    >персональных данных</a
-                  >, и подтверждаю ознакомление с
-                  <a
-                    href="#"
-                    :class="$style.bookingFormUnifiedConsentLink"
-                    @click.stop.prevent
-                    >Правилами бронирования</a
-                  >,
-                  <a
-                    href="#"
-                    :class="$style.bookingFormUnifiedConsentLink"
-                    @click.stop.prevent
-                    >условиями оферты</a
-                  >
-                  и
-                  <a
-                    href="#"
-                    :class="$style.bookingFormUnifiedConsentLink"
-                    @click.stop.prevent
-                    >Политикой обработки персональных данных</a
-                  >.
-                </span>
-              </label>
-              <p
-                v-if="locationUnifiedConsentErrorText"
-                :class="[
-                  $style.bookingFormUnifiedFieldTooltip,
-                  $style.bookingFormUnifiedConsentTooltip,
-                ]"
-              >
-                {{ locationUnifiedConsentErrorText }}
-              </p>
-            </div>
+                и
+                <a href="#" :class="$style.consentLink" @click.stop.prevent
+                  >Политикой обработки персональных данных</a
+                >.
+              </span>
+            </label>
           </div>
+
           <button
             type="submit"
             :class="$style.bookingFormUnifiedSubmit"
-            :disabled="!canSubmitLocationForm || bookingSubmitting"
+            :disabled="bookingSubmitting"
           >
             <span>Забронировать</span>
             <span
@@ -1045,7 +963,7 @@ const VueDatePicker = defineAsyncComponent(async () => {
 });
 
 const BOOKING_CONFIRM_URL =
-  "https://realtycalendar.ru/v2/widget/NVGNpGgXO7/confirm";
+  "https://realtycalendar.ru/v2/widget/HE3NXyOLk4/confirm";
 const BOOKING_REDIRECT_URL = "https://homereserve.ru/HE3NXyOLk4/status";
 
 const RESIDENCE_COORDS = [53.473523, 49.37307];
@@ -1064,18 +982,32 @@ function isValidPersonName(value) {
   return /^[\p{L}]+(?:[\s\-'’]+[\p{L}]+)*$/u.test(t);
 }
 
-function sanitizePhoneInput(value) {
-  return (value || "").replace(/[^\d+()\s-]/g, "");
-}
-
-function digitsOnly(value) {
+function onlyDigits(value) {
   return (value || "").replace(/\D/g, "");
 }
 
-function isValidRuPhoneDigits(d) {
-  if (!d || typeof d !== "string") return false;
-  if (d.length === 10) return d[0] === "9";
-  if (d.length === 11 && (d[0] === "7" || d[0] === "8")) return d[1] === "9";
+function formatPhone(value) {
+  let digits = onlyDigits(value);
+  if (!digits) return "";
+  if (digits[0] === "8") digits = `7${digits.slice(1)}`;
+  if (digits[0] !== "7") digits = `7${digits}`;
+  digits = digits.slice(0, 11);
+  const local = digits.slice(1);
+  if (!local.length) return "+7 ";
+  let result = `+7 (${local.slice(0, 3)}`;
+  if (local.length >= 3) result += ")";
+  if (local.length > 3) result += ` ${local.slice(3, 6)}`;
+  if (local.length > 6) result += `-${local.slice(6, 8)}`;
+  if (local.length > 8) result += `-${local.slice(8, 10)}`;
+  return result;
+}
+
+function isValidPhoneDigits(digits) {
+  if (!digits) return false;
+  if (digits.length === 10) return digits[0] === "9";
+  if (digits.length === 11 && (digits[0] === "7" || digits[0] === "8")) {
+    return digits[1] === "9";
+  }
   return false;
 }
 
@@ -1085,25 +1017,17 @@ function normalizePhoneForApi(d) {
   return d;
 }
 
-function isValidEmailFormat(email) {
-  const t = (email || "").trim();
-  if (!t) return true;
-  if (t.length > 254 || /\s/.test(t)) return false;
-  if ((t.match(/@/g) || []).length !== 1) return false;
-  const [local, domain] = t.split("@");
-  if (!local || !domain || local.length > 64) return false;
-  if (local.startsWith(".") || local.endsWith(".") || local.includes(".."))
-    return false;
-  if (!domain.includes(".") || domain.startsWith(".") || domain.endsWith("."))
-    return false;
-  const tld = domain.slice(domain.lastIndexOf(".") + 1);
-  if (tld.length < 2 || !/^[a-zA-Z]+$/i.test(tld)) return false;
-  return (
-    /^[a-zA-Z0-9._+%-]+$/.test(local) &&
-    /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/i.test(
-      domain
-    )
-  );
+function cursorAfterDigit(formatted, digitCount) {
+  if (!formatted) return 0;
+  if (digitCount <= 0) return Math.min(3, formatted.length);
+  let seen = 0;
+  for (let i = 0; i < formatted.length; i++) {
+    if (/\d/.test(formatted[i])) {
+      seen += 1;
+      if (seen === digitCount) return i + 1;
+    }
+  }
+  return formatted.length;
 }
 
 export default {
@@ -1119,9 +1043,7 @@ export default {
       unionIconUrl,
       unionWhiteIconUrl,
       bookingName: "",
-      bookingLastName: "",
       bookingPhone: "",
-      bookingEmail: "",
       bookingWish: "",
       bookingConsent: false,
       bookingSubmitting: false,
@@ -1141,44 +1063,18 @@ export default {
       locationNearestDatesLoading: false,
       locationCanScrollNearestLeft: false,
       locationCanScrollNearestRight: false,
-      locationUnifiedClientErrors: {
-        first_name: "",
-        last_name: "",
-        phone: "",
-        email: "",
-        consent: "",
+      unifiedErrors: {
+        firstName: false,
+        phone: false,
+        consent: false,
       },
     };
   },
   computed: {
-    locationUnifiedFirstNameErrorText() {
-      return (
-        this.locationUnifiedClientErrors.first_name ||
-        this.locationApiErrorName ||
-        ""
-      );
-    },
-    locationUnifiedLastNameErrorText() {
-      return this.locationUnifiedClientErrors.last_name || "";
-    },
-    locationUnifiedPhoneErrorText() {
-      return (
-        this.locationUnifiedClientErrors.phone ||
-        this.locationApiErrorPhone ||
-        ""
-      );
-    },
-    locationUnifiedEmailErrorText() {
-      return this.locationUnifiedClientErrors.email || "";
-    },
-    locationUnifiedConsentErrorText() {
-      return this.locationUnifiedClientErrors.consent || "";
-    },
     canSubmitLocationForm() {
       const name = (this.bookingName || "").trim();
-      const lastName = (this.bookingLastName || "").trim();
-      const phone = digitsOnly(this.bookingPhone);
-      return !!name && !!lastName && !!phone && this.bookingConsent;
+      const phone = onlyDigits(this.bookingPhone);
+      return !!name && !!phone && this.bookingConsent;
     },
     locationTotalGuests() {
       const g = this.locationGuestSelection;
@@ -1261,7 +1157,7 @@ export default {
           dateLabel,
           price,
           priceFormatted:
-            price != null ? `${this.locationFormatPrice(price)} ₽` : null,
+            price != null ? this.locationFormatPrice(price) : null,
           discountPercent: discountPercent || null,
           discountLabel: discountPercent ? `-${discountPercent}%` : "",
           available:
@@ -1374,6 +1270,8 @@ export default {
     }
     this._mapObserver?.disconnect?.();
     this._mapObserver = null;
+    this._mapResizeObserver?.disconnect?.();
+    this._mapResizeObserver = null;
     document.removeEventListener(
       "mousedown",
       this.onLocationCalendarClickOutside
@@ -1445,7 +1343,7 @@ export default {
     },
     locationFormatPrice(value) {
       if (value == null) return "—";
-      return Number(value).toLocaleString("ru-RU");
+      return `${Number(value).toLocaleString("ru-RU")} ₽`;
     },
     isLocationDateCardSelected(item) {
       if (!this.locationDateRange || !Array.isArray(this.locationDateRange))
@@ -1570,6 +1468,18 @@ export default {
       const max =
         this.locationMaxGuests - this.locationGuestSelection.children.length;
       this.locationGuestSelection.adults = Math.max(min, Math.min(max, n));
+    },
+    locationFormatAgeYears(age) {
+      const n = Number(age);
+      if (!Number.isFinite(n)) return `${age} лет`;
+      const mod10 = n % 10;
+      const mod100 = n % 100;
+      let word = "лет";
+      if (mod10 === 1 && mod100 !== 11) word = "год";
+      else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
+        word = "года";
+      }
+      return `${n} ${word}`;
     },
     locationAddChild() {
       if (!this.locationCanAddChild) return;
@@ -1727,6 +1637,20 @@ export default {
         }
       );
       this.map.geoObjects.add(placemark);
+      this.$nextTick(() => {
+        this.map?.container?.fitToViewport?.();
+        this.bindMapResize();
+      });
+    },
+    bindMapResize() {
+      if (typeof ResizeObserver === "undefined") return;
+      const wrap = this.$refs.mapRef?.parentElement;
+      if (!wrap) return;
+      this._mapResizeObserver?.disconnect?.();
+      this._mapResizeObserver = new ResizeObserver(() => {
+        this.map?.container?.fitToViewport?.();
+      });
+      this._mapResizeObserver.observe(wrap);
     },
     updateMobileView() {
       this.isMobileView =
@@ -1734,134 +1658,164 @@ export default {
       this.isTabletOrBelowView =
         typeof window !== "undefined" && window.innerWidth <= 1290;
     },
-    resetLocationUnifiedClientErrors() {
-      this.locationUnifiedClientErrors = {
-        first_name: "",
-        last_name: "",
-        phone: "",
-        email: "",
-        consent: "",
+    resetUnifiedErrors() {
+      this.unifiedErrors = {
+        firstName: false,
+        phone: false,
+        consent: false,
       };
     },
-    clearLocationUnifiedField(key) {
-      this.locationUnifiedClientErrors[key] = "";
-      if (!this.locationApiErrors[key]) return;
-      this.locationApiErrors = Object.fromEntries(
-        Object.entries(this.locationApiErrors).filter(([k]) => k !== key)
-      );
+    clearUnifiedError(field) {
+      this.unifiedErrors = { ...this.unifiedErrors, [field]: false };
+      if (field === "firstName" && this.locationApiErrors.first_name) {
+        const { first_name: _removed, ...rest } = this.locationApiErrors;
+        this.locationApiErrors = rest;
+      }
+      if (field === "phone" && this.locationApiErrors.phone) {
+        const { phone: _removed, ...rest } = this.locationApiErrors;
+        this.locationApiErrors = rest;
+      }
     },
     onLocationUnifiedFirstNameInput(e) {
       this.bookingName = sanitizePersonName(e.target.value);
-      this.clearLocationUnifiedField("first_name");
+      this.clearUnifiedError("firstName");
     },
-    onLocationUnifiedLastNameInput(e) {
-      this.bookingLastName = sanitizePersonName(e.target.value);
-      this.clearLocationUnifiedField("last_name");
+    applyLocationPhone(el, formatted, digitCount) {
+      this.bookingPhone = formatted;
+      this.$nextTick(() => {
+        if (!el) return;
+        const pos = cursorAfterDigit(formatted, digitCount);
+        el.setSelectionRange(pos, pos);
+      });
     },
-    onLocationUnifiedPhoneInput(e) {
-      this.bookingPhone = sanitizePhoneInput(e.target.value);
-      this.clearLocationUnifiedField("phone");
-    },
-    onLocationUnifiedEmailInput(e) {
-      this.bookingEmail = e.target.value;
-      this.clearLocationUnifiedField("email");
-    },
-    validateLocationUnifiedPhoneField() {
-      const d = digitsOnly(this.bookingPhone);
-      if (!d) {
-        this.clearLocationUnifiedField("phone");
+    removeLocationPhoneDigitBefore(el, cursorPos) {
+      const value = el.value;
+      const digitsBefore = onlyDigits(value.slice(0, cursorPos)).length;
+      if (digitsBefore <= 1) {
+        this.applyLocationPhone(el, "+7 ", 1);
         return;
       }
-      if (!isValidRuPhoneDigits(d)) {
-        this.locationUnifiedClientErrors.phone =
-          "Введите номер в формате 9XXXXXXXXX или +7/8 9XXXXXXXXX";
-      } else {
-        this.clearLocationUnifiedField("phone");
-      }
+      const digits = onlyDigits(value);
+      const next =
+        digits.slice(0, digitsBefore - 1) + digits.slice(digitsBefore);
+      this.applyLocationPhone(el, formatPhone(next), digitsBefore - 1);
+      this.clearUnifiedError("phone");
     },
-    validateLocationUnifiedEmailField() {
-      const t = (this.bookingEmail || "").trim();
-      if (!t) {
-        this.clearLocationUnifiedField("email");
+    onLocationPhoneFocus(e) {
+      const digits = onlyDigits(this.bookingPhone);
+      if (!digits || digits === "7") {
+        this.bookingPhone = "+7 ";
+        this.$nextTick(() => {
+          const el = e.target;
+          el.setSelectionRange(el.value.length, el.value.length);
+        });
         return;
       }
-      if (!isValidEmailFormat(t)) {
-        this.locationUnifiedClientErrors.email = "Введите корректный e-mail";
-      } else {
-        this.clearLocationUnifiedField("email");
+      this.bookingPhone = formatPhone(this.bookingPhone);
+    },
+    onLocationPhoneKeydown(e) {
+      const el = e.target;
+      const start = el.selectionStart ?? 0;
+      const end = el.selectionEnd ?? 0;
+      const isShortcut = e.ctrlKey || e.metaKey || e.altKey;
+
+      if (!isShortcut && e.key.length === 1 && !/^\d$/.test(e.key)) {
+        e.preventDefault();
+        return;
       }
+      if (start !== end) return;
+
+      if (e.key === "Backspace") {
+        if (start <= 3) {
+          e.preventDefault();
+          return;
+        }
+        if (/\D/.test(el.value[start - 1] || "")) {
+          e.preventDefault();
+          this.removeLocationPhoneDigitBefore(el, start);
+        }
+        return;
+      }
+
+      if (e.key === "Delete") {
+        const value = el.value;
+        if (start >= value.length || !/\D/.test(value[start] || "")) return;
+        e.preventDefault();
+        let i = start;
+        while (i < value.length && /\D/.test(value[i])) i += 1;
+        if (i >= value.length) return;
+        this.removeLocationPhoneDigitBefore(el, i + 1);
+      }
+    },
+    onLocationPhoneInput(e) {
+      const el = e.target;
+      const cursor = el.selectionStart ?? el.value.length;
+      const digitCount = onlyDigits(el.value.slice(0, cursor)).length;
+      const formatted = formatPhone(el.value) || "+7 ";
+      this.applyLocationPhone(el, formatted, Math.max(digitCount, 1));
+      this.clearUnifiedError("phone");
+    },
+    onLocationPhoneBlur() {
+      const digits = onlyDigits(this.bookingPhone);
+      if (!digits || digits === "7") {
+        this.bookingPhone = "";
+        this.clearUnifiedError("phone");
+        return;
+      }
+      this.bookingPhone = formatPhone(this.bookingPhone);
+      this.unifiedErrors = {
+        ...this.unifiedErrors,
+        phone: !isValidPhoneDigits(digits),
+      };
     },
     onLocationShortFormSubmit() {
-      this.resetLocationUnifiedClientErrors();
+      this.resetUnifiedErrors();
       this.locationFormError = "";
       this.locationFormErrorField = "";
+      this.locationApiErrors = {};
 
       const firstName = (this.bookingName || "").trim();
-      const lastName = (this.bookingLastName || "").trim();
-      const phoneDigits = digitsOnly(this.bookingPhone);
-      const emailTrim = (this.bookingEmail || "").trim();
-      let invalid = false;
+      const phoneDigits = onlyDigits(this.bookingPhone);
+      const nextErrors = {
+        firstName: false,
+        phone: false,
+        consent: false,
+      };
 
-      if (!firstName) {
-        this.locationUnifiedClientErrors.first_name = "Введите имя";
-        invalid = true;
-      } else if (!isValidPersonName(firstName)) {
-        this.locationUnifiedClientErrors.first_name =
-          "Только буквы, без цифр и символов (минимум 2 символа)";
-        invalid = true;
+      if (!firstName || !isValidPersonName(firstName)) {
+        nextErrors.firstName = true;
       }
-      if (!lastName) {
-        this.locationUnifiedClientErrors.last_name = "Введите фамилию";
-        invalid = true;
-      } else if (!isValidPersonName(lastName)) {
-        this.locationUnifiedClientErrors.last_name =
-          "Только буквы, без цифр и символов (минимум 2 символа)";
-        invalid = true;
+      if (
+        !phoneDigits ||
+        phoneDigits === "7" ||
+        !isValidPhoneDigits(phoneDigits)
+      ) {
+        nextErrors.phone = true;
       }
-      if (!phoneDigits) {
-        this.locationUnifiedClientErrors.phone = "Введите телефон";
-        invalid = true;
-      } else if (!isValidRuPhoneDigits(phoneDigits)) {
-        this.locationUnifiedClientErrors.phone =
-          "Введите номер в формате 9XXXXXXXXX или +7/8 9XXXXXXXXX";
-        invalid = true;
-      }
-      if (!isValidEmailFormat(emailTrim)) {
-        this.locationUnifiedClientErrors.email =
-          "Некорректный адрес: проверьте формат name@домен.зона";
-        invalid = true;
-      }
-      if (!this.bookingConsent) {
-        this.locationUnifiedClientErrors.consent =
-          "Необходимо согласие на обработку персональных данных";
-        invalid = true;
-      }
+      if (!this.bookingConsent) nextErrors.consent = true;
 
-      if (invalid) {
+      this.unifiedErrors = nextErrors;
+      if (nextErrors.firstName || nextErrors.phone || nextErrors.consent) {
         this.$nextTick(() => {
-          if (this.locationUnifiedFirstNameErrorText) {
-            this.$refs.locationShortNameRef?.focus();
-          } else if (this.locationUnifiedLastNameErrorText) {
-            this.$refs.locationShortLastNameRef?.focus();
-          } else if (this.locationUnifiedPhoneErrorText) {
-            this.$refs.locationShortPhoneRef?.focus();
-          } else if (this.locationUnifiedEmailErrorText) {
-            this.$refs.locationShortEmailRef?.focus();
-          }
+          if (nextErrors.firstName) this.$refs.locationShortNameRef?.focus();
+          else if (nextErrors.phone) this.$refs.locationShortPhoneRef?.focus();
         });
         return;
       }
 
       const normalizedPhone = normalizePhoneForApi(phoneDigits);
-      const phonePrefill =
-        sanitizePhoneInput(this.bookingPhone).trim() || normalizedPhone;
+      const phonePrefill = formatPhone(this.bookingPhone) || normalizedPhone;
 
       this.$store.commit("setLocationFormData", {
         firstName,
-        lastName,
         phone: normalizedPhone,
-        email: emailTrim,
         wish: (this.bookingWish || "").trim(),
+        guests: {
+          adults: this.locationGuestSelection?.adults ?? 1,
+          children: (this.locationGuestSelection?.children ?? []).map((c) => ({
+            age: c?.age ?? "0",
+          })),
+        },
       });
       this.$store.commit("setBookingModalOpenedFromLocation", true);
       this.$store.commit("setBookingModalPrefill", {
@@ -1899,7 +1853,7 @@ export default {
 
       const firstName = (this.bookingName || "").trim();
       if (!firstName) {
-        this.locationFormError = "Введите имя";
+        this.locationFormError = "Имя";
         this.locationFormErrorField = "name";
         this.$nextTick(() => this.$refs.locationTabletNameRef?.focus());
         return;
@@ -1918,12 +1872,10 @@ export default {
         begin_date: this.locationToDateStr(start),
         end_date: this.locationToDateStr(end),
         first_name: firstName,
-        last_name: "Бронь-сайт",
+        last_name: firstName,
         guests: {
           adults: this.locationGuestSelection?.adults ?? 1,
-          children: (this.locationGuestSelection?.children ?? []).map((c) => ({
-            age: c?.age ?? "0",
-          })),
+          children: [],
         },
         phone: phoneRaw,
         redirect_url: BOOKING_REDIRECT_URL,
@@ -1964,17 +1916,16 @@ export default {
 .wrapper {
   display: flex;
   flex-direction: column;
-  padding: 5rem;
+  padding: 7.5rem 0;
   gap: 5rem;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  @include tablet {
-    padding: 5rem 2.5rem 2.5rem 2.5rem;
-    gap: 1rem;
+  @include laptop {
+    padding: 5rem 0;
   }
-  @include mobile {
-    padding: 2.5rem 1rem 1rem 1rem;
+  @include tablet {
+    padding: 2.5rem 0;
     gap: 1.5rem;
   }
 
@@ -1985,256 +1936,134 @@ export default {
   }
 }
 
-.titleContainer {
-  width: 100%;
-  flex-shrink: 0;
-}
-
-.titleLine1 {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  width: 100%;
-  margin: 0 0 1rem 0;
-
-  @include tablet {
-    .title {
-      display: none;
-    }
-    .titleLine1Right .phone {
-      display: none;
-    }
-  }
-  @include mobile {
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
-    margin: 0;
-
-    .title,
-    .titleLine1Right .phone {
-      display: none;
-    }
-    .titleLine1Desc {
-      display: block;
-      margin-top: 0.5rem;
-      max-width: 100%;
-      width: 100%;
-      text-align: center;
-      .descLine {
-        display: none;
-        margin: 0;
-      }
-    }
-    .titleH2 {
-      font-size: 1.875rem;
-      font-weight: 300;
-      width: 100%;
-      text-align: left;
-      line-height: 0.95;
-    }
-  }
-}
-
-.titleLine1Right {
+.header {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  max-width: 26rem;
-  min-width: 0;
-
-  .phone {
-    display: none;
-  }
-
-  .titleLine1Desc {
-    display: block;
-
-    @include tablet {
-      display: block;
-    }
-  }
-
-  @include mobile {
-    align-items: center;
-    max-width: none;
-    width: 100%;
-  }
-}
-
-.titleLine1Desc {
-  text-align: right;
-  max-width: 100%;
-  min-width: 0;
-
-  .descLine {
-    white-space: normal;
-    overflow-wrap: anywhere;
-    margin: 0 0 0.25rem;
-    font-size: 1rem;
-    font-weight: 300;
-    line-height: 1.2;
-    color: $text-primary;
-    letter-spacing: -4%;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-}
-
-.titleLine2 {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
+  gap: 0.25rem;
   width: 100%;
-
-  .titleH2 {
-    text-align: right;
-    order: 2;
-  }
-
-  .address {
-    margin: 0;
-    text-align: left;
-    order: 1;
-
-    :global(br) {
-      display: none;
-    }
-  }
-
+  flex-shrink: 0;
   @include tablet {
-    h2 {
-      line-height: 1;
-    }
-    justify-content: flex-end;
-    .address {
-      display: none;
-    }
+    gap: 0;
   }
-  @include mobile {
-    flex-direction: column;
-    align-items: center;
-    margin-top: 0;
 
-    .titleH2 {
-      font-size: 1.875rem;
-      font-weight: 300;
-      text-align: right;
-      width: 100%;
-      line-height: 0.95;
-      order: 1;
-    }
-    .titleDescMobile {
-      display: block;
-      order: 2;
-      margin: 0.35rem 0 0 0;
-      font-size: 0.625rem;
-      font-weight: 300;
-      line-height: 1.2;
-      text-align: center;
-      color: $text-primary;
-      max-width: 22rem;
-    }
-    .address {
-      display: block;
-      margin: 0.75rem 0 0 0;
-      font-size: 1rem;
-      font-weight: 600;
-      line-height: 1.35;
-      text-align: center;
-      width: 100%;
-      order: 3;
-
-      :global(br) {
-        display: inline;
-      }
-    }
-  }
-}
-
-.titleLine3 {
-  display: none;
-
-  @include tablet {
+  .headerRow {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    gap: 2.5rem;
     width: 100%;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin: 5rem 0 0 0;
-  }
-  @include mobile {
-    display: none;
-  }
-}
+    &:last-child {
+      align-items: flex-end;
+    }
+    @include tablet {
+      display: contents;
+    }
 
-.contactItem {
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.2;
-  color: $text-primary;
-  text-decoration: none;
-}
+    .titlePrimary {
+      margin: 0;
+      font-weight: 400;
+      font-size: 6.25rem;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      color: $text-primary;
+      line-height: 1;
+      @include laptop {
+        font-size: 3.75rem;
+      }
+      @include tablet {
+        order: 1;
+        font-size: 1.5rem;
+      }
+    }
 
-a.contactItem:hover {
-  text-decoration: underline;
-}
+    .headerMeta {
+      flex-shrink: 0;
+      margin: 0;
+      text-align: right;
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: -0.04em;
+      color: $text-primary;
+      p {
+        margin: 0;
+      }
+      @include laptop {
+        font-size: 0.875rem;
+      }
+      @include tablet {
+        order: 4;
+        width: 100%;
+        text-align: left;
+        margin-top: 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        letter-spacing: -0.02em;
+      }
+    }
 
-.titleH2 {
-  margin: 0;
-}
+    .headerContacts {
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: -0.04em;
+      @include laptop {
+        font-size: 0.875rem;
+      }
+      @include tablet {
+        order: 3;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        margin-top: 2.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+      }
 
-.title {
-  font-size: 1rem;
-  line-height: 1.2;
-  font-weight: 300;
-}
+      .contactItem {
+        font-size: inherit;
+        font-weight: inherit;
+        color: $text-primary;
+        text-decoration: none;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
 
-.phone {
-  font-size: 2rem;
-  line-height: 1.2;
-  font-weight: 500;
-}
-
-.address {
-  font-size: 1.5rem;
-  line-height: 1.2;
-  text-align: right;
-  @include mobile {
-    text-align: center;
-  }
-}
-
-.titleDescMobile {
-  display: none;
-
-  @include mobile {
-    display: block;
-    font-size: 0.625rem;
-    font-weight: 300;
-    line-height: 1.4;
-    color: $text-secondary;
-    text-align: center;
+    .titleSecondary {
+      margin: 0;
+      font-weight: 400;
+      font-size: 6.25rem;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      color: $text-accent;
+      line-height: 1;
+      text-align: right;
+      @include laptop {
+        font-size: 3.75rem;
+      }
+      @include tablet {
+        order: 2;
+        width: 100%;
+        margin-top: 0.15rem;
+        font-size: 1.5rem;
+      }
+    }
   }
 }
 
 .mapAndFormWrap {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 26.75rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 26.25rem);
   width: 100%;
   min-width: 0;
-  gap: 0.75rem;
-
+  gap: 1.5rem;
+  align-items: stretch;
   @include tablet {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 26.75rem;
-    gap: 1rem;
-    align-items: stretch;
-  }
-  @include mobile {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -2244,7 +2073,7 @@ a.contactItem:hover {
 .locationContactRowMobile {
   display: none;
 
-  @include mobile {
+  @include tablet {
     display: none;
   }
 }
@@ -2252,25 +2081,34 @@ a.contactItem:hover {
 .mapWrap {
   position: relative;
   width: 100%;
-  flex-shrink: 0;
+  min-width: 0;
+  min-height: 0;
+  flex-shrink: 1;
   border-radius: 1.25rem;
   overflow: hidden;
-  @include mobile {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  @include tablet {
     border-radius: 1rem;
+    flex-shrink: 0;
   }
 }
 
 .mapContainer {
   width: 100%;
   min-width: 0;
-  height: 32.625rem;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 100%;
   border-radius: 1.25rem;
   overflow: hidden;
+  background: #f5f5f5;
+  box-sizing: border-box;
   @include tablet {
-    height: 32.5rem;
-  }
-  @include mobile {
     height: 16rem;
+    min-height: 16rem;
+    flex: none;
     border-radius: 1rem;
   }
 
@@ -2280,14 +2118,14 @@ a.contactItem:hover {
   :global([class*="-copyright"]) {
     display: none !important;
   }
-  background: #f5f5f5;
-  box-sizing: border-box;
 }
 
 .mapPlaceholder {
   width: 100%;
   min-width: 0;
-  height: 20.5rem;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 20rem;
   border-radius: 1.25rem;
   background: #f5f5f5;
   display: flex;
@@ -2296,10 +2134,9 @@ a.contactItem:hover {
   color: #999;
   box-sizing: border-box;
   @include tablet {
-    height: 20.5rem;
-  }
-  @include mobile {
     height: 16rem;
+    min-height: 16rem;
+    flex: none;
     border-radius: 1rem;
   }
 }
@@ -2307,6 +2144,7 @@ a.contactItem:hover {
 .bookingForm {
   position: relative;
   width: 100%;
+  max-width: 26.25rem;
   min-height: 20.5rem;
   padding: 1.5rem;
   background: $text-primary;
@@ -2316,9 +2154,7 @@ a.contactItem:hover {
   box-sizing: border-box;
   color: $text-white;
   @include tablet {
-    min-height: 20.5rem;
-  }
-  @include mobile {
+    max-width: none;
     min-height: 0;
     padding: 0.95rem;
     border-radius: 1rem;
@@ -2338,7 +2174,7 @@ a.contactItem:hover {
   font-size: 1rem;
   line-height: 1.2;
   color: $text-white;
-  @include mobile {
+  @include tablet {
     flex-wrap: wrap;
     gap: 0.25rem 0.75rem;
   }
@@ -2360,7 +2196,7 @@ a.contactItem:hover {
   @include tablet {
     font-size: 1.75rem;
   }
-  @include mobile {
+  @include tablet {
     font-size: 1.4rem;
   }
 }
@@ -2374,168 +2210,212 @@ a.contactItem:hover {
   flex-direction: column;
   gap: 1rem;
   margin-top: 1.5rem;
-}
-
-.bookingFormUnifiedRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  border-radius: 0.45rem;
-  overflow: visible;
-  @include mobile {
-    grid-template-columns: 1fr;
-  }
-}
-
-.bookingFormUnifiedFieldWrap {
-  position: relative;
-  min-width: 0;
-  &:not(:first-child) {
-    border-left: 1px solid rgba(255, 255, 255, 0.24);
-  }
-  @include mobile {
-    &:not(:first-child) {
-      border-left: none;
-      border-top: 1px solid rgba(255, 255, 255, 0.24);
+  .fieldRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 0.5rem;
+    background: transparent;
+    box-sizing: border-box;
+    @include tablet {
+      grid-template-columns: 1fr;
+    }
+    &.fieldRowHasError {
+      .fieldCell.fieldCellError:not(:first-child),
+      .fieldCellError + .fieldCell {
+        border-left-color: $main-red;
+        @include tablet {
+          border-top-color: $main-red;
+        }
+      }
+    }
+    .fieldCell {
+      position: relative;
+      min-width: 0;
+      padding: 0.9rem 1rem 0.75rem;
+      box-sizing: border-box;
+      &:not(:first-child) {
+        border-left: 1px solid rgba(255, 255, 255, 0.28);
+        @include tablet {
+          border-left: none;
+          border-top: 1px solid rgba(255, 255, 255, 0.28);
+        }
+      }
+      &.fieldCellError {
+        z-index: 1;
+        .fieldLabel {
+          color: $main-red;
+          background: $text-primary;
+          z-index: 2;
+        }
+        &::after {
+          content: "";
+          position: absolute;
+          inset: -1px;
+          z-index: 0;
+          border: 1px solid $main-red;
+          pointer-events: none;
+          box-sizing: border-box;
+        }
+        &:first-child::after {
+          border-radius: 0.5rem 0 0 0.5rem;
+          @include tablet {
+            border-radius: 0.5rem 0.5rem 0 0;
+          }
+        }
+        &:last-child::after {
+          border-radius: 0 0.5rem 0.5rem 0;
+          @include tablet {
+            border-radius: 0 0 0.5rem 0.5rem;
+          }
+        }
+      }
+      .fieldLabel {
+        position: absolute;
+        top: 0;
+        left: 0.85rem;
+        z-index: 2;
+        transform: translateY(-50%);
+        padding: 0 0.35rem;
+        background: $text-primary;
+        font-size: 0.75rem;
+        line-height: 1;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.55);
+      }
+      .fieldInput {
+        width: 100%;
+        min-width: 0;
+        min-height: 1.75rem;
+        padding: 0;
+        border: none;
+        background: transparent;
+        color: $text-white;
+        font-size: 1rem;
+        font-family: inherit;
+        outline: none;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.4);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
     }
   }
-}
-
-.bookingFormUnifiedField {
-  width: 100%;
-  min-width: 0;
-  padding: 0.75rem;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  border-radius: 0.45rem;
-  color: $text-white;
-  font-size: 0.875rem;
-  font-family: inherit;
-  line-height: 1.2;
-  font-weight: 300;
-  outline: none;
-  box-sizing: border-box;
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.42);
+  .fieldBox {
+    position: relative;
+    min-width: 0;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 0.5rem;
+    padding: 0.9rem 1rem 0.75rem;
+    background: transparent;
+    box-sizing: border-box;
+    .fieldLabel {
+      position: absolute;
+      top: 0;
+      left: 0.85rem;
+      z-index: 2;
+      transform: translateY(-50%);
+      padding: 0 0.35rem;
+      background: $text-primary;
+      font-size: 0.75rem;
+      line-height: 1;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.55);
+    }
+    &.commentBox {
+      display: flex;
+      flex-direction: column;
+      min-height: 5.75rem;
+      .commentInput {
+        flex: 1;
+        width: 100%;
+        min-height: 5rem;
+        padding: 0;
+        border: none;
+        resize: none;
+        background: transparent;
+        color: $text-white;
+        font-size: 1rem;
+        font-family: inherit;
+        outline: none;
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.4);
+        }
+      }
+    }
   }
-  &:-webkit-autofill,
-  &:-webkit-autofill:hover,
-  &:-webkit-autofill:focus,
-  &:-webkit-autofill:active {
-    -webkit-text-fill-color: $text-white;
-    caret-color: $text-white;
-    -webkit-box-shadow: 0 0 0 1000px $text-primary inset;
-    box-shadow: 0 0 0 1000px $text-primary inset;
-    transition: background-color 9999s ease-out 0s;
+  .consentBlock {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    .consentLabel {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      cursor: pointer;
+      .consentInput {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+        &:checked + .consentCheckbox {
+          background: #004f68;
+          border-color: #004f68;
+          .consentCheckmark {
+            display: flex;
+          }
+        }
+      }
+      .consentCheckbox {
+        position: relative;
+        width: 1.5rem;
+        height: 1.5rem;
+        margin-top: 0.1rem;
+        flex-shrink: 0;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 0.2rem;
+        background: transparent;
+        box-sizing: border-box;
+        .consentCheckmark {
+          position: absolute;
+          inset: 0;
+          display: none;
+          align-items: center;
+          justify-content: center;
+          &::before {
+            content: "";
+            width: 0.28rem;
+            height: 0.55rem;
+            margin-top: -0.1rem;
+            border: solid $text-white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+          }
+        }
+      }
+      .consentText {
+        font-size: 0.625rem;
+        font-weight: 300;
+        line-height: 1.2;
+        color: $text-tertiary;
+        .consentLink {
+          color: inherit;
+          text-decoration: underline;
+          text-underline-offset: 0.12em;
+        }
+      }
+    }
+    &.consentBlockError {
+      .consentCheckbox {
+        border-color: $main-red;
+      }
+    }
   }
-}
-
-.bookingFormUnifiedFieldHalf {
-  border: none;
-  border-radius: 0;
-}
-
-.bookingFormUnifiedFieldTooltip {
-  position: absolute;
-  top: calc(100% + 0.3rem);
-  right: 0.4rem;
-  z-index: 20;
-  margin: 0;
-  max-width: min(20rem, calc(100vw - 2rem));
-  padding: 0.35rem 0.5rem;
-  background: rgb(173, 31, 31);
-  border-radius: 0.35rem;
-  color: $text-white;
-  font-size: 0.7rem;
-  line-height: 1.25;
-  pointer-events: none;
-  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.25);
-}
-
-.bookingFormUnifiedTextarea {
-  min-height: 5.75rem;
-  resize: none;
-}
-
-.bookingFormUnifiedConsentRow {
-  display: block;
-  position: relative;
-}
-
-.bookingFormUnifiedConsentWrap {
-  position: relative;
-}
-
-.bookingFormUnifiedConsentTooltip {
-  top: calc(100% + 0.3rem);
-  bottom: auto;
-  right: 0.4rem;
-}
-
-.bookingFormUnifiedConsentInput {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.bookingFormUnifiedConsentLabel {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  font-size: 0.75rem;
-  line-height: 1.2;
-  color: rgba(255, 255, 255, 0.46);
-  cursor: pointer;
-}
-
-.bookingFormUnifiedConsentBox {
-  position: relative;
-  width: 0.875rem;
-  height: 0.875rem;
-  margin-top: 0.04rem;
-  flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.32);
-  border-radius: 0.14rem;
-  background: transparent;
-}
-
-.bookingFormUnifiedConsentCheckmark {
-  position: absolute;
-  left: 0.29rem;
-  top: 0.1rem;
-  width: 0.2rem;
-  height: 0.42rem;
-  border-right: 1px solid $text-white;
-  border-bottom: 1px solid $text-white;
-  opacity: 0;
-  transform: rotate(45deg) scale(0.9);
-  transition:
-    opacity 0.15s,
-    transform 0.15s;
-}
-
-.bookingFormUnifiedConsentText {
-  flex: 1;
-  min-width: 0;
-}
-
-.bookingFormUnifiedConsentLink {
-  color: rgba(255, 255, 255, 0.5);
-  text-decoration: underline;
-}
-
-.bookingFormUnifiedConsentInput:checked
-  + .bookingFormUnifiedConsentLabel
-  .bookingFormUnifiedConsentBox {
-  background: #685137;
-  border-color: #685137;
-}
-
-.bookingFormUnifiedConsentInput:checked
-  + .bookingFormUnifiedConsentLabel
-  .bookingFormUnifiedConsentCheckmark {
-  opacity: 1;
-  transform: rotate(45deg) scale(1);
 }
 
 .bookingFormUnifiedSubmit {
@@ -2545,13 +2425,14 @@ a.contactItem:hover {
   gap: 0.5rem;
   width: 100%;
   min-height: 3rem;
-  padding: 0.9rem 1rem;
+  padding: 1.125rem 1rem;
   border: none;
   border-radius: 0.45rem;
   background: #004f68;
   color: $text-white;
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 600;
+  paragraph-spacing: 0.08em;
   font-family: inherit;
   cursor: pointer;
   transition: background 0.2s;
@@ -2565,8 +2446,8 @@ a.contactItem:hover {
 }
 
 .bookingFormUnifiedSubmitIcon {
-  width: 1rem;
-  height: 1rem;
+  width: 1.5rem;
+  height: 1.5rem;
   object-fit: contain;
   filter: brightness(0) invert(1);
 }
@@ -2684,7 +2565,7 @@ a.contactItem:hover {
     border-radius: 1.5rem;
     min-height: 0;
   }
-  @include mobile {
+  @include tablet {
     display: flex;
     flex-direction: column;
     padding: 1.25rem 1rem;
@@ -3350,7 +3231,7 @@ a.contactItem:hover {
     outline: none;
     border-bottom-color: $text-white;
   }
-  @include mobile {
+  @include tablet {
     padding: 0.75rem 0;
     font-size: 0.9375rem;
   }
