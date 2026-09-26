@@ -863,9 +863,21 @@ export default {
     formatDate(date) {
       const d = this.normalizeDate(date);
       if (!d) return "";
-      const day = d.getDate();
-      const month = d.toLocaleDateString("ru-RU", { month: "long" });
-      return `${day} ${month}`;
+      const months = [
+        "января",
+        "февраля",
+        "марта",
+        "апреля",
+        "мая",
+        "июня",
+        "июля",
+        "августа",
+        "сентября",
+        "октября",
+        "ноября",
+        "декабря",
+      ];
+      return `${d.getDate()} ${months[d.getMonth()]}`;
     },
     normalizeDate(date) {
       if (!date) return null;

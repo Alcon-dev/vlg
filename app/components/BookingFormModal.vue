@@ -514,11 +514,22 @@ export default {
     formatDateDisplay(dateStr) {
       if (!dateStr || typeof dateStr !== "string") return "";
       const [year, month, day] = dateStr.split("-").map(Number);
-      if (!month || !day) return dateStr;
-      return new Date(year, month - 1, day).toLocaleDateString("ru-RU", {
-        day: "numeric",
-        month: "long",
-      });
+      if (!year || !month || !day) return dateStr;
+      const months = [
+        "января",
+        "февраля",
+        "марта",
+        "апреля",
+        "мая",
+        "июня",
+        "июля",
+        "августа",
+        "сентября",
+        "октября",
+        "ноября",
+        "декабря",
+      ];
+      return `${day} ${months[month - 1]}`;
     },
     onFirstNameInput(e) {
       this.firstName = onlyLettersName(e.target.value);

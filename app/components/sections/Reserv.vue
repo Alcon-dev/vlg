@@ -825,17 +825,39 @@ export default {
   computed: {
     checkInDateFormatted() {
       if (!this.checkInDate) return "";
-      return this.checkInDate.toLocaleDateString("ru-RU", {
-        day: "numeric",
-        month: "long",
-      });
+      const months = [
+        "января",
+        "февраля",
+        "марта",
+        "апреля",
+        "мая",
+        "июня",
+        "июля",
+        "августа",
+        "сентября",
+        "октября",
+        "ноября",
+        "декабря",
+      ];
+      return `${this.checkInDate.getDate()} ${months[this.checkInDate.getMonth()]}`;
     },
     checkOutDateFormatted() {
       if (!this.checkOutDate) return "";
-      return this.checkOutDate.toLocaleDateString("ru-RU", {
-        day: "numeric",
-        month: "long",
-      });
+      const months = [
+        "января",
+        "февраля",
+        "марта",
+        "апреля",
+        "мая",
+        "июня",
+        "июля",
+        "августа",
+        "сентября",
+        "октября",
+        "ноября",
+        "декабря",
+      ];
+      return `${this.checkOutDate.getDate()} ${months[this.checkOutDate.getMonth()]}`;
     },
     totalGuests() {
       const g = this.guestSelection;
