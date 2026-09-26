@@ -1,7 +1,7 @@
 import attractionsJson from "@app/data/attractions.json";
 
 const imageModules = import.meta.glob(
-  "@app/assets/img/sections/about/attractions/**/*.png",
+  "@app/assets/img/sections/about/attractions/**/*.webp",
   { eager: true, query: "?url", import: "default" }
 );
 

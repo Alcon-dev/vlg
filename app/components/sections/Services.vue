@@ -38,7 +38,10 @@
         <img
           :src="item.image"
           :alt="item.title"
-          :class="$style.banner"
+          :class="[
+            $style.banner,
+            index === services.length - 1 && $style.bannerBottom,
+          ]"
           loading="lazy"
           decoding="async"
         />
@@ -247,6 +250,9 @@ export default {
           max-width: 38.46vw;
           max-height: 12.5rem;
           border-radius: 0.75rem;
+        }
+        &.bannerBottom {
+          object-position: center 95%;
         }
       }
     }
