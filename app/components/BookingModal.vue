@@ -214,7 +214,7 @@
                       ]"
                     >
                       <span :class="$style.guestsChildFieldLabel">
-                        Ребенок {{ index + 1 }}
+                        Ребенок
                       </span>
                       <div :class="$style.guestsChildFieldInner">
                         <button

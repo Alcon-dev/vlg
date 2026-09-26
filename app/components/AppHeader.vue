@@ -422,27 +422,31 @@ header {
           position: absolute;
           top: 1.5rem;
           right: 1rem;
-          width: 2.875rem;
-          height: 2.875rem;
+          width: 3rem;
+          height: 3rem;
           padding: 0;
-          border: none;
+          border: 1px solid $bg-transparent-16;
           border-radius: 50%;
-          background: $bg-transparent-16;
+          background: transparent;
+          color: $text-white;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: background-color 0.2s;
+          box-sizing: border-box;
+          transition:
+            background 0.2s ease,
+            border-color 0.2s ease;
           z-index: 1;
           &:hover {
-            background: $bg-transparent-40;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.35);
           }
           .closeLine {
             position: absolute;
             width: 1.125rem;
-            height: 2px;
-            background: $text-white;
-            border-radius: 1px;
+            height: 1.5px;
+            background: currentColor;
             &:nth-child(1) {
               transform: rotate(45deg);
             }
@@ -477,44 +481,47 @@ header {
           margin-top: auto;
           padding-top: 1.5rem;
           display: flex;
-          justify-content: space-evenly;
-          gap: 0.5rem;
+          justify-content: space-around;
+          gap: 1.5rem;
           flex-wrap: wrap;
           .mobileSocialLink {
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 2.75rem;
-            height: 2.75rem;
-            border-radius: 50%;
-            background-color: $bg-transparent-16;
-            color: $text-white;
-            transition: background-color 0.2s;
+            width: 1.5rem;
+            height: 1.5rem;
+            opacity: 0.9;
+            transition: opacity 0.2s ease;
             &:hover {
-              background-color: $bg-transparent-40;
+              opacity: 1;
             }
             :global(img) {
-              width: 1.125rem;
-              height: 1.125rem;
+              width: 100%;
+              height: 100%;
               object-fit: contain;
               filter: brightness(0) invert(1);
             }
           }
         }
         .mobileBookingButton {
-          margin-top: 1rem;
+          margin-top: 2rem;
           width: 100%;
-          padding: 0.875rem 1.25rem;
+          padding: 0.875rem 1.5rem;
           border-radius: 6.25rem;
-          border: none;
-          background-color: $bg-transparent-16;
+          border: 1px solid $bg-transparent-16;
+          background: transparent;
+          box-sizing: border-box;
           color: $text-white;
           font-weight: 600;
           font-size: 1rem;
+          line-height: 1.2;
           cursor: pointer;
-          transition: background-color 0.2s;
+          transition:
+            background 0.2s ease,
+            border-color 0.2s ease;
           &:hover {
-            background-color: $bg-transparent-40;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.35);
           }
         }
       }
