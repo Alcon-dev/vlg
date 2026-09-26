@@ -290,7 +290,7 @@ import axios from "axios";
 import calendarIconUrl from "@app/assets/img/modals/calendar.svg";
 
 const BOOKING_CONFIRM_URL =
-  "https://realtycalendar.ru/v2/widget/NVGNpGgXO7/confirm";
+  "https://realtycalendar.ru/v2/widget/HE3NXyOLk4/confirm";
 const BOOKING_REDIRECT_URL = "https://homereserve.ru/HE3NXyOLk4/status";
 
 const EMPTY_ERRORS = () => ({
@@ -1245,11 +1245,11 @@ export default {
         }
       }
       .cta {
-        display: flex;
-        align-items: stretch;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         width: 100%;
         min-width: 0;
-        border: 1px solid $text-accent;
+        height: 3rem;
         border-radius: 0.5rem;
         overflow: hidden;
         align-self: start;
@@ -1259,54 +1259,64 @@ export default {
         .ctaPrice {
           display: flex;
           flex-direction: column;
+          align-items: center;
           justify-content: center;
-          gap: 0.15rem;
-          padding: 0.75rem 1.25rem;
-          min-width: 8.5rem;
+          gap: 0.1rem;
+          width: 100%;
+          min-width: 0;
+          height: 100%;
+          padding: 0 0.75rem;
+          background: $bg-white;
+          box-sizing: border-box;
           .ctaPriceOld {
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             font-weight: 400;
-            color: rgba(255, 255, 255, 0.45);
+            color: $green-accent;
+            opacity: 0.55;
             text-decoration: line-through;
-            line-height: 1.2;
+            line-height: 1;
           }
           .ctaPriceCurrent {
-            font-size: 1.25rem;
+            font-size: 1rem;
             font-weight: 600;
-            color: $text-white;
-            line-height: 1.2;
+            color: $green-accent;
+            line-height: 1;
           }
         }
         .ctaBtn {
-          flex: 1;
-          display: inline-flex;
+          display: flex;
           align-items: center;
           justify-content: center;
           gap: 0.5rem;
-          min-height: 3.75rem;
-          min-width: 10rem;
-          padding: 0.75rem 1.75rem;
+          width: 100%;
+          min-width: 0;
+          height: 100%;
+          padding: 0 0.75rem;
           border: none;
-          background: #555555;
+          background: $green-accent;
           color: $text-white;
           font-size: 1rem;
-          font-weight: 500;
+          font-weight: 600;
+          line-height: 1;
           font-family: inherit;
           cursor: pointer;
+          box-sizing: border-box;
           transition: background 0.2s;
           &:hover:not(:disabled) {
-            background: #636363;
+            background: #006080;
           }
           &:disabled {
-            opacity: 0.55;
+            opacity: 0.65;
             cursor: default;
           }
           .ctaBtnSpinner {
-            width: 1rem;
-            height: 1rem;
-            border: 2px solid rgba(255, 255, 255, 0.35);
+            width: 1.25rem;
+            height: 1.25rem;
+            flex-shrink: 0;
+            border: 2px solid rgba(255, 255, 255, 0.25);
             border-top-color: $text-white;
             border-radius: 50%;
+            box-sizing: border-box;
             animation: bookingSpin 0.7s linear infinite;
           }
         }

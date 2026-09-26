@@ -578,7 +578,7 @@ import axios from "axios";
 import calendarIconUrl from "@app/assets/img/modals/calendar.svg";
 
 const BOOKING_CONFIRM_URL =
-  "https://realtycalendar.ru/v2/widget/NVGNpGgXO7/confirm";
+  "https://realtycalendar.ru/v2/widget/HE3NXyOLk4/confirm";
 const BOOKING_REDIRECT_URL = "https://homereserve.ru/HE3NXyOLk4/status";
 
 const VueDatePicker = defineAsyncComponent(async () => {

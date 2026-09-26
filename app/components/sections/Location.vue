@@ -963,7 +963,7 @@ const VueDatePicker = defineAsyncComponent(async () => {
 });
 
 const BOOKING_CONFIRM_URL =
-  "https://realtycalendar.ru/v2/widget/NVGNpGgXO7/confirm";
+  "https://realtycalendar.ru/v2/widget/HE3NXyOLk4/confirm";
 const BOOKING_REDIRECT_URL = "https://homereserve.ru/HE3NXyOLk4/status";
 
 const RESIDENCE_COORDS = [53.473523, 49.37307];
