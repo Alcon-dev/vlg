@@ -1048,8 +1048,8 @@ export default {
             padding: 0 0.35rem;
             background: $bg-brown;
             font-size: 0.75rem;
-            line-height: 1;
-            font-weight: 400;
+            line-height: 1.2;
+            font-weight: 300;
             color: rgba(255, 255, 255, 0.55);
           }
           .fieldValue {
@@ -1145,8 +1145,8 @@ export default {
           padding: 0 0.35rem;
           background: $bg-brown;
           font-size: 0.75rem;
-          line-height: 1;
-          font-weight: 400;
+          line-height: 1.2;
+          font-weight: 300;
           color: rgba(255, 255, 255, 0.55);
         }
         &.commentBox {

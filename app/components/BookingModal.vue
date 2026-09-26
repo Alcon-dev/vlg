@@ -27,12 +27,7 @@
           </div>
 
           <div :class="$style.filtersBar">
-            <div
-              :class="[
-                $style.fieldGroup,
-                (checkInDate || checkOutDate) && $style.fieldGroupAccent,
-              ]"
-            >
+            <div :class="[$style.fieldGroup, $style.fieldGroupAccent]">
               <div :class="$style.fieldCell">
                 <span :class="$style.filterLabel">Дата заезда</span>
                 <div
@@ -1124,7 +1119,7 @@ export default {
     .filtersBar {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
+      gap: 1.5rem;
       padding: 0;
       overflow: visible;
       flex-shrink: 0;
@@ -1148,18 +1143,20 @@ export default {
         }
         &.fieldGroupAccent {
           border-color: $text-accent;
-          .filterLabel {
-            color: $text-accent;
-          }
           .filterIcon {
             opacity: 1;
             filter: none;
           }
-          .fieldCell:not(:first-child) {
-            border-left-color: $text-accent;
-            @include tablet {
-              border-left: none;
-              border-top-color: $text-accent;
+          .fieldCell {
+            .filterLabel {
+              color: $text-accent;
+            }
+            &:not(:first-child) {
+              border-left-color: $text-accent;
+              @include tablet {
+                border-left: none;
+                border-top-color: $text-accent;
+              }
             }
           }
         }
@@ -1195,8 +1192,8 @@ export default {
             transform: translateY(-50%);
             padding: 0 0.35rem;
             font-size: 0.75rem;
-            font-weight: 400;
-            line-height: 1;
+            font-weight: 300;
+            line-height: 1.2;
             color: rgba(255, 255, 255, 0.55);
             background: $bg-brown;
             pointer-events: none;
