@@ -1269,10 +1269,9 @@ export default {
         }
         .ctaPrice {
           display: flex;
-          flex-direction: column;
           align-items: center;
           justify-content: center;
-          gap: 0.1rem;
+          gap: 0.5rem;
           width: 100%;
           min-width: 0;
           height: 100%;
@@ -1280,18 +1279,20 @@ export default {
           background: $bg-white;
           box-sizing: border-box;
           .ctaPriceOld {
-            font-size: 0.75rem;
+            font-size: 0.8125rem;
             font-weight: 400;
             color: $green-accent;
             opacity: 0.55;
             text-decoration: line-through;
             line-height: 1;
+            white-space: nowrap;
           }
           .ctaPriceCurrent {
             font-size: 1rem;
             font-weight: 600;
             color: $green-accent;
             line-height: 1;
+            white-space: nowrap;
           }
         }
         .ctaBtn {
