@@ -875,7 +875,7 @@ export default {
       const g = this.guestSelection;
       return {
         adults: g?.adults ?? 0,
-        children: (g?.children ?? []).map((c) => ({ age: c?.age ?? "0" })),
+        children: [],
       };
     },
     activeTabIndex() {
@@ -1023,8 +1023,7 @@ export default {
           monthLabel,
           dateLabel,
           price,
-          priceFormatted:
-            price != null ? this.formatPrice(price) : null,
+          priceFormatted: price != null ? this.formatPrice(price) : null,
           discountPercent: discountPercent || null,
           discountLabel: discountPercent ? `-${discountPercent}%` : "",
           available:

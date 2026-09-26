@@ -723,6 +723,18 @@ export default {
         document.body.style.overflow = "hidden";
         document.addEventListener("keydown", this.onEscape);
         document.addEventListener("mousedown", this.onClickOutside);
+        const fromLocation = this.$store.state.bookingModalOpenedFromLocation;
+        const locationGuests = this.$store.state.locationFormData?.guests;
+        if (fromLocation && locationGuests) {
+          this.guestSelection = {
+            adults: Math.max(1, locationGuests.adults ?? 1),
+            children: Array.isArray(locationGuests.children)
+              ? locationGuests.children.map((c) => ({
+                  age: c?.age ?? "0",
+                }))
+              : [],
+          };
+        }
       } else {
         document.body.style.overflow = "";
         document.removeEventListener("keydown", this.onEscape);
@@ -1017,7 +1029,11 @@ export default {
     async onBookVilla(index) {
       const item = this.availableVillas[index];
       if (!item) return;
-      const guests = {
+      const guestsForApi = {
+        adults: this.guestSelection.adults,
+        children: [],
+      };
+      const guestsForForm = {
         adults: this.guestSelection.adults,
         children: (this.guestSelection.children || []).map((c) => ({
           age: c?.age ?? "0",
@@ -1036,7 +1052,7 @@ export default {
           end_date: this.toDateStr(this.checkOutDate),
           first_name: firstName,
           last_name: firstName,
-          guests,
+          guests: guestsForApi,
           phone: phoneRaw,
           redirect_url: BOOKING_REDIRECT_URL,
           widget_type: "widget_page",
@@ -1073,7 +1089,7 @@ export default {
       this.$store.commit("setBookingFormData", {
         checkInDate: this.toDateStr(this.checkInDate),
         checkOutDate: this.toDateStr(this.checkOutDate),
-        guests,
+        guests: guestsForForm,
         apartment: item.apartment,
         price: item.price ?? null,
         basePrice: item.basePrice ?? null,

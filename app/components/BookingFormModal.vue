@@ -154,7 +154,13 @@
                   </div>
                 </div>
 
-                <div :class="$style.fieldRow">
+                <div
+                  :class="[
+                    $style.fieldRow,
+                    $style.guestsFieldRow,
+                    guestsOpen && $style.guestsFieldRowOpen,
+                  ]"
+                >
                   <div :class="$style.fieldCell">
                     <span :class="$style.fieldLabel">Кол-во взрослых</span>
                     <div :class="$style.stepper">
@@ -188,25 +194,126 @@
                         type="button"
                         :class="$style.stepperBtn"
                         aria-label="Меньше детей"
-                        :disabled="childrenCount <= 0"
-                        @click="changeChildren(-1)"
+                        :disabled="children.length <= 0"
+                        @click="
+                          changeChildren(-1);
+                          if (!children.length) guestsOpen = false;
+                        "
                       >
                         −
                       </button>
-                      <span :class="$style.stepperValue">{{
-                        childrenCount
-                      }}</span>
+                      <button
+                        type="button"
+                        :class="$style.stepperValueBtn"
+                        aria-label="Возраст детей"
+                        @click="
+                          guestsOpen = children.length ? !guestsOpen : false
+                        "
+                      >
+                        {{ children.length }}
+                      </button>
                       <button
                         type="button"
                         :class="$style.stepperBtn"
                         aria-label="Больше детей"
                         :disabled="!canAddGuest"
-                        @click="changeChildren(1)"
+                        @click="
+                          changeChildren(1);
+                          guestsOpen = true;
+                        "
                       >
                         +
                       </button>
                     </div>
                   </div>
+                  <Transition name="dropdown">
+                    <div
+                      v-show="guestsOpen && children.length"
+                      :class="$style.guestsDropdown"
+                      @mousedown.prevent
+                    >
+                      <div :class="$style.guestsDropdownInner">
+                        <div
+                          v-for="(child, index) in children"
+                          :key="index"
+                          :class="[
+                            $style.guestsChildField,
+                            childAgeOpenIndex === index &&
+                              $style.guestsChildFieldOpen,
+                          ]"
+                        >
+                          <span :class="$style.guestsChildFieldLabel">
+                            Ребенок
+                          </span>
+                          <div :class="$style.guestsChildFieldInner">
+                            <button
+                              type="button"
+                              :class="$style.guestsChildTrigger"
+                              aria-haspopup="listbox"
+                              :aria-expanded="childAgeOpenIndex === index"
+                              @click.stop="toggleChildAge(index)"
+                            >
+                              <span>{{ formatAgeYears(child.age) }}</span>
+                              <span
+                                :class="$style.guestsChildChevron"
+                                aria-hidden="true"
+                              />
+                            </button>
+                            <button
+                              type="button"
+                              :class="$style.guestsChildRemove"
+                              aria-label="Удалить"
+                              @click.stop="
+                                removeChild(index);
+                                if (childAgeOpenIndex === index)
+                                  childAgeOpenIndex = null;
+                                if (!children.length) guestsOpen = false;
+                              "
+                            >
+                              ×
+                            </button>
+                          </div>
+                          <Transition name="dropdown">
+                            <ul
+                              v-show="childAgeOpenIndex === index"
+                              :class="$style.guestsChildAgeList"
+                              role="listbox"
+                              @mousedown.stop
+                            >
+                              <li
+                                v-for="a in childAges"
+                                :key="a"
+                                role="option"
+                                :aria-selected="child.age === a"
+                              >
+                                <button
+                                  type="button"
+                                  :class="[
+                                    $style.guestsChildAgeOption,
+                                    child.age === a &&
+                                      $style.guestsChildAgeOptionActive,
+                                  ]"
+                                  @click.stop="selectChildAge(index, a)"
+                                >
+                                  {{ formatAgeYears(a) }}
+                                </button>
+                              </li>
+                            </ul>
+                          </Transition>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        :class="$style.guestsClose"
+                        @click="
+                          guestsOpen = false;
+                          childAgeOpenIndex = null;
+                        "
+                      >
+                        Готово
+                      </button>
+                    </div>
+                  </Transition>
                 </div>
               </div>
 
@@ -299,6 +406,8 @@ const EMPTY_ERRORS = () => ({
   consent: false,
 });
 
+const CHILD_AGES = Array.from({ length: 18 }, (_, i) => String(i));
+
 function onlyLettersName(value) {
   return (value || "").replace(/[^\p{L}\s\-'’]/gu, "");
 }
@@ -385,7 +494,10 @@ export default {
       wishes: "",
       consent: false,
       adults: 1,
-      childrenCount: 0,
+      children: [],
+      childAges: CHILD_AGES,
+      guestsOpen: false,
+      childAgeOpenIndex: null,
       submitting: false,
       errors: EMPTY_ERRORS(),
     };
@@ -422,7 +534,7 @@ export default {
       return cap != null && cap > 0 ? cap : 99;
     },
     totalGuests() {
-      return this.adults + this.childrenCount;
+      return this.adults + this.children.length;
     },
     canAddGuest() {
       return this.totalGuests < this.maxGuests;
@@ -491,10 +603,40 @@ export default {
       this.wishes = "";
       this.consent = false;
       this.adults = Math.max(1, this.formData?.guests?.adults ?? 1);
-      this.childrenCount = Array.isArray(this.formData?.guests?.children)
-        ? this.formData.guests.children.length
-        : 0;
+      this.children = Array.isArray(this.formData?.guests?.children)
+        ? this.formData.guests.children.map((c) => ({
+            age: String(c?.age ?? "0"),
+          }))
+        : [];
       this.errors = EMPTY_ERRORS();
+      this.guestsOpen = false;
+      this.childAgeOpenIndex = null;
+    },
+    formatAgeYears(age) {
+      const n = Number(age);
+      if (!Number.isFinite(n)) return `${age} лет`;
+      const mod10 = n % 10;
+      const mod100 = n % 100;
+      let word = "лет";
+      if (mod10 === 1 && mod100 !== 11) word = "год";
+      else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
+        word = "года";
+      }
+      return `${n} ${word}`;
+    },
+    setChildAge(index, age) {
+      if (!this.children[index]) return;
+      this.children[index] = { ...this.children[index], age: String(age) };
+    },
+    toggleChildAge(index) {
+      this.childAgeOpenIndex = this.childAgeOpenIndex === index ? null : index;
+    },
+    selectChildAge(index, age) {
+      this.setChildAge(index, age);
+      this.childAgeOpenIndex = null;
+    },
+    removeChild(index) {
+      this.children.splice(index, 1);
     },
     clearError(field) {
       this.errors = { ...this.errors, [field]: false };
@@ -633,10 +775,13 @@ export default {
       this.adults = next;
     },
     changeChildren(delta) {
-      const next = this.childrenCount + delta;
-      if (next < 0) return;
-      if (delta > 0 && !this.canAddGuest) return;
-      this.childrenCount = next;
+      if (delta > 0) {
+        if (!this.canAddGuest) return;
+        this.children.push({ age: "0" });
+        return;
+      }
+      if (this.children.length <= 0) return;
+      this.children.pop();
     },
     validateForm() {
       const name = (this.firstName || "").trim();
@@ -676,9 +821,7 @@ export default {
         last_name: this.firstName.trim(),
         guests: {
           adults: this.adults,
-          children: Array.from({ length: this.childrenCount }, () => ({
-            age: "0",
-          })),
+          children: [],
         },
         phone: phoneForApi(phoneDigits),
         wish: (this.wishes || "").trim(),
@@ -971,6 +1114,7 @@ export default {
       grid-template-columns: 1.4fr 1fr;
       gap: 1.5rem;
       align-items: stretch;
+      overflow: visible;
       @include tablet {
         grid-template-columns: 1fr;
       }
@@ -979,6 +1123,7 @@ export default {
         flex-direction: column;
         gap: 0.75rem;
         min-width: 0;
+        overflow: visible;
       }
       .fieldRow {
         display: grid;
@@ -1139,6 +1284,212 @@ export default {
               font-size: 1rem;
               color: $text-white;
             }
+            .stepperValueBtn {
+              flex: 1;
+              min-width: 0;
+              padding: 0;
+              border: none;
+              background: transparent;
+              color: $text-white;
+              font-size: 1rem;
+              font-family: inherit;
+              line-height: 1;
+              cursor: pointer;
+              text-align: center;
+            }
+          }
+        }
+        &.guestsFieldRow {
+          position: relative;
+          overflow: visible;
+          z-index: 3;
+        }
+        &.guestsFieldRowOpen {
+          z-index: 5;
+        }
+      }
+      .guestsDropdown {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: calc(100% + 0.35rem);
+        z-index: 1000;
+        padding: 0.85rem;
+        background: rgba(30, 30, 30, 0.98);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 0.5rem;
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.4);
+        overflow: visible;
+        .guestsDropdownInner {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          .guestsChildField {
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            border-radius: 0.5rem;
+            background: transparent;
+            box-sizing: border-box;
+            &.guestsChildFieldOpen {
+              z-index: 2;
+              .guestsChildFieldLabel {
+                z-index: 3;
+              }
+              .guestsChildChevron {
+                transform: rotate(180deg);
+              }
+            }
+            .guestsChildFieldLabel {
+              position: absolute;
+              top: 0;
+              left: 0.85rem;
+              z-index: 2;
+              transform: translateY(-50%);
+              padding: 0 0.35rem;
+              background: rgba(30, 30, 30, 0.98);
+              font-size: 0.75rem;
+              font-weight: 300;
+              line-height: 1.2;
+              color: rgba(255, 255, 255, 0.55);
+              pointer-events: none;
+              white-space: nowrap;
+            }
+            .guestsChildFieldInner {
+              display: flex;
+              align-items: center;
+              gap: 0.35rem;
+              min-height: 2.5rem;
+              padding: 0.35rem 0.5rem 0.35rem 0.85rem;
+              .guestsChildTrigger {
+                flex: 1;
+                min-width: 0;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.5rem;
+                padding: 0;
+                border: none;
+                background: transparent;
+                color: $text-white;
+                font-size: 1rem;
+                font-weight: 400;
+                font-family: inherit;
+                line-height: 1.2;
+                cursor: pointer;
+                text-align: left;
+                span:first-child {
+                  min-width: 0;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                }
+              }
+              .guestsChildChevron {
+                flex-shrink: 0;
+                width: 0.45rem;
+                height: 0.45rem;
+                border-right: 1.5px solid rgba(255, 255, 255, 0.7);
+                border-bottom: 1.5px solid rgba(255, 255, 255, 0.7);
+                transform: rotate(45deg);
+                margin-top: -0.2rem;
+                transition: transform 0.15s ease;
+              }
+              .guestsChildRemove {
+                flex-shrink: 0;
+                width: 1.75rem;
+                height: 1.75rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+                background: none;
+                border: none;
+                color: rgba(255, 255, 255, 0.55);
+                font-size: 1.25rem;
+                line-height: 1;
+                cursor: pointer;
+                border-radius: 0.25rem;
+                transition:
+                  color 0.15s,
+                  background 0.15s;
+                &:hover {
+                  color: $text-white;
+                  background: rgba(255, 255, 255, 0.1);
+                }
+              }
+            }
+            .guestsChildAgeList {
+              position: absolute;
+              left: 0;
+              right: 0;
+              top: calc(100% + 0.35rem);
+              z-index: 5;
+              margin: 0;
+              padding: 0.35rem;
+              list-style: none;
+              display: flex;
+              flex-direction: column;
+              gap: 0.15rem;
+              max-height: 11rem;
+              overflow-y: auto;
+              background: rgba(24, 24, 24, 0.98);
+              border: 1px solid rgba(255, 255, 255, 0.2);
+              border-radius: 0.5rem;
+              box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.45);
+              scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+              &::-webkit-scrollbar {
+                width: 0.35rem;
+              }
+              &::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.25);
+                border-radius: 0.25rem;
+              }
+              .guestsChildAgeOption {
+                width: 100%;
+                display: block;
+                padding: 0.55rem 0.75rem;
+                border: none;
+                border-radius: 0.35rem;
+                background: transparent;
+                color: rgba(255, 255, 255, 0.85);
+                font-size: 0.875rem;
+                font-weight: 300;
+                font-family: inherit;
+                line-height: 1.2;
+                text-align: left;
+                cursor: pointer;
+                transition:
+                  background 0.15s,
+                  color 0.15s;
+                &:hover {
+                  background: rgba(255, 255, 255, 0.08);
+                  color: $text-white;
+                }
+                &.guestsChildAgeOptionActive {
+                  background: rgba(132, 99, 61, 0.35);
+                  color: $text-white;
+                }
+              }
+            }
+          }
+        }
+        .guestsClose {
+          margin-top: 0.85rem;
+          padding: 0.65rem 1rem;
+          background: rgba(255, 255, 255, 0.12);
+          border: none;
+          border-radius: 0.45rem;
+          color: $text-white;
+          font-size: 0.875rem;
+          font-weight: 400;
+          font-family: inherit;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          cursor: pointer;
+          width: 100%;
+          transition: background 0.2s;
+          &:hover {
+            background: rgba(255, 255, 255, 0.18);
           }
         }
       }
@@ -1197,11 +1548,6 @@ export default {
         @include tablet {
           order: 1;
         }
-        &.consentBlockError {
-          .consentCheckbox {
-            border-color: $main-red;
-          }
-        }
         .consentLabel {
           display: flex;
           align-items: flex-start;
@@ -1255,6 +1601,11 @@ export default {
               text-decoration: underline;
               text-underline-offset: 0.12em;
             }
+          }
+        }
+        &.consentBlockError {
+          .consentCheckbox {
+            border-color: $main-red;
           }
         }
       }
@@ -1358,5 +1709,16 @@ export default {
     opacity: 1;
     transform: translateY(100%);
   }
+}
+:global(.dropdown-enter-active),
+:global(.dropdown-leave-active) {
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+:global(.dropdown-enter-from),
+:global(.dropdown-leave-to) {
+  opacity: 0;
+  transform: translateY(-0.25rem);
 }
 </style>

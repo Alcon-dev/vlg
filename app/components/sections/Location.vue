@@ -1810,6 +1810,12 @@ export default {
         firstName,
         phone: normalizedPhone,
         wish: (this.bookingWish || "").trim(),
+        guests: {
+          adults: this.locationGuestSelection?.adults ?? 1,
+          children: (this.locationGuestSelection?.children ?? []).map((c) => ({
+            age: c?.age ?? "0",
+          })),
+        },
       });
       this.$store.commit("setBookingModalOpenedFromLocation", true);
       this.$store.commit("setBookingModalPrefill", {
@@ -1869,9 +1875,7 @@ export default {
         last_name: firstName,
         guests: {
           adults: this.locationGuestSelection?.adults ?? 1,
-          children: (this.locationGuestSelection?.children ?? []).map((c) => ({
-            age: c?.age ?? "0",
-          })),
+          children: [],
         },
         phone: phoneRaw,
         redirect_url: BOOKING_REDIRECT_URL,
@@ -2350,11 +2354,6 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
-    &.consentBlockError {
-      .consentCheckbox {
-        border-color: $main-red;
-      }
-    }
     .consentLabel {
       display: flex;
       align-items: flex-start;
@@ -2409,6 +2408,11 @@ export default {
           text-decoration: underline;
           text-underline-offset: 0.12em;
         }
+      }
+    }
+    &.consentBlockError {
+      .consentCheckbox {
+        border-color: $main-red;
       }
     }
   }
