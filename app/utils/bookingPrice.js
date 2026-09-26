@@ -11,6 +11,16 @@ function parseDateStr(str) {
   return new Date(y, m - 1, d);
 }
 
+function addDaysStr(dateStr, days) {
+  const d = parseDateStr(dateStr);
+  if (!d) return null;
+  d.setDate(d.getDate() + days);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 export function nightsBetween(beginDate, endDate) {
   const a = parseDateStr(beginDate);
   const b = parseDateStr(endDate);
@@ -44,19 +54,22 @@ export function calcStayPrice(calendar, beginDate, endDate) {
   const nights = nightsBetween(beginDate, endDate);
   if (!nights || !Array.isArray(calendar) || !calendar.length) return null;
 
-  const nightEntries = calendar.filter(
-    (e) => e?.date && e.date >= beginDate && e.date < endDate
-  );
-  const entries = nightEntries.length ? nightEntries : calendar.slice(0, nights);
+  const nightEntries = [];
+  for (let i = 0; i < nights; i++) {
+    const key = addDaysStr(beginDate, i);
+    const entry = calendar.find((e) => e?.date === key);
+    if (!entry || entry.price == null) return null;
+    nightEntries.push(entry);
+  }
 
   let base = 0;
-  for (const entry of entries) {
-    base += Number(entry?.price) || 0;
+  for (const entry of nightEntries) {
+    base += Number(entry.price) || 0;
   }
   if (!base) return null;
 
   const discounts =
-    entries.find((e) => Array.isArray(e?.discounts) && e.discounts.length)
+    nightEntries.find((e) => Array.isArray(e?.discounts) && e.discounts.length)
       ?.discounts ?? null;
   const discountPercent = pickDiscountPercent(discounts, nights);
   const total = discountPercent
@@ -66,6 +79,11 @@ export function calcStayPrice(calendar, beginDate, endDate) {
   return { base, total, discountPercent, nights };
 }
 
+/**
+ * Bookable only when every night of the stay matches a good RC day:
+ * available === true, price set, closed_on_arrival !== true.
+ * (Any available:false or closed_on_arrival:true → hide villa.)
+ */
 export function isStayAvailable(calendar, beginDate, endDate) {
   if (!Array.isArray(calendar) || !calendar.length) return false;
   const nights = nightsBetween(beginDate, endDate);
@@ -75,26 +93,17 @@ export function isStayAvailable(calendar, beginDate, endDate) {
     calendar.filter((e) => e?.date).map((e) => [e.date, e])
   );
 
-  const checkIn = byDate.get(beginDate);
-  if (
-    !checkIn ||
-    checkIn.closed_on_arrival === true ||
-    checkIn.available === false
-  ) {
-    return false;
+  for (let i = 0; i < nights; i++) {
+    const entry = byDate.get(addDaysStr(beginDate, i));
+    if (!entry) return false;
+    if (entry.available !== true) return false;
+    if (entry.price == null) return false;
+    if (entry.closed_on_arrival === true) return false;
   }
 
-  for (let i = 0; i < nights; i++) {
-    const d = parseDateStr(beginDate);
-    if (!d) return false;
-    d.setDate(d.getDate() + i);
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    const key = `${y}-${m}-${day}`;
-    const entry = byDate.get(key);
-    if (!entry || entry.available === false) return false;
-  }
+  const checkIn = byDate.get(beginDate);
+  const minStay = Number(checkIn?.min_stay) || 1;
+  if (nights < minStay) return false;
 
   const checkOut = byDate.get(endDate);
   if (checkOut?.closed_on_departure === true) return false;

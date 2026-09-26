@@ -699,15 +699,19 @@ export default {
     },
     availableVillas() {
       if (!this.hasDates) return [];
+      const adults = Math.max(1, this.guestSelection.adults || 1);
       return this.apartments
         .map((apartment) => {
+          if (apartment?.can_be_booked === false) return null;
           const info = this.availabilityMap[apartment.id];
           if (!info || !info.available) return null;
-          const price = info.price != null ? this.formatPrice(info.price) : "—";
+          if (info.price == null) return null;
+          const cap = apartment?.capacity;
+          if (cap != null && cap > 0 && adults > cap) return null;
           return {
             apartment,
-            priceFormatted: price,
-            price: info.price ?? null,
+            priceFormatted: this.formatPrice(info.price),
+            price: info.price,
             basePrice: info.basePrice ?? null,
             discountPercent: info.discountPercent ?? 0,
             available: true,
@@ -735,6 +739,7 @@ export default {
               : [],
           };
         }
+        if (this.hasDates) this.fetchAvailability();
       } else {
         document.body.style.overflow = "";
         document.removeEventListener("keydown", this.onEscape);
@@ -751,6 +756,14 @@ export default {
     endDateStr() {
       if (this.hasDates) this.fetchAvailability();
       else this.availabilityMap = {};
+    },
+    "guestSelection.adults"() {
+      if (this.hasDates) this.fetchAvailability();
+    },
+    apartments: {
+      handler(list) {
+        if (this.hasDates && list?.length) this.fetchAvailability();
+      },
     },
     photoGalleryOpen(open) {
       if (typeof document === "undefined") return;
@@ -979,9 +992,11 @@ export default {
       this.availabilityLoading = true;
       this.availabilityMap = {};
       try {
-        // Цена от гостей не зависит; guests с детьми дают 422
-        // у вилл с меньшим лимитом детей, чем выбран в форме.
-        const guests = { adults: 1, children: [] };
+        // Те же гости, что уйдут в confirm (без детей — иначе 422 по лимиту детей).
+        const guests = {
+          adults: Math.max(1, this.guestSelection.adults || 1),
+          children: [],
+        };
         for (const apt of this.apartments) {
           if (!apt.id) continue;
           if (requestId !== this.availabilityRequestId) return;
@@ -998,18 +1013,16 @@ export default {
             if (requestId !== this.availabilityRequestId) return;
             const available = isStayAvailable(calendar, beginDate, endDate);
             const stay = calcStayPrice(calendar, beginDate, endDate);
-            const fallback =
-              apt.price?.common?.without_discount != null
-                ? Number(apt.price.common.without_discount)
-                : null;
+            const bookable = !!(available && stay && stay.total > 0);
             this.availabilityMap = {
               ...this.availabilityMap,
               [apt.id]: {
-                available: !!available,
-                price: stay?.total ?? fallback,
-                basePrice: stay?.discountPercent > 0 ? stay.base : null,
-                discountPercent: stay?.discountPercent ?? 0,
-                nights: stay?.nights ?? 0,
+                available: bookable,
+                price: bookable ? stay.total : null,
+                basePrice:
+                  bookable && stay.discountPercent > 0 ? stay.base : null,
+                discountPercent: bookable ? stay.discountPercent : 0,
+                nights: bookable ? stay.nights : 0,
               },
             };
           } catch {
