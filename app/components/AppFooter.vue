@@ -17,46 +17,48 @@
       </nav>
 
       <div :class="$style.columns">
-        <nav :class="$style.column">
-          <h3 :class="$style.columnTitle">Виллы</h3>
-          <ul :class="$style.columnList">
-            <li v-for="(apt, index) in footerVillas" :key="apt.id">
-              <a
-                :class="$style.columnLink"
-                href="#reserv"
-                @click.prevent="onVillaClick(index)"
-              >
-                {{ apt.title }}
-              </a>
-            </li>
-          </ul>
-        </nav>
+        <div :class="[$style.columnsSide, $style.columnsSideLeft]">
+          <nav :class="$style.column">
+            <h3 :class="$style.columnTitle">Виллы</h3>
+            <ul :class="$style.columnList">
+              <li v-for="(apt, index) in footerVillas" :key="apt.id">
+                <a
+                  :class="$style.columnLink"
+                  href="#reserv"
+                  @click.prevent="onVillaClick(index)"
+                >
+                  {{ apt.title }}
+                </a>
+              </li>
+            </ul>
+          </nav>
 
-        <nav :class="$style.column">
-          <h3 :class="$style.columnTitle">Дополнительные услуги</h3>
-          <ul :class="$style.columnList">
-            <li>
-              <NuxtLink :class="$style.columnLink" to="#services"
-                >Ресторанный сервис</NuxtLink
-              >
-            </li>
-            <li>
-              <NuxtLink :class="$style.columnLink" to="#services"
-                >Шоу-программы</NuxtLink
-              >
-            </li>
-            <li>
-              <NuxtLink :class="$style.columnLink" to="#services"
-                >Замок Гарибальди</NuxtLink
-              >
-            </li>
-            <li>
-              <NuxtLink :class="$style.columnLink" to="#services"
-                >Активный отдых</NuxtLink
-              >
-            </li>
-          </ul>
-        </nav>
+          <nav :class="$style.column">
+            <h3 :class="$style.columnTitle">Дополнительные услуги</h3>
+            <ul :class="$style.columnList">
+              <li>
+                <NuxtLink :class="$style.columnLink" to="#services"
+                  >Ресторанный сервис</NuxtLink
+                >
+              </li>
+              <li>
+                <NuxtLink :class="$style.columnLink" to="#services"
+                  >Шоу-программы</NuxtLink
+                >
+              </li>
+              <li>
+                <NuxtLink :class="$style.columnLink" to="#services"
+                  >Замок Гарибальди</NuxtLink
+                >
+              </li>
+              <li>
+                <NuxtLink :class="$style.columnLink" to="#services"
+                  >Активный отдых</NuxtLink
+                >
+              </li>
+            </ul>
+          </nav>
+        </div>
 
         <div :class="$style.columnLogo">
           <AppIcon name="logo" alt="Резиденция ВОЛГА" :class="$style.logo" />
@@ -96,57 +98,65 @@
           </div>
         </div>
 
-        <div :class="[$style.column, $style.columnEnd]">
-          <h3 :class="$style.columnTitle">Контакты</h3>
-          <ul :class="$style.columnList">
-            <li>
-              Тольятти, СНТ Волгарь, 18/3 р-н<br />
-              Центральный
-            </li>
-            <li>
-              <a :class="$style.contactLink" href="tel:+79171556888"
-                >+7 917 155-68-88</a
-              >
-            </li>
-            <li>
-              <a :class="$style.contactLink" href="mailto:volga-dom163@mail.ru"
-                >volga-dom163@mail.ru</a
-              >
-            </li>
-          </ul>
-        </div>
+        <div :class="[$style.columnsSide, $style.columnsSideRight]">
+          <div :class="[$style.column, $style.columnEnd]">
+            <h3 :class="$style.columnTitle">Контакты</h3>
+            <ul :class="$style.columnList">
+              <li>
+                Тольятти, СНТ Волгарь, 18/3 р-н<br />
+                Центральный
+              </li>
+              <li>
+                <a :class="$style.contactLink" href="tel:+79171556888"
+                  >+7 917 155-68-88</a
+                >
+              </li>
+              <li>
+                <a
+                  :class="$style.contactLink"
+                  href="mailto:volga-dom163@mail.ru"
+                  >volga-dom163@mail.ru</a
+                >
+              </li>
+            </ul>
+          </div>
 
-        <div :class="[$style.column, $style.columnEnd]">
-          <h3 :class="$style.columnTitle">Правила проживания</h3>
-          <ul :class="$style.columnList">
-            <li>
-              Заезд {{ footerRules.checkIn }} / Выезд
-              {{ footerRules.checkOut }}
-            </li>
-            <li>Тишина после 22:00</li>
-            <li>Возвратный депозит</li>
-            <li>
-              Питомцы
-              {{
-                footerRules.pets === "да" ? "по согласованию" : "не допускаются"
-              }}
-            </li>
-          </ul>
+          <div :class="[$style.column, $style.columnEnd]">
+            <h3 :class="$style.columnTitle">Правила проживания</h3>
+            <ul :class="$style.columnList">
+              <li>
+                Заезд {{ footerRules.checkIn }} / Выезд
+                {{ footerRules.checkOut }}
+              </li>
+              <li>Тишина после 22:00</li>
+              <li>Возвратный депозит</li>
+              <li>
+                Питомцы
+                {{
+                  footerRules.pets === "да"
+                    ? "по согласованию"
+                    : "не допускаются"
+                }}
+              </li>
+            </ul>
+          </div>
         </div>
 
         <div :class="$style.bottomSection">
-          <span :class="[$style.bottomItem, $style.bottomRow]">
-            ООО "Резиденция ВОЛГА"
-          </span>
-          <span
-            :class="[
-              $style.bottomItem,
-              $style.bottomCopyright,
-              $style.bottomRow,
-            ]"
-          >
-            © 2026 Все права защищены
-          </span>
+          <div :class="$style.bottomLeft">
+            <span :class="[$style.bottomItem, $style.bottomRow]">
+              ООО "Резиденция ВОЛГА"
+            </span>
+            <span
+              :class="[
+                $style.bottomItem,
+                $style.bottomCopyright,
+                $style.bottomRow,
+              ]"
+            >
+              © 2026 Все права защищены
+            </span>
+          </div>
           <a
             :class="[$style.bottomLink, $style.bottomCenter, $style.bottomRow]"
             href="#faq"
@@ -154,22 +164,26 @@
           >
             Правила проживания
           </a>
-          <NuxtLink
-            :class="[$style.bottomLink, $style.bottomEnd, $style.bottomRow]"
-            to="#"
-          >
-            Политика конфиденциальности
-          </NuxtLink>
-          <span :class="[$style.bottomDev, $style.bottomEnd, $style.bottomRow]">
-            <span :class="$style.bottomDevLabel">Сайт разработан:</span>
-            <a
-              :class="$style.devLink"
-              href="https://atlantsoftware.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Atlantsoftware.com</a
+          <div :class="$style.bottomRight">
+            <NuxtLink
+              :class="[$style.bottomLink, $style.bottomEnd, $style.bottomRow]"
+              to="#"
             >
-          </span>
+              Политика конфиденциальности
+            </NuxtLink>
+            <span
+              :class="[$style.bottomDev, $style.bottomEnd, $style.bottomRow]"
+            >
+              <span :class="$style.bottomDevLabel">Сайт разработан:</span>
+              <a
+                :class="$style.devLink"
+                href="https://atlantsoftware.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Atlantsoftware.com</a
+              >
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -292,7 +306,7 @@ export default {
     }
     .columns {
       display: grid;
-      grid-template-columns: 1fr 1.15fr auto 1fr 1.1fr;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
       column-gap: 1.75rem;
       row-gap: 2.5rem;
       align-items: start;
@@ -301,6 +315,22 @@ export default {
         flex-direction: column;
         align-items: center;
         gap: 0;
+      }
+      .columnsSide {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 1.75rem;
+        min-width: 0;
+        width: 100%;
+        @include tablet {
+          display: none;
+        }
+        &.columnsSideLeft {
+          justify-self: stretch;
+        }
+        &.columnsSideRight {
+          justify-self: stretch;
+        }
       }
       .column {
         display: flex;
@@ -357,6 +387,7 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-self: center;
         gap: 2.5rem;
         padding: 0 1.5rem;
         @include tablet {
@@ -473,7 +504,12 @@ export default {
         }
       }
       .bottomSection {
-        display: contents;
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        column-gap: 1.75rem;
+        align-items: center;
+        width: 100%;
         @include tablet {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -484,6 +520,29 @@ export default {
           font-size: 0.625rem;
           font-weight: 300;
           color: $text-tertiary;
+        }
+        .bottomLeft {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 0.75rem 1.25rem;
+          min-width: 0;
+          justify-self: start;
+          @include tablet {
+            display: contents;
+          }
+        }
+        .bottomRight {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 0.75rem 1.25rem;
+          min-width: 0;
+          justify-self: end;
+          @include tablet {
+            display: contents;
+          }
         }
         .bottomRow {
           align-self: center;
@@ -500,7 +559,6 @@ export default {
           }
           &.bottomCopyright {
             text-align: left;
-            justify-self: start;
             @include tablet {
               justify-self: stretch;
               width: 100%;

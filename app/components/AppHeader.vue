@@ -196,22 +196,29 @@ header {
   justify-content: space-between;
   align-items: center;
   padding-block: 1.5rem;
+  --header-logo-slot: 10.5rem;
   @include content-width;
   @include laptop {
     padding-block: 1.5rem;
+    --header-logo-slot: 9.5rem;
   }
   .menu {
     display: flex;
     align-items: center;
     flex: 1 1 0;
     min-width: 0;
+    max-width: calc((100% - var(--header-logo-slot)) / 2);
     .menuList {
       display: flex;
       align-items: center;
+      flex-wrap: nowrap;
       gap: 0.5rem;
       margin: 0;
       padding: 0;
       list-style: none;
+      @include laptop {
+        gap: 0.35rem;
+      }
       .menuItem {
         padding: 0;
         border-radius: 6.25rem;
@@ -235,6 +242,10 @@ header {
           font-weight: 600;
           line-height: 1.2;
           white-space: nowrap;
+          @include laptop {
+            padding: 0.75rem 0.9rem;
+            font-size: 0.875rem;
+          }
           &:hover {
             cursor: pointer;
           }
@@ -253,9 +264,11 @@ header {
     height: auto;
     position: absolute;
     left: 50%;
-    top: 1.5rem;
-    transform: translateX(-50%);
+    top: 50%;
+    transform: translate(-50%, -50%);
     flex-shrink: 0;
+    z-index: 2;
+    pointer-events: none;
   }
   .socialLinks {
     display: flex;
@@ -267,6 +280,10 @@ header {
     flex: 1 1 0;
     justify-content: flex-end;
     min-width: 0;
+    max-width: calc((100% - var(--header-logo-slot)) / 2);
+    @include laptop {
+      gap: 0.25rem;
+    }
     .socialLink {
       display: flex;
       justify-content: center;
@@ -276,6 +293,10 @@ header {
       border-radius: 0;
       background: transparent;
       transition: opacity 0.2s ease;
+      @include laptop {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
       &:hover {
         opacity: 0.7;
       }
@@ -302,6 +323,11 @@ header {
       transition:
         background 0.2s ease,
         border-color 0.2s ease;
+      @include laptop {
+        margin-left: 0.25rem;
+        padding: 0.75rem 0.9rem;
+        font-size: 0.875rem;
+      }
       &:hover {
         background: rgba(255, 255, 255, 0.08);
         border-color: rgba(255, 255, 255, 0.35);
@@ -399,11 +425,9 @@ header {
       }
     }
     .logo {
-      width: 8rem;
-      top: 1rem;
-      @include tablet {
-        width: 5.75rem;
-      }
+      width: 5.75rem;
+      top: 50%;
+      transform: translate(-50%, -50%);
     }
     .mobileMenuOverlay {
       display: block;
