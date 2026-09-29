@@ -234,9 +234,9 @@ export default {
       }
       .banner {
         flex: none;
-        width: 20.83vw;
-        max-width: 20.83vw;
-        max-height: 20.83vw;
+        width: min(20.83vw, 400px);
+        max-width: min(20.83vw, 400px);
+        max-height: min(20.83vw, 400px);
         height: 100%;
         object-fit: cover;
         border-radius: 1rem;

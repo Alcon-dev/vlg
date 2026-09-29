@@ -4,7 +4,8 @@
 @use "./mixins.scss" as *;
 
 html {
-  font-size: calc(100vw * 16 / 1920);
+  // Cap at 16px so layouts stop growing above the 1920 design width.
+  font-size: min(16px, calc(100vw * 16 / 1920));
   scroll-behavior: smooth;
   // Prevent layout shifts: `100vw` changes when the vertical scrollbar appears/disappears,
   // which changes root `rem` sizing across the page (visible as header "jump" on load).
